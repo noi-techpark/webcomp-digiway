@@ -1,0 +1,77 @@
+{
+  "title": "Digiway Activities & Pois",
+  "description": "Map that displays Activities & Pois imported withhin the Digiway project",
+  "descriptionAbstract": "Map that displays Activities & Pois imported withhin the Digiway projec",
+  "license": "AGPL-3.0-or-later",
+  "repositoryUrl": "https://github.com/noi-techpark/webcomp-digiway.git",
+  "shortName": "digiway-data-map",
+  "copyrightHolders": [
+    {
+      "name": "NOI",
+      "email": "info@noi.bz.it",
+      "organization": "NOI S.p.A",
+      "organizationUrl": "https://noi.bz.it"
+    }
+  ],
+  "authors": [
+    {
+      "name": "Rudi Thoeni",
+      "email": "r.thoeni@noi.bz.it",
+      "organization": "NOI S.p.A",
+      "organizationUrl": "https://noi.bz.it"
+    }
+  ],
+  "image": "wcs-logo.png",
+  "searchTags": [
+    "map"
+  ],
+  "dist": {
+    "basePath": "dist",
+    "files": [
+      "map_widget.min.js"
+    ]
+  },
+  "configuration": {
+    "tagName": "map-widget",
+    "options": [
+      {
+        "key": "source",
+        "type": "select",
+        "label": "Select which data to display",
+        "required": false,
+        "options": {
+          "values": [
+            "civis.geoserver.hikingtrails",
+            "civis.geoserver.mountainbikeroutes",
+            "civis.geoserver.intermunicipalcyclingroutes",
+            "civis.geoserver.cyclewaystyrol"
+          ],
+          "default": "civis.geoserver.intermunicipalcyclingroutes"
+        }
+      },
+      {
+        "key": "language",
+        "type": "select",
+        "label": "Two letter key for the language to be used, if omitted the widget will use the lang attribute of the closest parent element. Fallback and Default is `en`",
+        "required": false,
+        "options": {
+          "values": [
+            "de",
+            "it",
+            "en"
+          ],
+          "default": "en"
+        }
+      },     
+      {
+        "key": "centermap",
+        "type": "text",
+        "label": "centermap: ex. 46.7728692,10.7916716,14",
+        "required": false,
+        "options": {
+          "default": ""
+        }
+      }     
+    ]
+  }
+}
