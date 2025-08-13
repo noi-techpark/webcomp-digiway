@@ -57,10 +57,9 @@
         "options": {
           "values": [
             "de",
-            "it",
-            "en"
+            "it"
           ],
-          "default": "en"
+          "default": "de"
         }
       },     
       {
