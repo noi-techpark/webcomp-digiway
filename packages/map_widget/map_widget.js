@@ -61,6 +61,7 @@ class MapWidget extends LitElement {
     this.totalresults = 0;
     this.pagestotal = 0;
     this.currentpage = 0;
+    this.displayitems = 0;
 
     this.nodes = [];
     this.types = {};
@@ -101,9 +102,47 @@ class MapWidget extends LitElement {
 
       await this.fetchActivities(this.propLanguage, this.propSource, pagenumber, this.propPagesize);
 
+      const icon = L.divIcon({
+        className: "marker-24x32",
+        iconSize: [24, 32],
+        iconAnchor: [12, 32]
+      });      
+      let color = "#e91e63";
+      let activitytype = "";
+      let source = "";
+
       this.nodes.map(activity => {   
+        this.displayitems++;
+
+
+
+        if(this.propSource == "civis.geoserver.hikingtrails"){
+            color = "#e91e63";
+            activitytype = "hikingtrail";
+            source = "civis.geoserver";
+        }  
+        if(this.propSource == "civis.geoserver.mountainbikeroutes"){
+            color = "#3d1ee9ff";
+            activitytype = "mountainbikeroutes";
+            source = "civis.geoserver";
+        } 
+        if(this.propSource == "civis.geoserver.intermunicipalcyclingroutes"){
+            color = "#20804bff";
+            activitytype = "intermunicipalcyclingroutes";
+            source = "civis.geoserver";
+        } 
+        if(this.propSource == "civis.geoserver.cyclewaystyrol"){
+            color = "#e9d51eff";
+            activitytype = "cycleway";
+            source = "civis.geoserver";
+        } 
+        if(this.propSource == "dservices3.arcgis.com.radrouten_tirol"){
+            color = "#272726ff";
+            activitytype = "cycleway";
+            source = "dservices3.arcgis.com";
+        } 
         
-        let popup = '<div class="popup"><b>' + activity["Detail." + this.propLanguage + ".Title"] + '</b>';
+        let popup = '<div class="popup">Name: <b>' + activity["Detail." + this.propLanguage + ".Title"] + '</b><br /><div>Type: ' + activitytype + '</div><br /><div>Source: ' + source + '</div>';
 
         if(activity["Detail." + this.propLanguage + ".BaseText"] != null)
         {
@@ -121,6 +160,7 @@ class MapWidget extends LitElement {
               .then(res => res.json())
               .then(geojson => {
                   // Create new kml overlay
+                  //TODO Change color?
                   const parser = new DOMParser();
                   const shape = geojson.Geometry;
                   const track = new L.geoJSON(shape, {
@@ -138,20 +178,18 @@ class MapWidget extends LitElement {
             activity.GpsInfo[key].Longitude
           ];  
 
-            let iconskiarea = L.divIcon({
-            html: '<div class="marker"><div style="background-color: red"></div></div>',
-            iconSize: L.point(17, 17)
-          });
 
           let marker = L.marker(pos, {
-            icon: iconskiarea,
+            icon: icon,
           }).addTo(this.map).bindPopup(popupobj); 
 
-        });
-        
+          const el = marker.getElement();
+          if (el) el.style.setProperty("--marker-color", color);
 
-
+        });        
     });
+
+    //TODO CHECK WHY Clustering does not work
 
     this.visibleNodes = columns_layer_array.length;
     let columns_layer = L.layerGroup(columns_layer_array, {});
@@ -172,6 +210,7 @@ class MapWidget extends LitElement {
     this.layer_columns.addLayer(columns_layer);
     /** Add the cluster group to the map */
     this.map.addLayer(this.layer_columns);
+
     }
     this.refreshPagingView();
   }
@@ -181,7 +220,7 @@ class MapWidget extends LitElement {
     let pageInforef = root.getElementById('pageInfo');
 
     pageInforef.innerText =
-      `${this.currentpage} / ${this.pagestotal} (total: ${this.totalresults})`;
+      `page ${this.currentpage} / ${this.pagestotal} (displaying: ${this.displayitems} of total: ${this.totalresults})`;
   }
 
   async registerPaging(){
@@ -192,7 +231,7 @@ class MapWidget extends LitElement {
     let nextBtnref = root.getElementById('nextBtn');
     
     pageInforef.innerText =
-      `${this.currentpage} / ${this.pagestotal} (total: ${this.totalresults})`;
+      `page ${this.currentpage} / ${this.pagestotal} (displaying: ${this.displayitems} of total: ${this.totalresults})`;
 
       // Buttons steuern
       prevBtnref.addEventListener("click", () => {
@@ -213,7 +252,7 @@ class MapWidget extends LitElement {
     await this.drawMap(1);
     this.registerPaging();
   }
-
+  
   render() {
     return html`
       <style>

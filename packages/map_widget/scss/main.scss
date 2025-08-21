@@ -322,6 +322,9 @@ textarea:focus {
   width: 16px;
   height: 16px;
   opacity: 0.5;
+  box-sizing: border-box;
+  width: 32px; 
+  height: 32px;  
 }
 
 .marker :first-child {
@@ -373,4 +376,45 @@ textarea:focus {
   transform: translate(0);  
 }
 
+.marker-24x32 {
+  /* Nur die Farbe ist variabel */
+  --marker-color: #4285F4;
 
+  position: relative;
+  width: 24px;
+  height: 32px;              /* 24 (Kreis) + 8 (Strich) */
+  pointer-events: auto;      /* üblich für Marker */
+}
+
+/* Kreis oben – mit echtem transparentem Loch (Ø 8px => r = 4px) */
+.marker-24x32::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  /* Transparente Mitte via radial-gradient */
+  background: radial-gradient(
+    circle at 50% 50%,
+    transparent 0 4px,            /* Loch-Radius = 4px */
+    var(--marker-color) 4px 100%
+  );
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  z-index: 1;
+}
+
+/* Strich unten (2×8 px) */
+.marker-24x32::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  height: 8px;
+  background: var(--marker-color);
+  transform: translateX(-50%);
+  z-index: 0;
+}
