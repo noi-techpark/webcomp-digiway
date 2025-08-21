@@ -26,6 +26,10 @@ class MapWidget extends LitElement {
         type: String,
         attribute: 'source'
       },
+      propPagesize: {
+        type: String,
+        attribute: 'pagesize'
+      },
       propCenterMap: {
         type: String,
         attribute: 'centermap'
@@ -54,6 +58,10 @@ class MapWidget extends LitElement {
     // this.language = 'de';
 
     /* Data fetched from Open Data Hub */
+    this.totalresults = 0;
+    this.pagestotal = 0;
+    this.currentpage = 0;
+
     this.nodes = [];
     this.types = {};
 
@@ -82,11 +90,16 @@ class MapWidget extends LitElement {
     }).addTo(this.map);
   }
 
-  async drawMap() {
+  async drawMap(pagenumber) {
 
     let columns_layer_array = [];
       
-      await this.fetchActivities(this.propLanguage, this.propSource);
+      if(this.propSource)
+      {
+          if(this.propLanguage == undefined)
+            this.propLanguage = 'de';
+
+      await this.fetchActivities(this.propLanguage, this.propSource, pagenumber, this.propPagesize);
 
       this.nodes.map(activity => {   
         
@@ -159,11 +172,46 @@ class MapWidget extends LitElement {
     this.layer_columns.addLayer(columns_layer);
     /** Add the cluster group to the map */
     this.map.addLayer(this.layer_columns);
+    }
+    this.refreshPagingView();
+  }
+
+  async refreshPagingView(){
+    let root = this.shadowRoot;
+    let pageInforef = root.getElementById('pageInfo');
+
+    pageInforef.innerText =
+      `${this.currentpage} / ${this.pagestotal} (total: ${this.totalresults})`;
+  }
+
+  async registerPaging(){
+
+    let root = this.shadowRoot;
+    let pageInforef = root.getElementById('pageInfo');
+    let prevBtnref = root.getElementById('prevBtn');
+    let nextBtnref = root.getElementById('nextBtn');
+    
+    pageInforef.innerText =
+      `${this.currentpage} / ${this.pagestotal} (total: ${this.totalresults})`;
+
+      // Buttons steuern
+      prevBtnref.addEventListener("click", () => {
+        if (this.currentpage > 1) {
+          this.drawMap(this.currentpage - 1);
+        }
+      });
+
+      nextBtnref.addEventListener("click", () => {
+        if (this.currentpage < this.pagestotal) {
+          this.drawMap(this.currentpage + 1);
+        }
+      });
   }
 
   async firstUpdated() {
     this.initializeMap();
-    this.drawMap();
+    await this.drawMap(1);
+    this.registerPaging();
   }
 
   render() {
@@ -175,6 +223,11 @@ class MapWidget extends LitElement {
       </style>
       <div id="map_widget">
         <div id="map" class="map"></div>
+      </div>
+      <div id="pager" class="pager">
+        <button id="prevBtn">⏮️ Back</button>
+        <span id="pageInfo"></span>
+        <button id="nextBtn">Next ⏭️</button>
       </div>
     `;
   }

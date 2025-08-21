@@ -25,17 +25,21 @@ export function callGet(domain, path, params) {
 		});
 }
 
-export async function fetchActivities(language, source) {	
+export async function fetchActivities(language, source, pagenumber, pagesize = 100) {	
 		return callGet(config.API_BASE_URL_TOURISM,"/ODHActivityPoi", {
-			pagesize: 500,
+			pagesize: pagesize,
 			fields: "Id,GpsInfo,Tags,GpsTrack,Detail." + language +".Title,Detail." + language + ".BaseText,Source",
 			active: true,
 			language: language,
 			source: source,
+			pagenumber: pagenumber,
 			origin: config.ORIGIN
 		})
 		.then(response => {			
-			this.nodes = response.Items;
+			this.totalresults = response.TotalResults;
+    		this.pagestotal = response.TotalPages;
+    		this.currentpage = response.CurrentPage;		
+			this.nodes = response.Items;			
 		})
 		.catch(e => {
 			console.log(e)

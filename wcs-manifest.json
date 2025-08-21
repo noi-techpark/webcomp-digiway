@@ -37,16 +37,26 @@
       {
         "key": "source",
         "type": "select",
-        "label": "Select which data to display",
+        "label": "Select which dataset to display",
         "required": false,
         "options": {
           "values": [
             "civis.geoserver.hikingtrails",
             "civis.geoserver.mountainbikeroutes",
             "civis.geoserver.intermunicipalcyclingroutes",
-            "civis.geoserver.cyclewaystyrol"
+            "civis.geoserver.cyclewaystyrol",
+            "dservices3.arcgis.com.radrouten_tirol"
           ],
           "default": "civis.geoserver.intermunicipalcyclingroutes"
+        }
+      },
+      {
+        "key": "pagesize",
+        "type": "number",
+        "label": "Number of list items per page (Browse mode)",
+        "required": false,
+        "options": {
+          "default": 100
         }
       },
       {
@@ -57,7 +67,8 @@
         "options": {
           "values": [
             "de",
-            "it"
+            "it",
+            "en"
           ],
           "default": "de"
         }
