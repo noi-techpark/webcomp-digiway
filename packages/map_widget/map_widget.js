@@ -181,10 +181,19 @@ class MapWidget extends LitElement {
 
           let marker = L.marker(pos, {
             icon: icon,
-          }).addTo(this.map).bindPopup(popupobj); 
+            markerColor: color
+          }).bindPopup(popupobj); //.addTo(this.map).bindPopup(popupobj); 
 
-          const el = marker.getElement();
-          if (el) el.style.setProperty("--marker-color", color);
+          // const el = marker.getElement();
+          // if (el) el.style.setProperty("--marker-color", color);
+
+          columns_layer_array.push(marker);
+
+          // Use the 'add' event to set color when marker is actually rendered
+          marker.on('add', function() {
+            const el = this.getElement();
+            if (el) el.style.setProperty("--marker-color", color);
+          });
 
         });        
     });
@@ -201,13 +210,25 @@ class MapWidget extends LitElement {
       disableClusteringAtZoom: 13,
       iconCreateFunction: function(cluster) {
         return L.divIcon({
-          html: '<div class="marker_cluster__marker">' + cluster.getChildCount() + '</div>',
+          html: '<div class="marker_cluster__marker" style="background-color:' + color + '">' + cluster.getChildCount() + '</div>',
           iconSize: L.point(32, 32)
         });
       }
-    });
+    });    
+
     /** Add maker layer in the cluster group */
     this.layer_columns.addLayer(columns_layer);
+
+    // this.layer_columns.on('animationend', function() {
+    //     // Apply colors to all visible markers after cluster animation
+    //     columns_layer.eachLayer(function(marker) {
+    //         if (marker.options && marker.options.markerColor) {
+    //             const el = marker.getElement();
+    //             if (el) el.style.setProperty("--marker-color", marker.options.markerColor);
+    //         }
+    //     });
+    // });
+
     /** Add the cluster group to the map */
     this.map.addLayer(this.layer_columns);
 
