@@ -283,12 +283,12 @@ class MapWidget extends LitElement {
       </style>
       <div id="map_widget">
         <div id="map" class="map"></div>
-      </div>
-      <div id="pager" class="pager">
-        <button id="prevBtn">⏮️ Back</button>
-        <span id="pageInfo"></span>
-        <button id="nextBtn">Next ⏭️</button>
-      </div>
+        <div id="pager" class="pager">
+          <button id="prevBtn">⏮️ Back</button>
+          <span id="pageInfo"></span>
+          <button id="nextBtn">Next ⏭️</button>
+        </div>
+      </div>      
     `;
   }
 }
