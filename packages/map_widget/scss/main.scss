@@ -7,7 +7,7 @@
 @import 'colors';
 @import 'mixins';
 
-$map_desktop_height: 650px;
+$map_desktop_height: 700px;
 $mobile-bottom-controls: 24px;
 
 @mixin dimension() {
@@ -26,7 +26,7 @@ $mobile-bottom-controls: 24px;
     font-family: 'Suedtirol';
     color: $black;
     background-color: $black-50;
-    height: 97vh;
+    height: 100vh;
     width: 100%;
     overflow: hidden;
     position: fixed;
@@ -177,7 +177,7 @@ input[type='text'] {
 
 #map {
   @media only screen and (min-width: 320px) {
-    height: 100vh;
+    height: 97vh;
     width: 100%;
     &.closed {
       height: 30vh;
