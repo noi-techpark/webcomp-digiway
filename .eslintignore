@@ -1,0 +1,11 @@
+# Standard
+node_modules/
+dist/
+build/
+coverage/
+
+# Logs & temp
+*.log
+
+# Environment variables
+.env

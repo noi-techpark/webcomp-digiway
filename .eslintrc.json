@@ -1,0 +1,20 @@
+{
+  "env": {
+    "es2021": true,
+    "node": true,
+    "browser": true
+  },
+  "extends": ["eslint:recommended", "plugin:prettier/recommended"],
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "rules": {
+    // Eigene ESLint-Regeln
+    "no-unused-vars": "warn",
+    "no-console": "off",
+
+    // Beispiel: Prettier-Override
+    "prettier/prettier": "error"
+  }
+}

@@ -10,13 +10,13 @@ module.exports = {
   entry: './packages/map_widget/map_widget.js',
   output: {
     path: path.resolve(__dirname, './dist'),
-    filename: 'map_widget.min.js'
+    filename: 'map_widget.min.js',
   },
   module: {
     rules: [
       {
         test: /\.(s*)css$/,
-        use: [{ loader: 'css-loader' }, { loader: 'sass-loader' }]
+        use: [{ loader: 'css-loader' }, { loader: 'sass-loader' }],
       },
       {
         test: /\.(png|jpg|gif|ttf)$/i,
@@ -24,14 +24,14 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              limit: 10000
-            }
-          }
-        ]
+              limit: 10000,
+            },
+          },
+        ],
       },
       {
         test: /\.svg$/,
-        loader: 'svg-inline-loader'
+        loader: 'svg-inline-loader',
       },
       {
         test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
@@ -40,15 +40,13 @@ module.exports = {
             loader: 'file-loader',
             options: {
               name: '[name].[ext]',
-              outputPath: 'fonts/'
-            }
-          }
-        ]
-      }
-    ]
-  }, 
+              outputPath: 'fonts/',
+            },
+          },
+        ],
+      },
+    ],
+  },
   devtool: 'inline-source-map',
-  plugins: [
-    new Dotenv()
-  ]
+  plugins: [new Dotenv()],
 };

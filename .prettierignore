@@ -1,0 +1,16 @@
+# Standard
+node_modules/
+dist/
+build/
+coverage/
+
+# Package-Locks
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Logs
+*.log
+
+# Environment Variables
+.env

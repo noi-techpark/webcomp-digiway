@@ -22,14 +22,10 @@
     }
   ],
   "image": "wcs-logo.png",
-  "searchTags": [
-    "map"
-  ],
+  "searchTags": ["map"],
   "dist": {
     "basePath": "dist",
-    "files": [
-      "map_widget.min.js"
-    ]
+    "files": ["map_widget.min.js"]
   },
   "configuration": {
     "tagName": "map-widget",
@@ -65,14 +61,10 @@
         "label": "Two letter key for the language to be used, if omitted the widget will use the lang attribute of the closest parent element. Fallback and Default is `en`",
         "required": false,
         "options": {
-          "values": [
-            "de",
-            "it",
-            "en"
-          ],
+          "values": ["de", "it", "en"],
           "default": "de"
         }
-      },     
+      },
       {
         "key": "centermap",
         "type": "text",
@@ -81,7 +73,7 @@
         "options": {
           "default": ""
         }
-      }     
+      }
     ]
   }
 }

@@ -5,10 +5,18 @@
  */
 
 @mixin map_dimensions_tns() {
-  -webkit-transition: height 0.35s ease-out, width 0.35s ease;
-  -moz-transition: height 0.35s ease-out, width 0.35s ease;
-  -o-transition: height 0.35s ease-out, width 0.35s ease;
-  transition: height 0.35s ease-out, width 0.35s ease;
+  -webkit-transition:
+    height 0.35s ease-out,
+    width 0.35s ease;
+  -moz-transition:
+    height 0.35s ease-out,
+    width 0.35s ease;
+  -o-transition:
+    height 0.35s ease-out,
+    width 0.35s ease;
+  transition:
+    height 0.35s ease-out,
+    width 0.35s ease;
 }
 
 @mixin transition($property) {
