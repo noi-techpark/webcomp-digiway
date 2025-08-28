@@ -143,10 +143,7 @@ class MapWidget extends LitElement {
         className: "marker-24x32",
         iconSize: [24, 32],
         iconAnchor: [12, 32]
-      });      
-      // let color = "#e91e63";
-      // let activitytype = "";
-      // let source = "";
+      });
 
       const BATCH_SIZE = 50; // Process 10 at a time
       const BATCH_DELAY = 500; // 500ms delay between batches
@@ -225,18 +222,26 @@ class MapWidget extends LitElement {
               let marker = L.marker(pos, {
                 icon: icon,
                 markerColor: color
+              })
+              .on('add', function(e) {
+                  const dot = e.target.getElement();
+                  if (dot) dot.style.setProperty("--marker-color", color);
+              })
+              .on('mouseover', function(e) {
+                  const dot = e.target.getElement();
+                  if (dot) dot.style.setProperty("--marker-color", '#ff0000');
+              }).on('mouseout', function(e) {
+                  const dot = e.target.getElement();
+                  if (dot) dot.style.setProperty("--marker-color", color);
               }).bindPopup(popupobj); //.addTo(this.map).bindPopup(popupobj); 
-
-              // const el = marker.getElement();
-              // if (el) el.style.setProperty("--marker-color", color);
-
+              
               columns_layer_array.push(marker);
 
               // Use the 'add' event to set color when marker is actually rendered
-              marker.on('add', function() {
-                const el = this.getElement();
-                if (el) el.style.setProperty("--marker-color", color);
-              });
+              // marker.on('add', function() {
+              //   const el = this.getElement();
+              //   if (el) el.style.setProperty("--marker-color", color);
+              // });
 
             });   
           });
