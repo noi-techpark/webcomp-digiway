@@ -183,8 +183,34 @@ class MapWidget extends LitElement {
                       const parser = new DOMParser();
                       const shape = geojson.Geometry;
                       const track = new L.geoJSON(shape, {
-                        async: true
-                      }).on('loaded', function (e) {
+                        async: true,
+                        // Add default styling
+                        style: {
+                            color: color,                            
+                            weight: 4,
+                            opacity: 0.8,
+                            fillOpacity: 0.2
+                        },
+                        // Add hover functionality
+                        onEachFeature: function (feature, layer) {
+                            layer.on({
+                                mouseover: function (e) {
+                                    e.target.setStyle({
+                                        color: '#ff0000',      // Red on hover
+                                        weight: 6,             // Thicker on hover
+                                        opacity: 1.0
+                                    });
+                                },
+                                mouseout: function (e) {
+                                    e.target.setStyle({
+                                        color: color,      // Back to original
+                                        weight: 4,
+                                        opacity: 0.8
+                                    });
+                                }
+                            });
+                        }
+                    }).on('loaded', function (e) {
                     }).addTo(this.map).bindPopup(popupobj);                  
                   });                              
             });  
