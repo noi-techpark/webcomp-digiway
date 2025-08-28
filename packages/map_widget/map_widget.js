@@ -91,6 +91,43 @@ class MapWidget extends LitElement {
     }).addTo(this.map);
   }
 
+  async getColorAndType(activitysource)
+  {
+      let color = "#e91e63";
+      let activitytype = "";
+      let source = "";      
+
+      console.log(activitysource);
+
+        if(activitysource == "civis.geoserver.hikingtrails"){
+            color = "#e91e63";
+            activitytype = "hikingtrail";
+            source = "civis.geoserver";
+        }  
+        if(activitysource == "civis.geoserver.mountainbikeroutes"){
+            color = "#3d1ee9ff";
+            activitytype = "mountainbikeroutes";
+            source = "civis.geoserver";
+        } 
+        if(activitysource == "civis.geoserver.intermunicipalcyclingroutes"){
+            color = "#20804bff";
+            activitytype = "intermunicipalcyclingroutes";
+            source = "civis.geoserver";
+        } 
+        if(activitysource == "civis.geoserver.cyclewaystyrol"){
+            color = "#e9d51eff";
+            activitytype = "cycleway";
+            source = "civis.geoserver";
+        } 
+        if(activitysource == "dservices3.arcgis.com.radrouten_tirol"){
+            color = "#272726ff";
+            activitytype = "cycleway";
+            source = "dservices3.arcgis.com";
+        } 
+
+        return { color, activitytype, source };
+  }
+  
   async drawMap(pagenumber) {
 
     let columns_layer_array = [];
@@ -107,96 +144,84 @@ class MapWidget extends LitElement {
         iconSize: [24, 32],
         iconAnchor: [12, 32]
       });      
-      let color = "#e91e63";
-      let activitytype = "";
-      let source = "";
+      // let color = "#e91e63";
+      // let activitytype = "";
+      // let source = "";
 
-      this.nodes.map(activity => {   
-        this.displayitems++;
+      const BATCH_SIZE = 50; // Process 10 at a time
+      const BATCH_DELAY = 500; // 500ms delay between batches
 
+      for (let i = 0; i < this.nodes.length; i += BATCH_SIZE) {
+        const batch = this.nodes.slice(i, i + BATCH_SIZE);
 
+          // Process batch in parallel
+          const promises = batch.map(async activity => {   
 
-        if(this.propSource == "civis.geoserver.hikingtrails"){
-            color = "#e91e63";
-            activitytype = "hikingtrail";
-            source = "civis.geoserver";
-        }  
-        if(this.propSource == "civis.geoserver.mountainbikeroutes"){
-            color = "#3d1ee9ff";
-            activitytype = "mountainbikeroutes";
-            source = "civis.geoserver";
-        } 
-        if(this.propSource == "civis.geoserver.intermunicipalcyclingroutes"){
-            color = "#20804bff";
-            activitytype = "intermunicipalcyclingroutes";
-            source = "civis.geoserver";
-        } 
-        if(this.propSource == "civis.geoserver.cyclewaystyrol"){
-            color = "#e9d51eff";
-            activitytype = "cycleway";
-            source = "civis.geoserver";
-        } 
-        if(this.propSource == "dservices3.arcgis.com.radrouten_tirol"){
-            color = "#272726ff";
-            activitytype = "cycleway";
-            source = "dservices3.arcgis.com";
-        } 
-        
-        let popup = '<div class="popup">Name: <b>' + activity["Detail." + this.propLanguage + ".Title"] + '</b><br /><div>Type: ' + activitytype + '</div><br /><div>Source: ' + source + '</div>';
+            const { color, activitytype, source } = await this.getColorAndType(activity.SyncSourceInterface);            
 
-        if(activity["Detail." + this.propLanguage + ".BaseText"] != null)
-        {
-          popup += '<div>' + activity["Detail." + this.propLanguage + ".BaseText"] + '</div>';
-        }
-        popup += '</div>';
+            this.displayitems++;
 
-        let popupobj = L.popup().setContent(popup);
+            let popup = '<div class="popup">Name: <b>' + activity["Detail." + this.propLanguage + ".Title"] + '</b><br /><div>Type: ' + activitytype + '</div><br /><div>Source: ' + source + '</div>';
 
-        Object.keys(activity.GpsTrack).forEach(key => {
-          
-              var url = activity.GpsTrack[key].GpxTrackUrl;
-                                  
-              fetch(url)
-              .then(res => res.json())
-              .then(geojson => {
-                  // Create new kml overlay
-                  //TODO Change color?
-                  const parser = new DOMParser();
-                  const shape = geojson.Geometry;
-                  const track = new L.geoJSON(shape, {
-                    async: true
-                  }).on('loaded', function (e) {
-                }).addTo(this.map).bindPopup(popupobj);                  
+            if(activity["Detail." + this.propLanguage + ".BaseText"] != null)
+            {
+              popup += '<div>' + activity["Detail." + this.propLanguage + ".BaseText"] + '</div>';
+            }
+            popup += '</div>';
+
+            let popupobj = L.popup().setContent(popup);
+
+            Object.keys(activity.GpsTrack).forEach(key => {
+              
+                  var url = activity.GpsTrack[key].GpxTrackUrl;
+                                      
+                  fetch(url)
+                  .then(res => res.json())
+                  .then(geojson => {
+                      // Create new kml overlay
+                      //TODO Change color?
+                      const parser = new DOMParser();
+                      const shape = geojson.Geometry;
+                      const track = new L.geoJSON(shape, {
+                        async: true
+                      }).on('loaded', function (e) {
+                    }).addTo(this.map).bindPopup(popupobj);                  
+                  });                              
+            });  
+            
+            Object.keys(activity.GpsInfo).forEach(key => {
+
+              const pos = [
+                activity.GpsInfo[key].Latitude,
+                activity.GpsInfo[key].Longitude
+              ];  
+
+              let marker = L.marker(pos, {
+                icon: icon,
+                markerColor: color
+              }).bindPopup(popupobj); //.addTo(this.map).bindPopup(popupobj); 
+
+              // const el = marker.getElement();
+              // if (el) el.style.setProperty("--marker-color", color);
+
+              columns_layer_array.push(marker);
+
+              // Use the 'add' event to set color when marker is actually rendered
+              marker.on('add', function() {
+                const el = this.getElement();
+                if (el) el.style.setProperty("--marker-color", color);
               });
-                              
-        });  
-        
-        Object.keys(activity.GpsInfo).forEach(key => {
 
-          const pos = [
-            activity.GpsInfo[key].Latitude,
-            activity.GpsInfo[key].Longitude
-          ];  
-
-
-          let marker = L.marker(pos, {
-            icon: icon,
-            markerColor: color
-          }).bindPopup(popupobj); //.addTo(this.map).bindPopup(popupobj); 
-
-          // const el = marker.getElement();
-          // if (el) el.style.setProperty("--marker-color", color);
-
-          columns_layer_array.push(marker);
-
-          // Use the 'add' event to set color when marker is actually rendered
-          marker.on('add', function() {
-            const el = this.getElement();
-            if (el) el.style.setProperty("--marker-color", color);
+            });   
           });
 
-        });        
-    });
+        await Promise.all(promises);
+        
+        // Delay between batches (except for the last batch)
+        if (i + BATCH_SIZE < this.nodes.length) {
+            await new Promise(resolve => setTimeout(resolve, BATCH_DELAY));
+        }
+      }
 
     //TODO CHECK WHY Clustering does not work
 
@@ -210,7 +235,7 @@ class MapWidget extends LitElement {
       disableClusteringAtZoom: 13,
       iconCreateFunction: function(cluster) {
         return L.divIcon({
-          html: '<div class="marker_cluster__marker" style="background-color:' + color + '">' + cluster.getChildCount() + '</div>',
+          html: '<div class="marker_cluster__marker" style="background-color:grey">' + cluster.getChildCount() + '</div>',
           iconSize: L.point(32, 32)
         });
       }
@@ -248,18 +273,17 @@ class MapWidget extends LitElement {
 
     let root = this.shadowRoot;
     let pageInforef = root.getElementById('pageInfo');
-    let prevBtnref = root.getElementById('prevBtn');
+    //let prevBtnref = root.getElementById('prevBtn');
     let nextBtnref = root.getElementById('nextBtn');
     
     pageInforef.innerText =
       `page ${this.currentpage} / ${this.pagestotal} (displaying: ${this.displayitems} of total: ${this.totalresults})`;
 
-      // Buttons steuern
-      prevBtnref.addEventListener("click", () => {
-        if (this.currentpage > 1) {
-          this.drawMap(this.currentpage - 1);
-        }
-      });
+      // prevBtnref.addEventListener("click", () => {
+      //   if (this.currentpage > 1) {
+      //     this.drawMap(this.currentpage - 1);
+      //   }
+      // });
 
       nextBtnref.addEventListener("click", () => {
         if (this.currentpage < this.pagestotal) {
@@ -283,10 +307,9 @@ class MapWidget extends LitElement {
       </style>
       <div id="map_widget">
         <div id="map" class="map"></div>
-        <div id="pager" class="pager">
-          <button id="prevBtn">⏮️ Back</button>
+        <div id="pager" class="pager">          
           <span id="pageInfo"></span>
-          <button id="nextBtn">Next ⏭️</button>
+          <button id="nextBtn">Load Next ⏭️</button>
         </div>
       </div>      
     `;

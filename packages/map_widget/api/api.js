@@ -28,7 +28,7 @@ export function callGet(domain, path, params) {
 export async function fetchActivities(language, source, pagenumber, pagesize = 100) {	
 		return callGet(config.API_BASE_URL_TOURISM,"/ODHActivityPoi", {
 			pagesize: pagesize,
-			fields: "Id,GpsInfo,Tags,GpsTrack,Detail." + language +".Title,Detail." + language + ".BaseText,Source",
+			fields: "Id,GpsInfo,Tags,GpsTrack,Detail." + language +".Title,Detail." + language + ".BaseText,Source,SyncSourceInterface",
 			active: true,
 			language: language,
 			source: source,
@@ -51,7 +51,7 @@ export async function fetchGpsTrack(id) {
 	return callGet(config.API_BASE_URL_TOURISM,"/GeoShape/" + id, {		
 		origin: config.ORIGIN
 	})
-	.then(response => {			
+	.then(response => {
 		this.nodes = response.Items;
 	})
 	.catch(e => {

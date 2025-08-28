@@ -36,7 +36,7 @@
     "options": [
       {
         "key": "source",
-        "type": "select",
+        "type": "multiselect",
         "label": "Select which dataset to display",
         "required": false,
         "options": {
@@ -56,7 +56,7 @@
         "label": "Number of list items per page (Browse mode)",
         "required": false,
         "options": {
-          "default": 100
+          "default": 500
         }
       },
       {
