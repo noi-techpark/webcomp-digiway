@@ -1,6 +1,6 @@
 {
-  "title": "Digiway Activities & Pois",
-  "description": "Map that displays Activities & Pois imported withhin the Digiway project",
+  "title": "Digiway Pois & Routes",
+  "description": "Map that displays Pois & Routes imported withhin the Digiway project",
   "descriptionAbstract": "Map that displays Activities & Pois imported withhin the Digiway projec",
   "license": "AGPL-3.0-or-later",
   "repositoryUrl": "https://github.com/noi-techpark/webcomp-digiway.git",
@@ -43,13 +43,13 @@
             "civis.geoserver.cyclewaystyrol",
             "dservices3.arcgis.com.radrouten_tirol"
           ],
-          "default": "civis.geoserver.intermunicipalcyclingroutes"
+          "default": ["civis.geoserver.intermunicipalcyclingroutes"]
         }
       },
       {
         "key": "pagesize",
         "type": "number",
-        "label": "Number of list items per page (Browse mode)",
+        "label": "Indicates how many elements should be loaded",
         "required": false,
         "options": {
           "default": 500
