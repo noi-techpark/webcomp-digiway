@@ -41,7 +41,8 @@
             "civis.geoserver.mountainbikeroutes",
             "civis.geoserver.intermunicipalcyclingroutes",
             "civis.geoserver.cyclewaystyrol",
-            "dservices3.arcgis.com.radrouten_tirol"
+            "dservices3.arcgis.com.radrouten_tirol",
+            "dservices3.arcgis.com.hikintrail_e5"
           ],
           "default": "civis.geoserver.intermunicipalcyclingroutes"
         }
