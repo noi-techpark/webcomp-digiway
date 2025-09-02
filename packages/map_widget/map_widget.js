@@ -126,6 +126,11 @@ class MapWidget extends LitElement {
       activitytype = 'cycleway';
       source = 'dservices3.arcgis.com';
     }
+    if (activitysource == 'dservices3.arcgis.com.hikintrail_e5') {
+      color = '#b65edfff';
+      activitytype = 'hikintrail';
+      source = 'dservices3.arcgis.com';
+    }
 
     return { color, activitytype, source };
   }
