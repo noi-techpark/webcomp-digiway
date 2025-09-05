@@ -56,7 +56,7 @@
         "label": "Indicates how many elements should be loaded",
         "required": false,
         "options": {
-          "default": 500
+          "default": 1000
         }
       },
       {
