@@ -6,9 +6,7 @@ import axios from 'axios';
 import config from './config';
 
 export function callGet(domain, path, params) {
-  console.log('call = ' + domain + path);
-  console.log('call params = ');
-  console.log(params);
+
   return axios
     .get(domain + path, {
       params: params,
@@ -34,7 +32,7 @@ export async function fetchActivities(
   return callGet(config.API_BASE_URL_TOURISM, '/ODHActivityPoi', {
     pagesize: pagesize,
     fields:
-      'Id,GpsInfo,Tags,GpsTrack,Detail.' +
+      'Id,Shortname,GpsInfo,Tags,GpsTrack,Detail.' +
       language +
       '.Title,Detail.' +
       language +

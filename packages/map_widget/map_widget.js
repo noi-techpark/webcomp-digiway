@@ -98,8 +98,7 @@ class MapWidget extends LitElement {
     let color = '#e91e63';
     let activitytype = '';
     let source = '';
-
-    console.log(activitysource);
+    let darker = '#e91e63';    
 
     if (activitysource == 'civis.geoserver.hikingtrails') {
       color = '#e91e63';
@@ -147,7 +146,25 @@ class MapWidget extends LitElement {
       source = 'siat.provincia.tn.it';
     }
 
-    return { color, activitytype, source };
+    darker = this.darkenColor(color, 30)
+
+    return { color, activitytype, source, darker };
+  }
+
+  darkenColor(hex, percent) {
+        
+    let num = parseInt(hex.slice(1), 16);
+    let r = (num >> 16) & 255;
+    let g = (num >> 8) & 255;
+    let b = num & 255;
+
+    r = Math.max(0, r - (r * percent / 100));
+    g = Math.max(0, g - (g * percent / 100));
+    b = Math.max(0, b - (b * percent / 100));
+
+    return "#" + ((1 << 24) + (Math.round(r) << 16) + (Math.round(g) << 8) + Math.round(b))
+      .toString(16)
+      .slice(1);
   }
 
   async drawMap(pagenumber) {
@@ -177,15 +194,15 @@ class MapWidget extends LitElement {
 
         // Process batch in parallel
         const promises = batch.map(async (activity) => {
-          const { color, activitytype, source } = await this.getColorAndType(
+          const { color, activitytype, source, darker } = await this.getColorAndType(
             activity.SyncSourceInterface
-          );
+          );          
 
           this.displayitems++;
 
           let popup =
             '<div class="popup">Name: <b>' +
-            activity['Detail.' + this.propLanguage + '.Title'] +
+            activity['Shortname'] +
             '</b><br /><div>Type: ' +
             activitytype +
             '</div><br /><div>Source: ' +
@@ -215,24 +232,24 @@ class MapWidget extends LitElement {
                   // Add default styling
                   style: {
                     color: color,
-                    weight: 4,
+                    weight: 2,
                     opacity: 0.8,
                     fillOpacity: 0.2,
                   },
                   // Add hover functionality
                   onEachFeature: function (feature, layer) {
                     layer.on({
-                      mouseover: function (e) {
+                      mouseover: function (e) {                        
                         e.target.setStyle({
-                          color: '#ff0000', // Red on hover
-                          weight: 6, // Thicker on hover
+                          color: darker,
+                          weight: 3, // Thicker on hover
                           opacity: 1.0,
                         });
                       },
                       mouseout: function (e) {
                         e.target.setStyle({
                           color: color, // Back to original
-                          weight: 4,
+                          weight: 2,
                           opacity: 0.8,
                         });
                       },
@@ -261,7 +278,7 @@ class MapWidget extends LitElement {
               })
               .on('mouseover', function (e) {
                 const dot = e.target.getElement();
-                if (dot) dot.style.setProperty('--marker-color', '#ff0000');
+                if (dot) dot.style.setProperty('--marker-color', darker);
               })
               .on('mouseout', function (e) {
                 const dot = e.target.getElement();
