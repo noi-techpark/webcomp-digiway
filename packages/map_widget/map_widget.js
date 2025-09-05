@@ -131,6 +131,21 @@ class MapWidget extends LitElement {
       activitytype = 'hikintrail';
       source = 'dservices3.arcgis.com';
     }
+    if (activitysource == 'siat.provincia.tn.it.mtb_percorsi_v') {
+      color = '#179b5dff';
+      activitytype = 'mountainbikeroutes';
+      source = 'siat.provincia.tn.it';
+    }
+    if (activitysource == 'siat.provincia.tn.it.elementi_cicloviari_v') {
+      color = '#6c8a61ff';
+      activitytype = 'cycleway';
+      source = 'siat.provincia.tn.it';
+    }
+    if (activitysource == 'siat.provincia.tn.it.sentieri_della_sat') {
+      color = '#525e44ff';
+      activitytype = 'hikintrail';
+      source = 'siat.provincia.tn.it';
+    }
 
     return { color, activitytype, source };
   }

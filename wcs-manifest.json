@@ -42,7 +42,10 @@
             "civis.geoserver.intermunicipalcyclingroutes",
             "civis.geoserver.cyclewaystyrol",
             "dservices3.arcgis.com.radrouten_tirol",
-            "dservices3.arcgis.com.hikintrail_e5"
+            "dservices3.arcgis.com.hikintrail_e5",
+            "siat.provincia.tn.it.mtb_percorsi_v",
+            "siat.provincia.tn.it.elementi_cicloviari_v",
+            "siat.provincia.tn.it.sentieri_della_sat"
           ],
           "default": "civis.geoserver.intermunicipalcyclingroutes"
         }
