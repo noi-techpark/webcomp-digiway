@@ -106,66 +106,79 @@ class MapWidget extends LitElement {
       source = 'civis.geoserver';
     }
     if (activitysource == 'civis.geoserver.mountainbikeroutes') {
-      color = '#3d1ee9ff';
+      color = '#3d1ee9';
       activitytype = 'mountainbikeroutes';
       source = 'civis.geoserver';
     }
     if (activitysource == 'civis.geoserver.intermunicipalcyclingroutes') {
-      color = '#20804bff';
+      color = '#20804b';
       activitytype = 'intermunicipalcyclingroutes';
       source = 'civis.geoserver';
     }
     if (activitysource == 'civis.geoserver.cyclewaystyrol') {
-      color = '#e9d51eff';
+      color = '#e9d51e';
       activitytype = 'cycleway';
       source = 'civis.geoserver';
     }
     if (activitysource == 'dservices3.arcgis.com.radrouten_tirol') {
-      color = '#272726ff';
+      color = '#272726';
       activitytype = 'cycleway';
       source = 'dservices3.arcgis.com';
     }
     if (activitysource == 'dservices3.arcgis.com.hikintrail_e5') {
-      color = '#b65edfff';
-      activitytype = 'hikintrail';
+      color = '#b65edf';
+      activitytype = 'hikingtrail';
       source = 'dservices3.arcgis.com';
     }
     if (activitysource == 'siat.provincia.tn.it.mtb_percorsi_v') {
-      color = '#179b5dff';
+      color = '#179b5d';
       activitytype = 'mountainbikeroutes';
-      source = 'siat.provincia.tn.it';
+      source = 'siat.provincia.tn.it';      
     }
     if (activitysource == 'siat.provincia.tn.it.elementi_cicloviari_v') {
-      color = '#6c8a61ff';
+      color = '#52694a';
       activitytype = 'cycleway';
       source = 'siat.provincia.tn.it';
     }
     if (activitysource == 'siat.provincia.tn.it.sentieri_della_sat') {
-      color = '#525e44ff';
-      activitytype = 'hikintrail';
-      source = 'siat.provincia.tn.it';
+      color = '#6e545e';
+      activitytype = 'hikingtrail';
+      source = 'siat.provincia.tn.it';  
     }
 
-    darker = this.darkenColor(color, 30)
+    darker = this.makeDarker(color, 40);
 
     return { color, activitytype, source, darker };
   }
 
-  darkenColor(hex, percent) {
-        
-    let num = parseInt(hex.slice(1), 16);
-    let r = (num >> 16) & 255;
-    let g = (num >> 8) & 255;
-    let b = num & 255;
-
-    r = Math.max(0, r - (r * percent / 100));
-    g = Math.max(0, g - (g * percent / 100));
-    b = Math.max(0, b - (b * percent / 100));
-
-    return "#" + ((1 << 24) + (Math.round(r) << 16) + (Math.round(g) << 8) + Math.round(b))
-      .toString(16)
-      .slice(1);
-  }
+  makeDarker(hexColor, percent) {
+    // Validate percent parameter
+    percent = Math.max(0, Math.min(100, percent));
+    
+    // Remove # if present and validate hex format
+    const hex = hexColor.replace('#', '');
+    if (hex.length !== 6 || !/^[0-9A-Fa-f]{6}$/.test(hex)) {
+        throw new Error('Invalid hex color format. Use #RRGGBB format.');
+    }
+    
+    // Parse RGB values
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    
+    // Calculate darkening factor
+    const factor = (100 - percent) / 100;
+    
+    // Apply darkening
+    const newR = Math.round(r * factor);
+    const newG = Math.round(g * factor);
+    const newB = Math.round(b * factor);
+    
+    // Convert back to hex
+    const toHex = (n) => n.toString(16).padStart(2, '0');
+    
+    return `#${toHex(newR)}${toHex(newG)}${toHex(newB)}`;
+}
 
   async drawMap(pagenumber) {
     let columns_layer_array = [];
@@ -216,6 +229,9 @@ class MapWidget extends LitElement {
               '</div>';
           }
           popup += '</div>';
+
+          console.log(color);
+          console.log(darker);
 
           let popupobj = L.popup().setContent(popup);
 
