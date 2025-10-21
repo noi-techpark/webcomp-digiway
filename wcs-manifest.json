@@ -45,7 +45,8 @@
             "dservices3.arcgis.com.hikintrail_e5",
             "siat.provincia.tn.it.mtb_percorsi_v",
             "siat.provincia.tn.it.elementi_cicloviari_v",
-            "siat.provincia.tn.it.sentieri_della_sat"
+            "siat.provincia.tn.it.sentieri_della_sat",
+            "mobility.peoplecounter"
           ],
           "default": "civis.geoserver.intermunicipalcyclingroutes"
         }

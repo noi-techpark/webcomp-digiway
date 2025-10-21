@@ -9,7 +9,7 @@ import style__leaflet from 'leaflet/dist/leaflet.css';
 import style__markercluster from 'leaflet.markercluster/dist/MarkerCluster.css';
 import style from './scss/main.scss';
 import { getStyle } from './utils.js';
-import { fetchActivities, fetchGpsTrack } from './api/api.js';
+import { fetchActivities, fetchGpsTrack, fetchPeopleCounter } from './api/api.js';
 // import moment from 'moment';
 // import L2 from 'leaflet-gpx';
 // import L3 from 'leaflet-kml';
@@ -64,12 +64,14 @@ class MapWidget extends LitElement {
     this.displayitems = 0;
 
     this.nodes = [];
+    this.mobilitynodes = [];
     this.types = {};
 
     /* Requests */
     //this.fetchStations = fetchStations.bind(this);
     this.fetchActivities = fetchActivities.bind(this);
     this.fetchGpsTrack = fetchGpsTrack.bind(this);
+    this.fetchPeopleCounter = fetchPeopleCounter.bind(this);
   }
 
   async initializeMap() {
@@ -145,6 +147,11 @@ class MapWidget extends LitElement {
       activitytype = 'hikingtrail';
       source = 'siat.provincia.tn.it';  
     }
+    if (activitysource == 'mobility.peoplecounter') {
+      color = '#ff0000';
+      activitytype = 'peoplecounter';
+      source = 'systems-merano';  
+    }
 
     darker = this.makeDarker(color, 40);
 
@@ -185,6 +192,9 @@ class MapWidget extends LitElement {
 
     if (this.propSource) {
       if (this.propLanguage == undefined) this.propLanguage = 'de';
+      
+      if(this.propSource.includes("mobility"))
+        await this.drawMobilityMap();
 
       await this.fetchActivities(
         this.propLanguage,
@@ -192,7 +202,7 @@ class MapWidget extends LitElement {
         pagenumber,
         this.propPagesize
       );
-
+      
       const icon = L.divIcon({
         className: 'marker-24x32',
         iconSize: [24, 32],
@@ -358,6 +368,116 @@ class MapWidget extends LitElement {
       this.map.addLayer(this.layer_columns);
     }
     this.refreshPagingView();
+  }
+
+  async drawMobilityMap() {
+    let columns_layer_array = [];
+      
+    await this.fetchPeopleCounter();
+
+      const icon = L.divIcon({
+        className: 'marker-24x32',
+        iconSize: [24, 32],
+        iconAnchor: [12, 32],
+      });
+
+      const BATCH_SIZE = 1000; // Process 10 at a time
+      const BATCH_DELAY = 500; // 500ms delay between batches
+
+      for (let i = 0; i < this.mobilitynodes.length; i += BATCH_SIZE) {
+        const batch = this.mobilitynodes.slice(i, i + BATCH_SIZE);
+
+        // Process batch in parallel
+        const promises = batch.map(async (activity) => {
+          const { color, activitytype, source, darker } = await this.getColorAndType(
+            "mobility.peoplecounter"
+          );          
+
+          this.displayitems++;
+
+          let popup =
+            '<div class="popup">Name: <b>' +
+            activity['sname'] +
+            '</b><br /><div>Data Type: ' +
+            activity['tname'] + 
+            '</div>' +
+            '<div>Period: ' +
+            activity['mperiod'] + 
+            '</div>' +
+            '<div>Measured value: ' +
+            activity['mvalue'] + ' ' + activity['tunit']
+            '</div>';
+
+          if (activity['tdescription'] != null) {
+            popup +=
+              '<div>' +
+              activity['tdescription'] +
+              '</div>';
+          }
+          popup += '</div>';
+
+          let popupobj = L.popup().setContent(popup);
+
+          const pos = [
+            activity.scoordinate.y,
+            activity.scoordinate.x,
+          ];
+
+          let marker = L.marker(pos, {
+            icon: icon,
+            markerColor: color,
+          })
+            .on('add', function (e) {
+              const dot = e.target.getElement();
+              if (dot) dot.style.setProperty('--marker-color', color);
+            })
+            .on('mouseover', function (e) {
+              const dot = e.target.getElement();
+              if (dot) dot.style.setProperty('--marker-color', darker);
+            })
+            .on('mouseout', function (e) {
+              const dot = e.target.getElement();
+              if (dot) dot.style.setProperty('--marker-color', color);
+            })
+            .bindPopup(popupobj); //.addTo(this.map).bindPopup(popupobj);
+
+          columns_layer_array.push(marker);
+        });
+
+        await Promise.all(promises);
+
+        // Delay between batches (except for the last batch)
+        if (i + BATCH_SIZE < this.nodes.length) {
+          await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY));
+        }
+      }
+
+      //TODO CHECK WHY Clustering does not work
+
+      this.visibleNodes = columns_layer_array.length;
+      let columns_layer = L.layerGroup(columns_layer_array, {});
+
+      /** Prepare the cluster group for station markers */
+      this.layer_columns = new L.markerClusterGroup({
+        showCoverageOnHover: false,
+        chunkedLoading: true,
+        disableClusteringAtZoom: 20,
+        iconCreateFunction: function (cluster) {
+          return L.divIcon({
+            html:
+              '<div class="marker_cluster__marker" style="background-color:grey">' +
+              cluster.getChildCount() +
+              '</div>',
+            iconSize: L.point(32, 32),
+          });
+        },
+      });
+
+      /** Add maker layer in the cluster group */
+      this.layer_columns.addLayer(columns_layer);
+
+      /** Add the cluster group to the map */
+      this.map.addLayer(this.layer_columns);        
   }
 
   async refreshPagingView() {

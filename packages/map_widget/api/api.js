@@ -67,3 +67,21 @@ export async function fetchGpsTrack(id) {
       throw e;
     });
 }
+
+export async function fetchPeopleCounter(
+  language,
+  source,
+  pagenumber,
+  pagesize = 100
+) {
+  return callGet(config.API_BASE_URL_MOBILITY, '/flat,node/PeopleCounter/*/latest', {    
+    origin: config.ORIGIN,
+  })
+    .then((response) => {      
+      this.mobilitynodes = response.data;
+    })
+    .catch((e) => {
+      console.log(e);
+      throw e;
+    });
+}

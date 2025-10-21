@@ -32,7 +32,8 @@ jobs:
 
       - uses: noi-techpark/github-actions/env-file@v2
         env:
-          X_TOURISM_BASE_PATH: 'https://api.tourism.testingmachine.eu/v1'
+          X_TOURISM_BASE_PATH: 'https://tourism.api.opendatahub.testingmachine.eu/v1'
+          X_MOBILITY_BASE_PATH: 'https://mobility.api.opendatahub.testingmachine.eu/v2'
 
       - uses: noi-techpark/github-actions/npm-build@v2
         with:
@@ -55,6 +56,7 @@ jobs:
       - uses: noi-techpark/github-actions/env-file@v2
         env:
           X_TOURISM_BASE_PATH: 'https://tourism.opendatahub.com/v1'
+          X_MOBILITY_BASE_PATH: 'https://mobility.api.opendatahub.com/v1'
 
       - uses: noi-techpark/github-actions/npm-build@v2
         with:
