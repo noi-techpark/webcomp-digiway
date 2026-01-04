@@ -85,3 +85,22 @@ export async function fetchPeopleCounter(
       throw e;
     });
 }
+
+export async function fetchWeatherForecast(language) {
+  return callGet(
+    config.API_BASE_URL_TOURISM,
+    '/v1/Weather/Forecast',
+    {
+      language: language,
+      origin: config.ORIGIN,
+    }
+  )
+    .then((response) => {
+      return response;
+    })
+    .catch((e) => {
+      console.log(e);
+      throw e;
+    });
+}
+

@@ -9,35 +9,44 @@ import style__leaflet from 'leaflet/dist/leaflet.css';
 import style__markercluster from 'leaflet.markercluster/dist/MarkerCluster.css';
 import style from './scss/main.scss';
 import { getStyle } from './utils.js';
-import { fetchActivities, fetchGpsTrack, fetchPeopleCounter } from './api/api.js';
+import {
+  fetchActivities,
+  fetchGpsTrack,
+  fetchPeopleCounter,
+  fetchWeatherForecast
+} from './api/api.js';
+
 // import moment from 'moment';
 // import L2 from 'leaflet-gpx';
 // import L3 from 'leaflet-kml';
 
 class MapWidget extends LitElement {
+  
   static get properties() {
-    return {
-      propLanguage: {
-        type: String,
-        attribute: 'language',
-      },
-      propSource: {
-        type: String,
-        attribute: 'source',
-      },
-      propPagesize: {
-        type: String,
-        attribute: 'pagesize',
-      },
-      propCenterMap: {
-        type: String,
-        attribute: 'centermap',
-      },
-    };
-  }
+  return {
+    propLanguage: { type: String, attribute: 'language' },
+    propSource: { type: String, attribute: 'source' },
+    propPagesize: { type: String, attribute: 'pagesize' },
+    propCenterMap: { type: String, attribute: 'centermap' },
+
+    // Weather state
+    weatherByMunicipality: { type: Object },
+    weatherDates: { type: Array },
+
+    // ✅ NEW (Step 3)
+    selectedWeatherDate: { type: String }
+  };
+}
 
   constructor() {
     super();
+    this.weatherLayer = L.layerGroup();
+
+    // Weather state (SAFE for this build)
+    this.weatherByMunicipality = {};
+    this.weatherDates = [];
+    this.selectedWeatherDate = null;
+    this.weatherMarkersLayer = null;
 
     /* Map configuration */
     this.map_center = [46.479, 11.331];
@@ -46,16 +55,6 @@ class MapWidget extends LitElement {
       'https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png';
     this.map_attribution =
       '<a target="_blank" href="https://opendatahub.com">OpenDataHub.com</a> | &copy; <a target="_blank" href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a target="_blank" href="https://carto.com/attribution">CARTO</a>';
-
-    //OSM
-    // this.map_layer = "http://a.tile.openstreetmap.org/{z}/{x}/{y}.png";
-    // this.map_attribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>';
-
-    //OA MAP needs OA JS
-
-    /* Internationalization */
-    // this.language_default = 'en';
-    // this.language = 'de';
 
     /* Data fetched from Open Data Hub */
     this.totalresults = 0;
@@ -68,11 +67,150 @@ class MapWidget extends LitElement {
     this.types = {};
 
     /* Requests */
-    //this.fetchStations = fetchStations.bind(this);
     this.fetchActivities = fetchActivities.bind(this);
     this.fetchGpsTrack = fetchGpsTrack.bind(this);
     this.fetchPeopleCounter = fetchPeopleCounter.bind(this);
+    this.fetchWeatherForecast = fetchWeatherForecast.bind(this);
   }
+
+  getMunicipalityCenter(municipalityCode) {
+  // fallback: use existing activity GPS data to approximate center
+  for (let i = 0; i < this.nodes.length; i++) {
+    const activity = this.nodes[i];
+
+    const code =
+      activity.MunicipalityIstatCode ||
+      (activity.LocationInfo &&
+        activity.LocationInfo.MunicipalityInfo &&
+        activity.LocationInfo.MunicipalityInfo.MunicipalityIstatCode);
+
+    if (code === municipalityCode && activity.GpsInfo) {
+      const keys = Object.keys(activity.GpsInfo);
+      if (keys.length > 0) {
+        const gps = activity.GpsInfo[keys[0]];
+        return [gps.Latitude, gps.Longitude];
+      }
+    }
+  }
+
+  return null;
+}
+
+connectedCallback() {
+  super.connectedCallback();
+
+  this.weatherByMunicipality = {};
+  this.weatherDates = [];
+
+  this.fetchWeatherForecast(this.propLanguage || 'en')
+    .then((response) => {
+      console.log('Weather forecast response:', response);
+
+      response.forEach((entry) => {
+        // --- municipality code (NO optional chaining) ---
+        let municipalityCode = entry.MunicipalityIstatCode;
+
+        if (
+          !municipalityCode &&
+          entry.LocationInfo &&
+          entry.LocationInfo.MunicipalityInfo
+        ) {
+          municipalityCode =
+            entry.LocationInfo.MunicipalityInfo.MunicipalityIstatCode;
+        }
+
+        // --- date (NO optional chaining) ---
+        let date = null;
+        if (entry.Date) {
+          date = entry.Date.split('T')[0];
+        }
+
+        if (!municipalityCode || !date) return;
+
+        // --- collect unique dates ---
+        if (this.weatherDates.indexOf(date) === -1) {
+          this.weatherDates.push(date);
+        }
+
+        if (!this.weatherByMunicipality[municipalityCode]) {
+          this.weatherByMunicipality[municipalityCode] = {};
+        }
+
+        // --- forecast daily (SAFE) ---
+        let daily = null;
+        if (entry.ForecastDaily && entry.ForecastDaily.length > 0) {
+          daily = entry.ForecastDaily[0];
+        }
+
+        this.weatherByMunicipality[municipalityCode][date] = {
+          minTemp: daily ? daily.MinTemp : null,
+          maxTemp: daily ? daily.MaxTemp : null,
+          weatherCode: daily ? daily.WeatherCode : null,
+        };
+      });
+
+      console.log('FINAL weatherByMunicipality:', this.weatherByMunicipality);
+      console.log('FINAL weatherDates:', this.weatherDates);
+
+      // set default selected date
+      if (!this.selectedWeatherDate && this.weatherDates.length > 0) {
+        this.selectedWeatherDate = this.weatherDates[0];
+      }
+
+      this.drawWeatherMarkers();
+    })
+    .catch((err) => {
+      console.error('Weather forecast error:', err);
+    });
+}
+
+
+handleWeatherDateChange(e) {
+  this.selectedWeatherDate = e.target.value;
+  this.drawWeatherMarkers();
+}
+
+drawWeatherMarkers() {
+  if (!this.weatherMarkersLayer) {
+    this.weatherMarkersLayer = L.layerGroup().addTo(this.map);
+  }
+
+  this.weatherMarkersLayer.clearLayers();
+
+  var selectedDate = this.selectedWeatherDate;
+  if (!selectedDate) return;
+
+  var self = this;
+
+  Object.keys(this.weatherByMunicipality).forEach(function (municipalityCode) {
+    var datesMap = self.weatherByMunicipality[municipalityCode];
+    var forecast = datesMap[selectedDate];
+    if (!forecast) return;
+
+    var center = self.getMunicipalityCenter(municipalityCode);
+    if (!center) return;
+
+    var minTemp =
+      forecast.minTemp !== null && forecast.minTemp !== undefined
+        ? forecast.minTemp
+        : '-';
+
+    var maxTemp =
+      forecast.maxTemp !== null && forecast.maxTemp !== undefined
+        ? forecast.maxTemp
+        : '-';
+
+    var popupHtml =
+      '<b>Weather Forecast</b><br/>' +
+      'Date: ' + selectedDate + '<br/>' +
+      'Min: ' + minTemp + ' °C<br/>' +
+      'Max: ' + maxTemp + ' °C';
+
+    L.marker(center)
+      .addTo(self.weatherMarkersLayer)
+      .bindPopup(popupHtml);
+  });
+}
 
   async initializeMap() {
     let root = this.shadowRoot;
@@ -223,27 +361,76 @@ class MapWidget extends LitElement {
 
           this.displayitems++;
 
-          let popup =
-            '<div class="popup">Name: <b>' +
-            activity['Shortname'] +
-            '</b><br /><div>Type: ' +
-            activitytype +
-            '</div><br /><div>Source: ' +
-            source +
-            '</div>';
+let popup =
+  '<div class="popup">Name: <b>' +
+  activity['Shortname'] +
+  '</b><br /><div>Type: ' +
+  activitytype +
+  '</div><br /><div>Source: ' +
+  source +
+  '</div>';
 
-          if (activity['Detail.' + this.propLanguage + '.BaseText'] != null) {
-            popup +=
-              '<div>' +
-              activity['Detail.' + this.propLanguage + '.BaseText'] +
-              '</div>';
-          }
-          popup += '</div>';
+if (activity['Detail.' + this.propLanguage + '.BaseText'] != null) {
+  popup +=
+    '<div>' +
+    activity['Detail.' + this.propLanguage + '.BaseText'] +
+    '</div>';
+}
 
-          console.log(color);
-          console.log(darker);
+/* ===============================
+   WEATHER EXTENSION (STEP 4)
+   =============================== */
 
-          let popupobj = L.popup().setContent(popup);
+/* ===============================
+   WEATHER EXTENSION (STEP 4)
+   =============================== */
+
+var municipalityCode = null;
+
+if (activity.MunicipalityIstatCode) {
+  municipalityCode = activity.MunicipalityIstatCode;
+} else if (
+  activity.LocationInfo &&
+  activity.LocationInfo.MunicipalityInfo &&
+  activity.LocationInfo.MunicipalityInfo.MunicipalityIstatCode
+) {
+  municipalityCode =
+    activity.LocationInfo.MunicipalityInfo.MunicipalityIstatCode;
+}
+
+var selectedDate = this.selectedWeatherDate;
+
+popup += '<hr/>';
+
+if (
+  municipalityCode &&
+  selectedDate &&
+  this.weatherByMunicipality &&
+  this.weatherByMunicipality[municipalityCode] &&
+  this.weatherByMunicipality[municipalityCode][selectedDate]
+) {
+  var w = this.weatherByMunicipality[municipalityCode][selectedDate];
+
+  popup +=
+    '<b>Weather (' + selectedDate + ')</b><br/>' +
+    'Min: ' + (w.minTemp !== null ? w.minTemp : '-') + ' °C<br/>' +
+    'Max: ' + (w.maxTemp !== null ? w.maxTemp : '-') + ' °C';
+} else {
+  popup += '<i>No weather data</i>';
+}
+
+/* =============================== */
+
+
+/* =============================== */
+
+popup += '</div>';
+
+console.log(color);
+console.log(darker);
+
+let popupobj = L.popup().setContent(popup);
+
 
           Object.keys(activity.GpsTrack).forEach((key) => {
             var url = activity.GpsTrack[key].GpxTrackUrl;
@@ -508,28 +695,58 @@ class MapWidget extends LitElement {
     });
   }
 
-  async firstUpdated() {
-    this.initializeMap();
-    await this.drawMap(1);
-    this.registerPaging();
-  }
+async firstUpdated() {
+  // Expose instance for debugging (SAFE & STABLE)
+  window.mapWidget = this;
 
-  render() {
-    return html`
-      <style>
-        ${getStyle(style__markercluster)}
-        ${getStyle(style__leaflet)}
-        ${getStyle(style)}
-      </style>
-      <div id="map_widget">
-        <div id="map" class="map"></div>
-        <div id="pager" class="pager">
-          <span id="pageInfo"></span>
-          <button id="nextBtn">Load Next ⏭️</button>
-        </div>
+  // Existing logic
+  this.initializeMap();
+  await this.drawMap(1);
+  this.registerPaging();
+
+  console.log('MapWidget exposed as window.mapWidget');
+}
+
+
+
+
+ render() {
+  return html`
+    <style>
+      ${getStyle(style__markercluster)}
+      ${getStyle(style__leaflet)}
+      ${getStyle(style)}
+    </style>
+
+    <div id="map_widget">
+      <div style="padding: 8px; background: #fff;">
+        <label>
+          Forecast date:&nbsp;
+          <select @change=${this.handleWeatherDateChange}>
+            ${this.weatherDates.map(
+              (date) => html`
+                <option
+                  value=${date}
+                  ?selected=${date === this.selectedWeatherDate}
+                >
+                  ${date}
+                </option>
+              `
+            )}
+          </select>
+        </label>
       </div>
-    `;
-  }
+
+      <div id="map" class="map"></div>
+
+      <div id="pager" class="pager">
+        <span id="pageInfo"></span>
+        <button id="nextBtn">Load Next ⏭️</button>
+      </div>
+    </div>
+  `;
+}
+
 }
 
 if (!window.customElements.get('map-widget')) {
