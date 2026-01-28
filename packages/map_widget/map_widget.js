@@ -9,7 +9,7 @@ import style__leaflet from 'leaflet/dist/leaflet.css';
 import style__markercluster from 'leaflet.markercluster/dist/MarkerCluster.css';
 import style from './scss/main.scss';
 import { getStyle } from './utils.js';
-import { fetchActivities, fetchGpsTrack, fetchPeopleCounter } from './api/api.js';
+import { fetchActivities, fetchAnnouncements, fetchGpsTrack, fetchPeopleCounter, fetchWeatherForecast } from './api/api.js';
 // import moment from 'moment';
 // import L2 from 'leaflet-gpx';
 // import L3 from 'leaflet-kml';
@@ -33,6 +33,10 @@ class MapWidget extends LitElement {
         type: String,
         attribute: 'centermap',
       },
+      propForecastDay: {
+        type: Number,
+        attribute: 'forecastday',
+      }
     };
   }
 
@@ -65,6 +69,10 @@ class MapWidget extends LitElement {
 
     this.nodes = [];
     this.mobilitynodes = [];
+    this.weathernodes = [];
+    this.announcementnodes = [];
+    this.announcementMarkers = [];
+    this.fetchAnnouncements = fetchAnnouncements.bind(this);
     this.types = {};
 
     /* Requests */
@@ -72,6 +80,7 @@ class MapWidget extends LitElement {
     this.fetchActivities = fetchActivities.bind(this);
     this.fetchGpsTrack = fetchGpsTrack.bind(this);
     this.fetchPeopleCounter = fetchPeopleCounter.bind(this);
+    this.fetchWeatherForecast = fetchWeatherForecast.bind(this);
   }
 
   async initializeMap() {
@@ -152,6 +161,11 @@ class MapWidget extends LitElement {
       activitytype = 'peoplecounter';
       source = 'systems-merano';  
     }
+    if (activitysource == 'odh.weather.forecast') {
+      color = '#0088cc';
+      activitytype = 'weatherforecast';
+      source = 'opendatahub-weather';
+    }
 
     darker = this.makeDarker(color, 40);
 
@@ -185,7 +199,7 @@ class MapWidget extends LitElement {
     const toHex = (n) => n.toString(16).padStart(2, '0');
     
     return `#${toHex(newR)}${toHex(newG)}${toHex(newB)}`;
-}
+  }
 
   async drawMap(pagenumber) {
     let columns_layer_array = [];
@@ -195,6 +209,12 @@ class MapWidget extends LitElement {
       
       if(this.propSource.includes("mobility"))
         await this.drawMobilityMap();
+
+      if (this.propSource.includes("tourism.weather"))
+        await this.drawWeatherMap();
+
+      if (this.propSource.includes("tourism.announcement"))
+        await this.drawAnnouncementMap();
 
       await this.fetchActivities(
         this.propLanguage,
@@ -480,6 +500,102 @@ class MapWidget extends LitElement {
       this.map.addLayer(this.layer_columns);        
   }
 
+  
+
+  async drawWeatherMap() {
+    await this.fetchWeatherForecast(this.propLanguage || 'de');
+
+    const forecastDay = this.propForecastDay !== undefined ? this.propForecastDay : 0;
+    if (!this.weathernodes || !this.weathernodes.Forecast) {
+      console.log('No weather data available');
+      return;
+    }
+
+    this.weathernodes.Forecast.forEach((municipality) => {
+      if (!municipality.ForeCastDaily || municipality.ForeCastDaily.length === 0) {
+        return;
+      }
+
+      const forecast = municipality.ForeCastDaily[forecastDay];
+      if (!forecast) {
+        return;
+      }
+
+      const lat = municipality.Latitude;
+      const lon = municipality.Longitude;
+
+      if (!lat || !lon) {
+        return;
+      }
+
+      // get weather icon url from response
+      const weatherIconUrl = forecast.WeatherImgUrl || '';
+      const weatherDesc = forecast.WeatherDesc || '';
+      const maxTemp = forecast.MaxTemp !== undefined ? forecast.MaxTemp : '--';
+      const minTemp = forecast.MinTemp !== undefined ? forecast.MinTemp : '--';
+      const forecastDate = forecast.Date ? new Date(forecast.Date).toLocaleDateString() : '';
+
+      const nameObj = municipality.LocationInfo &&
+        municipality.LocationInfo.MunicipalityInfo &&
+        municipality.LocationInfo.MunicipalityInfo.Name;
+
+      console.log('nameObj:', nameObj, 'language:', this.propLanguage)
+
+      let municipalityName = 'Unknown'
+
+      if (typeof nameObj === 'string') {
+        municipalityName = nameObj;
+      } else if (nameObj && typeof nameObj[this.propLanguage] === 'string') {
+        municipalityName = nameObj[this.propLanguage];
+      } else if (nameObj && nameObj[this.propLanguage] && nameObj[this.propLanguage].Name) {
+        municipalityName = nameObj[this.propLanguage].Name;
+      } else if (municipality.LocationInfo && municipality.LocationInfo.MunicipalityInfo && municipality.LocationInfo.MunicipalityInfo.Id) {
+        municipalityName = municipality.LocationInfo.MunicipalityInfo.Id;
+      }
+
+      console.log('Final municipalityName:', municipalityName);
+
+      // const municipalityName =
+      //   municipality.MunicipalityName ||
+      //   (nameObj && nameObj[this.propLanguage]) ||
+      //   'Unknown';
+
+
+      const popup = `
+        <div class="popup weather-popup">
+          <b>${municipalityName}</b><br/>
+          <div style="text-align: center;">
+            ${weatherIconUrl ? `<img src="${weatherIconUrl}" alt="${weatherDesc}" style="width: 48px; height: 48px;">` : ''}
+          </div>
+          <div><b>${weatherDesc}</b></div>
+          <div>Max: ${maxTemp}°C / Min: ${minTemp}°C</div>
+          <div style="font-size: 0.9em; color: #666;">${forecastDate}</div>
+        </div>
+      `;
+
+      const icon = L.divIcon({
+        className: 'weather-marker',
+        html: weatherIconUrl
+          ? `<img src="${weatherIconUrl}" style="width: 40px; height: 40px; filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));">`
+          : `<span style="font-size: 32px;">🌡️</span>`,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+      });
+
+        // L.marker([lat, lon], { icon: icon })
+        //   .bindPopup(popup)
+        //   .addTo(this.map);
+        const marker = L.marker([lat, lon], { icon: icon })
+          .bindPopup(popup)
+          .addTo(this.map);
+
+        if (!this.weatherMarkers) this.weatherMarkers = [];
+        this.weatherMarkers.push(marker);
+    })
+  }
+
+
+
   async refreshPagingView() {
     let root = this.shadowRoot;
     let pageInforef = root.getElementById('pageInfo');
@@ -523,12 +639,111 @@ class MapWidget extends LitElement {
       </style>
       <div id="map_widget">
         <div id="map" class="map"></div>
+        ${this.propSource && this.propSource.includes('tourism.weather') ? html`
+          <div id="controls" class="controls" style="padding: 8px; background: white; position: absolute; top: 10px; right: 10px; z-index: 1000; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
+            <label for="daySelector">Forecast: </label>
+            <select id="daySelector" @change="${this.onDayChange}">
+              <option value="0">Today</option>
+              <option value="1">Tomorrow</option>
+              <option value="2">Day +2</option>
+              <option value="3">Day +3</option>
+              <option value="4">Day +4</option>
+            </select>
+          </div>
+        ` : ''}
         <div id="pager" class="pager">
           <span id="pageInfo"></span>
           <button id="nextBtn">Load Next ⏭️</button>
         </div>
       </div>
     `;
+  }
+
+  onDayChange(e) {
+    this.propForecastDay = parseInt(e.target.value);
+    this.clearWeatherMarkers();
+    this.drawWeatherMap();
+  }
+
+  clearWeatherMarkers() {
+    // Remove existing weather markers from map
+    if (this.weatherMarkers) {
+      this.weatherMarkers.forEach(marker => this.map.removeLayer(marker));
+    }
+    this.weatherMarkers = [];
+  }
+
+  async drawAnnouncementMap() {
+    await this.fetchAnnouncements(this.propLanguage || 'de');
+
+    if (!this.announcementnodes || this.announcementnodes.length === 0) {
+      console.log('No announcement data available');
+      return;
+    }
+
+    console.log('Announcements count:', this.announcementnodes.length);
+
+    this.announcementnodes.forEach((item) => {
+      const geo = item.Geo && item.Geo.position;
+      if (!geo || !geo.Latitude || !geo.Longitude) {
+        return;
+      }
+
+      const lat = geo.Latitude;
+      const lon = geo.Longitude;
+
+      // Get detail in preferred language, fallback to Italian or any available
+      const detail = (item.Detail && item.Detail[this.propLanguage]) ||
+                     (item.Detail && item.Detail['it']) ||
+                     (item.Detail && item.Detail['de']) ||
+                     {};
+
+      const title = detail.Title || item.Shortname || 'Unknown';
+      const baseText = detail.BaseText || '';
+
+      // "Chiuso" or "Aperto"
+      const isClosed = baseText.toLowerCase().includes('chiuso') || 
+                       baseText.toLowerCase().includes('closed');
+      const isOpen = baseText.toLowerCase().includes('aperto') || 
+                   baseText.toLowerCase().includes('open');
+
+      //icon/color based on status
+      let iconHtml;
+      let color;
+
+      if (isClosed) {
+        color = '#dc3545';
+        iconHtml = `<div style="background: ${color}; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">✕</div>`;
+      } else if (isOpen) {
+        color = '#28a745'; 
+        iconHtml = `<div style="background: ${color}; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">✓</div>`;
+      } else {
+        color = '#ffc107'; 
+        iconHtml = `<div style="background: ${color}; color: black; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">!</div>`;
+      }
+
+      const icon = L.divIcon({
+        className: 'announcement-marker',
+        html: iconHtml,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+      });
+
+      const popup = `
+        <div class="popup announcement-popup">
+          <b>${title}</b><br/>
+          <div>${baseText}</div>
+          ${item.StartTime ? `<div style="font-size: 0.85em; color: #666; margin-top: 4px;">From: ${new Date(item.StartTime).toLocaleDateString()}</div>` : ''}
+          ${item.EndTime ? `<div style="font-size: 0.85em; color: #666;">To: ${new Date(item.EndTime).toLocaleDateString()}</div>` : ''}
+        </div>
+      `;
+
+      const marker = L.marker([lat, lon], { icon: icon })
+        .bindPopup(popup)
+        .addTo(this.map);
+
+      this.announcementMarkers.push(marker);
+    });
   }
 }
 

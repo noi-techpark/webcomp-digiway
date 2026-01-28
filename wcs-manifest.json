@@ -46,7 +46,8 @@
             "siat.provincia.tn.it.mtb_percorsi_v",
             "siat.provincia.tn.it.elementi_cicloviari_v",
             "siat.provincia.tn.it.sentieri_della_sat",
-            "mobility.peoplecounter"
+            "mobility.peoplecounter",
+            "odh.weather.forecast"
           ],
           "default": "civis.geoserver.intermunicipalcyclingroutes"
         }
@@ -77,6 +78,16 @@
         "required": false,
         "options": {
           "default": ""
+        }
+      },
+      {
+        "key": "forecastday",
+        "type": "select",
+        "label": "Weather forecast day (0=today, 1=tomorrow, etc.)",
+        "required": false,
+        "options": {
+          "values": ["0", "1", "2", "3", "4"],
+          "default": "0"
         }
       }
     ]
