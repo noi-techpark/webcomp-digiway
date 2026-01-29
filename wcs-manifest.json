@@ -47,7 +47,8 @@
             "siat.provincia.tn.it.elementi_cicloviari_v",
             "siat.provincia.tn.it.sentieri_della_sat",
             "mobility.peoplecounter",
-            "odh.weather.forecast"
+            "tourism.announcement",
+            "tourism.weather"
           ],
           "default": "civis.geoserver.intermunicipalcyclingroutes"
         }

@@ -4,7 +4,6 @@
 
 export default {
   API_BASE_URL_TOURISM: process.env.TOURISM_BASE_PATH,
-  API_BASE_URL_TOURISM_TEST: process.env.API_BASE_URL_TOURISM,
   API_BASE_URL_MOBILITY: process.env.MOBILITY_BASE_PATH,
   ORIGIN: 'webcomp-tourism-digiway',
 };
