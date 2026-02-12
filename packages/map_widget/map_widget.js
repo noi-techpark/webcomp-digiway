@@ -142,7 +142,7 @@ class MapWidget extends LitElement {
       source = 'dservices3.arcgis.com';
     }
     if (activitysource == 'dservices3.arcgis.com.accessibletrails_austria') {
-      color = '#5e4769ff';
+      color = '#534769';
       activitytype = 'accessibletrail';
       source = 'dservices3.arcgis.com';
     }
