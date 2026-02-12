@@ -141,6 +141,11 @@ class MapWidget extends LitElement {
       activitytype = 'hikingtrail';
       source = 'dservices3.arcgis.com';
     }
+    if (activitysource == 'dservices3.arcgis.com.accessibletrails_austria') {
+      color = '#5e4769ff';
+      activitytype = 'accessibletrail';
+      source = 'dservices3.arcgis.com';
+    }
     if (activitysource == 'siat.provincia.tn.it.mtb_percorsi_v') {
       color = '#179b5d';
       activitytype = 'mountainbikeroutes';
