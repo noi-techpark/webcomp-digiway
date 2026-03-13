@@ -48,7 +48,8 @@
             "siat.provincia.tn.it.elementi_cicloviari_v",
             "siat.provincia.tn.it.sentieri_della_sat",
             "mobility.peoplecounter",
-            "tourism.announcement",
+            "digiway.zoho",
+            "tirol.mapservices.eu",
             "tourism.weather"
           ],
           "default": "civis.geoserver.intermunicipalcyclingroutes"

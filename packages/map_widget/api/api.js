@@ -126,9 +126,9 @@ export async function fetchWeatherForecast(language) {
   }
 }
 
-export async function fetchAnnouncements(language, pagesize = 500) {
+export async function fetchAnnouncements(language, source, pagesize = 500) {
   return callGet(config.API_BASE_URL_TOURISM, '/Announcement', {
-    source: 'digiway.zoho',
+    source: source,
     pagesize: pagesize,
     origin: config.ORIGIN,
   })

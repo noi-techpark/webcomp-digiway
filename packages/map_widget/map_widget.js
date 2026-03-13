@@ -218,8 +218,8 @@ class MapWidget extends LitElement {
       if (this.propSource.includes("tourism.weather"))
         await this.drawWeatherMap();
 
-      if (this.propSource.includes("tourism.announcement"))
-        await this.drawAnnouncementMap();
+      if (this.propSource.includes("tirol.mapservices.eu" || "digiway.zoho"))
+        await this.drawAnnouncementMap(this.propSource);
 
       await this.fetchActivities(
         this.propLanguage,
@@ -679,7 +679,7 @@ class MapWidget extends LitElement {
   }
 
   async drawAnnouncementMap() {
-    await this.fetchAnnouncements(this.propLanguage || 'de');
+    await this.fetchAnnouncements(this.propLanguage || 'de', this.propSource);
 
     if (!this.announcementnodes || this.announcementnodes.length === 0) {
       console.log('No announcement data available');
@@ -748,7 +748,9 @@ class MapWidget extends LitElement {
         .addTo(this.map);
 
       this.announcementMarkers.push(marker);
-    });
+    })
+    
+    ;
   }
 }
 
