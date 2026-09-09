@@ -3,3 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+.noi-map-popup .popup__section.popup__section--roads {
+  padding: 2px 16px;
+}
+
+.roads-extra-details {
+  padding: 0 16px;
+  margin: 8px 0;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 10pt;
+}

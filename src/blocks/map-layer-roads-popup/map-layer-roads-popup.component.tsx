@@ -31,6 +31,7 @@ export class MapLayerRoadsPopupComponent implements StencilComponent {
 
   @State()
   private routeDetails?: RouteDetails;
+  private mappingData: Array<{ name: string, value: string }> = [];
 
   @State()
   private headerConfig?: HeaderConfig;
@@ -70,6 +71,20 @@ export class MapLayerRoadsPopupComponent implements StencilComponent {
     this.__request = this.detailsService.getDetails(this.routeId, (_, routeDetails) => {
       this.__request = undefined; // avoid cancelling finished request later
       this.routeDetails = routeDetails;
+
+      // calculate extended details
+      this.mappingData = [];
+      const mMapping = this.routeDetails?.Mapping || {};
+      for (const mProvider in mMapping) {
+        const mProps = mMapping[mProvider] || {};
+        for (const mKey in mProps) {
+          if (!!mProps[mKey] || (mProps[mKey] as any) === 0) {
+            this.mappingData.push({name: mKey, value: mProps[mKey]});
+          }
+        }
+      }
+      console.log('mappingData', this.mappingData);
+
       this.isLoading = false;
     });
   }
@@ -103,6 +118,19 @@ export class MapLayerRoadsPopupComponent implements StencilComponent {
               <div class="popup__description">{description}</div>
             </div>)
         )}
+
+        {(!this.isLoading && this.mappingData.length > 0)
+          ?
+          <details class="roads-extra-details">
+            <summary>{this.languageService.translate('map.layer.util.technical-details')}</summary>
+            {this.mappingData.map(mData => (
+              <div class="popup__section popup__section--roads">
+                <div class="popup__section-name">{mData.name}</div>
+                <div class="popup__section-value">{mData.value}</div>
+              </div>
+            ))}
+          </details>
+          : ''}
 
       </div>
     );

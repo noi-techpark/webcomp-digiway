@@ -11,7 +11,7 @@ export interface RouteDetails {
   Detail: Record<string, LanguageDetail>;
   Source: string; // example: "civis.geoserver"
   TagIds: string[];
-  Mapping: Record<string | 'civis.geoserver', MappingDetails>;
+  Mapping: Record<string | 'civis.geoserver' | 'siat.provincia.tn.it', MappingDetails>;
   Shortname: string;
   LastChange: string; // ISO Date String
   FirstImport: string; // ISO Date String
@@ -65,28 +65,7 @@ export interface LanguageDetail {
 }
 
 export interface MappingDetails {
-  ID: string;
-  LENGTH: string;
-  OBJECT: string;
-  REGION: string;
-  STATUS: string;
-  ROUTE_END: string;
-  DIFFICULTY: string;
-  END_HEIGHT: string;
-  ROUTE_DESC: string;
-  ROUTE_NAME: string;
-  ROUTE_TYPE: string;
-  CREATE_DATE: string;
-  ROUTE_START: string;
-  STATUS_DATE: string;
-  UPDATE_DATE: string;
-  MUNICIPALITY: string;
-  ROUTE_NUMBER: string;
-  RUNNING_TIME: string;
-  START_HEIGHT: string;
-  UPHILL_METERS: string;
-  DOWNHILL_METERS: string;
-
+  // various data can be here
   [key: string]: string; // Fallback index signature for varying dynamic keys
 }
 

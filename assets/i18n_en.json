@@ -4,6 +4,7 @@
   "map.base.tirol": "Tirol",
   "map.base.osm": "Open Street Map",
   "map.layer.util.no-details": "No details",
+  "map.layer.util.technical-details": "Technical details",
   "map.layer.route-closures": "Route Closures",
   "map.layer.risk-exposure": "Risk Exposure",
   "map.layer.cycling": "Cycling routes",
