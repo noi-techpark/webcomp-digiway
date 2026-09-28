@@ -157,12 +157,19 @@ Here is an example of dark mode styles:
 ```css
 
 noi-digiway.dark {
+
   --color-primary: #0084e6;
+  --color-primary-contrast: #FFFFFF;
   --color-secondary: #da1d6d;
+  --color-tertiary: red;
 
   --color-text: #EEE;
   --color-background: #333;
+  --color-background-shade: #666;
   --color-background-hover: #454545;
+
+  --scrollbar-color: #CCC;
+  --scrollbar-bg: #333;
 
   --map-filter: brightness(0.7) contrast(1.5);
 }
