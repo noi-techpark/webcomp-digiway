@@ -219,6 +219,7 @@ export async function loadIconFont(fontName: string, url: string) {
 }
 
 
+
 /**
  *
  */
@@ -339,6 +340,18 @@ export async function getParentMap(el: HTMLElement): Promise<Map> {
   return map;
 }
 
+
+/**
+ * Simple string hashing function to generate a unique 32-bit integer
+ */
+export function stringToNumId(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
+}
 
 /**
  * In MapLibre GL, feature-state has a strict historical requirement: unless configured otherwise, a feature's root-level id must be a number (an integer) or a string that can be cast to an integer.

@@ -17,14 +17,18 @@ export interface PopupDefinitionObject {
   },
   body: Array<{
     type: 'name' | 'description' | 'section';
+    cssClass?: string;
     // 'text' is for 'name' and 'description'
     text?: string;
     // 'section' is for 'section'
-    section?: {
-      name: string;
-      value: string;
-    };
+    section?: PopupDefinitionObject_sectionData;
   }>;
+}
+
+
+export interface PopupDefinitionObject_sectionData {
+  name: string;
+  value: string | number | null | undefined;
 }
 
 
@@ -49,11 +53,11 @@ export function popupBuilder(def: PopupDefinitionObject): string {
   // body
   for (const bDef of def.body) {
     if (bDef.type === 'name') {
-      popupContent += `<div class="popup__name">${bDef.text}</div>`;
+      popupContent += `<div class="popup__name ${bDef.cssClass || ''}">${bDef.text}</div>`;
     }
     if (bDef.type === 'description') {
       if (bDef.text) {
-        popupContent += `<div class="popup__description">${sanitizeText(bDef.text)}</div>`;
+        popupContent += `<div class="popup__description ${bDef.cssClass || ''}">${sanitizeText(bDef.text)}</div>`;
       }
       continue;
     }
@@ -61,7 +65,7 @@ export function popupBuilder(def: PopupDefinitionObject): string {
       if (bDef.section?.value === null || bDef.section?.value === undefined) {
         continue;
       }
-      popupContent += `<div class="popup__section">
+      popupContent += `<div class="popup__section ${bDef.cssClass || ''}">
           <div class="popup__section-name">${bDef.section.name}</div>
           <div class="popup__section-value">${bDef.section.value}</div>
         </div>`;
@@ -79,7 +83,7 @@ export function debugPopupStructure(feature: MapGeoJSONFeature, featureType?: st
   html += `<strong>ID:</strong> ${feature.id}<br>`;
   html += `<hr/>`;
 
-  if (featureType === 'Line') {
+  if (feature?.geometry?.type) {
     html += `<strong>Type:</strong> ${feature.geometry.type}<br>`;
   }
 

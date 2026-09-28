@@ -37,13 +37,75 @@ export function getClearSkyType(now: Date, sunshineHours: number) {
  */
 export function _getDailyMeasurement<T>(measurements: Measurement<T>[]) {
 
-  const measurementDaily = measurements
+  const measurementDaily = (measurements || [])
     .filter(m => m.mperiod === 86400);
 
   if (measurementDaily.length > 1) {
     console.warn('Too many daily measurements:', measurements);
   }
   return measurementDaily[0];
+}
+
+/**
+ */
+export function _getMeasurementRelevant<T>(measurements: Measurement<T>[] | undefined, dateTime: Date) {
+
+  const measurementDesc = (measurements || [])
+    .filter(m => m.mperiod !== 86400)
+    .sort((a, b) => b.mvalidtime.localeCompare(a.mvalidtime)); // date is JS-date string, which is safe to compare
+
+  const timeLookup = dateTime.getTime();
+  for (const m of measurementDesc) {
+    const mTime = new Date(m.mvalidtime).getTime();
+    if (mTime <= timeLookup) {
+      if ((mTime + m.mperiod) >= timeLookup) {
+        return m;
+      }
+    }
+  }
+  return null;
+}
+
+
+/**
+ */
+export function _getMeasurementLatest<T>(measurements: Measurement<T>[] | undefined, dateTime: Date) {
+
+  const measurementDesc = (measurements || [])
+    .filter(m => m.mperiod !== 86400)
+    .sort((a, b) => b.mvalidtime.localeCompare(a.mvalidtime)); // date is JS-date string, which is safe to compare
+
+  const timeLookup = dateTime.getTime();
+  for (const m of measurementDesc) {
+    const mTime = new Date(m.mvalidtime).getTime();
+    if (mTime <= timeLookup) {
+      return m;
+    }
+  }
+  return null;
+}
+
+/**
+ */
+export function _getMeasurementAny<T>(measurements: Measurement<T>[] | undefined, dateTime: Date): {
+  measurement: Measurement<T>,
+  isRelevant: boolean
+} | null {
+
+  const measurementDesc = (measurements || [])
+    .filter(m => m.mperiod !== 86400)
+    .sort((a, b) => b.mvalidtime.localeCompare(a.mvalidtime)); // date is JS-date string, which is safe to compare
+
+  const timeLookup = dateTime.getTime();
+  for (const m of measurementDesc) {
+    const mTime = new Date(m.mvalidtime).getTime();
+    if (mTime <= timeLookup) {
+      // const isRelevant = (mTime + m.mperiod) >= timeLookup;
+      const isRelevant = Math.abs(mTime - timeLookup) <= (24 * 60 * 60 * 1000);
+      return {measurement: m, isRelevant};
+    }
+  }
+  return null;
 }
 
 

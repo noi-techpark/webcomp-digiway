@@ -294,6 +294,7 @@ noi-map {
 .legend {
   border-radius: 4px;
 
+  contain: content;
   display: flex;
   align-items: stretch;
   justify-content: center;
@@ -320,12 +321,21 @@ noi-map {
 }
 
 .legend__btn {
+  height: 100%;
   --color: var(--color-text);
   --color-hover: var(--color-primary);
   --color-bg-hover: var(--color-background-hover);
 }
 .legend__btn::part(button-native){
-  padding: 6px;
+  padding: 4px 6px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.legend__btn-toggle--active::part(button-native) {
+  color: var(--color-background);
+  background: var(--color-primary);
 }
 
 .legend__text {

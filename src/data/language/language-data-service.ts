@@ -32,8 +32,8 @@ export class LanguageDataService {
     return LanguageDataService.instance;
   }
 
-  translate(token: string) {
-    return this.languageData[this.currentLanguage as any]?.[token] || this.languageData[DEFAULT_LANGUAGE]?.[token] || token;
+  translate(token: string, fallback?: string) {
+    return this.languageData[this.currentLanguage as any]?.[token] || this.languageData[DEFAULT_LANGUAGE]?.[token] || fallback || token;
   }
 
   translateObject<T>(tObject?: { [lang: string]: T }) {

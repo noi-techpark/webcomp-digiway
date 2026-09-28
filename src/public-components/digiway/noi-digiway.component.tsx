@@ -12,6 +12,7 @@ import { formatDay } from "../../utils/intl";
 import { WeatherForecastService } from "../../data/noi/weather-forecast-service";
 import { diffInDays } from "../../utils/date";
 import { ZoomCategory } from "../../blocks/otp/map-layer-otp-layers/layout";
+import { WeatherCurrentViewMode } from "../../blocks/map-layer-weather-current/noi-map-layer-weather-current.component";
 
 
 interface DataLayerOption extends SelectOption {
@@ -91,6 +92,9 @@ export class NoiDigiwayComponent implements StencilComponent {
   @State()
   viewDateObj!: Date;
 
+  @State()
+  weatherCurrentMode: WeatherCurrentViewMode = 'temperature';
+
   private modes: MapSourceOption[] = [
     {value: 'tirol', text: 'map.base.tirol'},
     {value: 'osm', text: 'map.base.osm'},
@@ -122,7 +126,8 @@ export class NoiDigiwayComponent implements StencilComponent {
         {value: 'layer-hiking-accessible', text: 'map.layer.hiking-accessible'},
       ],
     },
-    {value: 'layer-weather', text: 'map.layer.weather', icon: 'weather-alert'},
+    {value: 'layer-weather-forecast', text: 'map.layer.weather-forecast', icon: 'weather-alert'},
+    {value: 'layer-weather-current', text: 'map.layer.weather-current', icon: 'material-thermomether'},
     {
       value: 'layer-otp', text: 'map.layer.otp-stops', icon: 'transport', forceSource: 'carto', showLoader: true,
       // children: [
@@ -211,6 +216,10 @@ export class NoiDigiwayComponent implements StencilComponent {
   changeViewDate(daysChange: number) {
     this.viewDateObj = new Date(this.viewDateObj.getTime());
     this.viewDateObj.setDate(this.viewDateObj.getDate() + daysChange);
+  }
+
+  setWeatherCurrentMode(mode: WeatherCurrentViewMode) {
+    this.weatherCurrentMode = mode;
   }
 
   _onLanguageChanged() {
@@ -451,11 +460,18 @@ export class NoiDigiwayComponent implements StencilComponent {
               onLayerLoading={(e) => this._setLayerLoading('layer-hiking-accessible', e.detail)}></noi-map-layer-roads>
             : ''}
 
-          {this.layersActive.includes('layer-weather')
+          {this.layersActive.includes('layer-weather-forecast')
             ? <noi-map-layer-weather
-              key="layer-weather"
+              key="layer-weather-forecast"
               viewDate={this.viewDateObj}
-              onLayerLoading={(e) => this._setLayerLoading('layer-weather', e.detail)}></noi-map-layer-weather>
+              onLayerLoading={(e) => this._setLayerLoading('layer-weather-forecast', e.detail)}></noi-map-layer-weather>
+            : ''}
+
+          {this.layersActive.includes('layer-weather-current')
+            ? <noi-map-layer-weather-current
+              key="layer-weather-current"
+              viewMode={this.weatherCurrentMode}
+              onLayerLoading={(e) => this._setLayerLoading('layer-weather-current', e.detail)}></noi-map-layer-weather-current>
             : ''}
 
           {this.layersActive.includes('layer-otp')
@@ -586,8 +602,11 @@ export class NoiDigiwayComponent implements StencilComponent {
 
     for (const layer of this.layersActive) {
       switch (layer) {
-        case 'layer-weather':
+        case 'layer-weather-forecast':
           legendArr.push(this._renderLegend_weatherForecast());
+          break;
+        case 'layer-weather-current':
+          legendArr.push(this._renderLegend_weatherCurrent());
           break;
         case 'layer-exposure':
           legendArr.push(this._renderLegend_riskExposure());
@@ -625,7 +644,7 @@ export class NoiDigiwayComponent implements StencilComponent {
 
   _renderLegend_weatherForecast() {
     return (<div class="legend" part="legend">
-      <noi-icon name="weather-alert" class="legend__icon legend__pane" title={this.languageService.translate('map.layer.weather')}></noi-icon>
+      <noi-icon name="weather-alert" class="legend__icon legend__pane" title={this.languageService.translate('map.layer.weather-forecast')}></noi-icon>
       <noi-button class="legend__btn"
                   title="Previous day"
                   disabled={!this.canChangeViewDate(-1)}
@@ -655,6 +674,29 @@ export class NoiDigiwayComponent implements StencilComponent {
       <div class="legend__text">
         <span>{this.languageService.translate('otp.zoom-too-far')}</span>
       </div>
+    </div>);
+  }
+
+  _renderLegend_weatherCurrent() {
+    let iconName = 'weather-alert';
+    switch (this.weatherCurrentMode) {
+      case 'temperature':
+        iconName = 'material-thermomether';
+        break;
+      case 'precipitation':
+        iconName = 'material-weather-mix';
+        break;
+    }
+    return (<div class="legend" part="legend">
+      <noi-icon name={iconName} class="legend__icon legend__pane" title={this.languageService.translate('map.layer.weather-current')}></noi-icon>
+      <noi-button class={'legend__btn ' + (this.weatherCurrentMode === 'temperature' ? 'legend__btn-toggle--active' : '')}
+                  onClick={() => this.setWeatherCurrentMode('temperature')}>
+        {this.languageService.translate('weather.type.temperature')}
+      </noi-button>
+      <noi-button class={'legend__btn ' + (this.weatherCurrentMode === 'precipitation' ? 'legend__btn-toggle--active' : '')}
+                  onClick={() => this.setWeatherCurrentMode('precipitation')}>
+        {this.languageService.translate('weather.type.precipitation')}
+      </noi-button>
     </div>);
   }
 }
