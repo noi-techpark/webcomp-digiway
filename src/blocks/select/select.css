@@ -65,6 +65,14 @@
   --ss-bg-color: var(--select-font-active-color);
 }
 
+.ss-content {
+  display: none;
+}
+
+.ss-content.ss-open {
+  display: flex;
+}
+
 .ss-content .ss-list .ss-option:hover:not(.ss-disabled) {
   border-left: 0;
 }

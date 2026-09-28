@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 
-import { MapGeoJSONFeature } from "maplibre-gl";
 import { sanitizeText } from "./html";
+import { Point } from "geojson";
+import { LngLatLike, Map, MapGeoJSONFeature, Popup } from "maplibre-gl";
 
 export type PopupDefinitionFn = ((feature: MapGeoJSONFeature, featureType: string) => Promise<PopupDefinition>);
 export type PopupDefinition = PopupDefinitionObject | string | HTMLElement;
@@ -72,10 +73,11 @@ export function popupBuilder(def: PopupDefinitionObject): string {
 }
 
 // Feature popup helper
-export function debugPopupStructure(feature: MapGeoJSONFeature, featureType: string) {
-  const props = feature.properties;
-  let html = `<strong>${featureType} Feature</strong><br>`;
-  html += `<strong>ID:</strong> ${props.id}<br>`;
+export function debugPopupStructure(feature: MapGeoJSONFeature, featureType?: string) {
+  const props = feature.properties || {};
+  let html = `<strong>Feature (${featureType || feature.sourceLayer || feature.source})</strong><br>`;
+  html += `<strong>ID:</strong> ${feature.id}<br>`;
+  html += `<hr/>`;
 
   if (featureType === 'Line') {
     html += `<strong>Type:</strong> ${feature.geometry.type}<br>`;
@@ -83,14 +85,14 @@ export function debugPopupStructure(feature: MapGeoJSONFeature, featureType: str
 
   // Alle flachen Properties auÃŸer count & cluster
   Object.keys(props).forEach(key => {
-    if (['id', 'count', 'cluster'].includes(key)) return;
-    // Wenn es die 'data' Spalte ist, dann parse JSON
+    if (['count', 'cluster'].includes(key)) return;
+
     if (key === 'data' && props.data) {
       try {
         const data = JSON.parse(props.data);
-        Object.keys(data).forEach(k => {
+        for (const k in data) {
           html += `<strong>${k}:</strong> ${data[k]}<br>`;
-        });
+        }
       } catch (e) {
         html += `<strong>Data:</strong> ${props.data}<br>`;
       }
@@ -100,4 +102,45 @@ export function debugPopupStructure(feature: MapGeoJSONFeature, featureType: str
   });
 
   return html;
+}
+
+
+let _prevPopup: Popup | undefined;
+
+export function createDebugPopup(map: Map, feature: MapGeoJSONFeature) {
+
+  _prevPopup?.remove();
+
+  // create popup element
+  const popupContent = debugPopupStructure(feature);
+
+  // Wait for the browser layout engine to paint the content
+  // await new Promise(resolve => requestAnimationFrame(resolve));
+
+  // Append 'popupContent' to the DOM (Crucial: Stencil needs connection to initialize)
+  const popup = new Popup()
+    // .setLngLat(lngLat) // < on mouse click point
+    .setLngLat((feature.geometry as Point).coordinates as LngLatLike) // < on feature center
+    .setHTML(popupContent)
+    .setMaxWidth('380px')
+    .addTo(map);
+  popup.on('close', () => {
+    if (_prevPopup === popup) {
+      _prevPopup = undefined;
+    }
+  });
+  _prevPopup = popup;
+  return popup;
+}
+
+
+// Feature popup helper
+export function popupLoadingContent() {
+  return `
+    <div class="noi-map-popup" part="popup">
+        <div class="popup__loading">
+          <noi-spinner></noi-spinner>
+        </div>
+    </div>
+`;
 }

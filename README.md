@@ -125,19 +125,21 @@ Type
 
 This is regular CSS styles for the component, but specific adjustment is supported.
 
-| Name                       | Description                                  |
-| -------------------------- | -------------------------------------------- |
-| `--color-background`       | Background color                             |
-| `--color-background-hover` | Background color on hover                    |
-| `--color-background-shade` | Background darken color                      |
-| `--color-border`           | Border color                                 |
-| `--color-primary`          | Primary color                                |
-| `--color-secondary`        | Secondary color                              |
-| `--color-text`             | Text color                                   |
-| `--map-filter`             | 'filter' property for the map                |
-| `--sidebar-width`          | Sidebar with (for desktop and tablet layout) |
-| `--scrollbar-bg`           | Scrollbar background color                   |
-| `--scrollbar-color`        | Scrollbar thumb color                        |
+| Name                        | Description                                  |
+|-----------------------------|----------------------------------------------|
+| `--color-background`        | Background color                             |
+| `--color-background-hover`  | Background color on hover                    |
+| `--color-background-shade`  | Background darken color                      |
+| `--color-border`            | Border color                                 |
+| `--color-primary`           | Primary color                                |
+| `--color-primary-contrast`  | Primary contrast color                       |
+| `--color-secondary`         | Secondary color                              |
+| `--color-tertiary`          | Tertiary color                               |
+| `--color-text`              | Text color                                   |
+| `--map-filter`              | 'filter' property for the map                |
+| `--sidebar-width`           | Sidebar with (for desktop and tablet layout) |
+| `--scrollbar-bg`            | Scrollbar background color                   |
+| `--scrollbar-color`         | Scrollbar thumb color                        |
 
 Shadow Parts:
 
@@ -155,12 +157,19 @@ Here is an example of dark mode styles:
 ```css
 
 noi-digiway.dark {
+
   --color-primary: #0084e6;
+  --color-primary-contrast: #FFFFFF;
   --color-secondary: #da1d6d;
+  --color-tertiary: red;
 
   --color-text: #EEE;
   --color-background: #333;
+  --color-background-shade: #666;
   --color-background-hover: #454545;
+
+  --scrollbar-color: #CCC;
+  --scrollbar-bg: #333;
 
   --map-filter: brightness(0.7) contrast(1.5);
 }

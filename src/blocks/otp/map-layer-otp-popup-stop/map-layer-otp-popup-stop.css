@@ -1,0 +1,126 @@
+/*
+ * SPDX-FileCopyrightText: 2025 NOI Techpark <digital@noi.bz.it>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+:host {
+  display: block;
+}
+
+/* POPUP */
+.noi-otp-popup {
+  font: inherit;
+}
+
+.noi-otp-popup .popup__header {
+  padding: 0 32px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.5ch;
+  min-height: 32px;
+  font-size: 1.05em;
+  font-weight: bold;
+}
+
+
+/* */
+.station-name-section {
+  padding: 8px;
+}
+
+.station-name-section__code {
+  opacity: 0.9;
+  font-size: 0.9em;
+}
+
+.station-name-section__name {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+/* transport-types */
+.transport-types-section {
+  padding: 8px;
+  background: var(--color-background-shade);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.transport-types-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .5ch;
+  min-height: 1.5em;
+}
+
+/* STOPS */
+.otp-stop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.otp-stop__badge {
+  flex: 0 0 20px;
+
+  --badge-color-text: var(--color-text);
+  --badge-color-background: var(--color-background-shade);
+}
+
+.otp-stop__headsign {
+  padding: 2px 0;
+  flex: 1;
+  text-align: left;
+}
+
+.otp-stop__headsign-pattern {
+  font-size: 0.8em;
+  opacity: 0.8;
+}
+
+
+/* departures-section */
+.noi-otp-popup .departures-section {
+  max-height: 250px;
+  overflow-y: auto;
+  scrollbar-color: var(--scrollbar-color, initial) var(--scrollbar-bg, initial);
+}
+
+.departures-section__header {
+  padding: 4px 8px;
+  font-size: .9em;
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+.departures-section__empty {
+  padding: 0 8px;
+  opacity: 0.9;
+  font-size: 0.9em;
+  color: var(--color-text);
+}
+
+/* departures-list */
+.noi-otp-popup .departures-list {
+  padding: 0 1px;
+}
+
+.noi-otp-popup .departures-list > * {
+  margin-bottom: 2px;
+}
+
+.noi-otp-popup .departures-list noi-button {
+  width: 100%;
+  /* reserve space for items */
+  display: block;
+  min-height: 1.625em;
+}
+
+.noi-otp-popup .departures-list noi-button::part(button-native) {
+  padding: 2px 4px 2px 7px;
+  border-radius: 4px;
+  width: 100%;
+}

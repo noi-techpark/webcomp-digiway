@@ -1,0 +1,226 @@
+/*
+ * SPDX-FileCopyrightText: 2025 NOI Techpark <digital@noi.bz.it>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+:host {
+  --circle-highlight-color: var(--color-tertiary);
+}
+
+.otp-overlay-anchor {
+  padding: 12px;
+
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  bottom: 0;
+
+  pointer-events: none;
+}
+
+.otp-overlay {
+  padding: 6px 12px;
+
+  color: var(--color-text);
+  background: var(--color-background);
+  box-shadow: 0 0 4px var(--color-background-hover);
+  border-radius: 6px;
+  pointer-events: all;
+
+  font-size: 1.2em;
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
+/* header */
+.header {
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header noi-button::part(button-native) {
+  display: flex;
+  align-items: center;
+  gap: .5ch;
+}
+
+.header noi-button.header__back::part(button-native) {
+  padding: 4px 8px 4px 4px;
+  border-radius: 6px;
+}
+
+.header noi-button.header__close::part(button-native) {
+  padding: 4px;
+  border-radius: 6px;
+}
+
+/* ROUTE */
+.route {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.route__badge {
+  min-width: 20px;
+}
+
+.route__name {
+  font-size: 1.3em;
+  font-weight: bold;
+}
+
+.route-stops-list {
+  overflow-y: auto;
+  scrollbar-color: var(--scrollbar-color, initial) var(--scrollbar-bg, initial);
+}
+
+.route-label {
+  margin-top: 8px;
+  padding: 4px 0;
+  font-size: 1.1em;
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+
+/* */
+.trip-stop {
+  display: grid;
+  grid-template-columns: 14px 7ch auto;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  padding: 0 8px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.trip-stop:hover {
+  background-color: var(--color-background-hover);
+}
+
+.trip-stop__padding {
+  padding: 4px 0;
+}
+
+.trip-stop__dot {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.trip-stop:last-child .trip-stop__dot::before {
+  display: none;
+}
+
+
+/* line */
+.trip-stop__dot::before {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  left: 6px;
+  background: var(--color-primary);
+  transform: translateY(50%);
+  z-index: 1;
+}
+
+
+/* dot */
+.trip-stop__dot::after {
+  content: "";
+  display: inline-block;
+  height: 10px;
+  width: 10px;
+  border-radius: 7px;
+  background: var(--color-background);
+  border: 2px solid var(--color-primary);
+  z-index: 2;
+}
+
+.trip-stop--highlighted .trip-stop__dot::after {
+  border-color: var(--circle-highlight-color);
+  background: var(--circle-highlight-color);
+}
+
+.trip-stop--current .trip-stop__dot::after {
+  border-color: var(--circle-highlight-color);
+}
+
+
+/* tablet view */
+:host(.layout--tablet) .otp-overlay-anchor {
+  top: 40px;
+}
+
+
+/* mobile view */
+:host(.layout--mobile) .header {
+  font-size: 0.9em;
+}
+
+:host(.layout--mobile) .route {
+  font-size: 0.8em;
+  margin: 4px 0;
+}
+
+:host(.layout--mobile) .route-label {
+  display: none;
+}
+
+:host(.layout--mobile) .route-stops-list {
+  font-size: 0.8em;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 120px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+:host(.layout--mobile) .otp-overlay-anchor {
+  width: initial;
+  top: initial;
+  right: 0;
+}
+
+:host(.layout--mobile) .trip-stop {
+  grid-template-columns: initial;
+  grid-template-rows: 14px 1em auto;
+  padding: 8px 0 4px;
+  align-items: self-start;
+}
+
+:host(.layout--mobile) .trip-stop__padding {
+  padding: 0 8px;
+  text-align: center;
+}
+
+:host(.layout--mobile) .trip-stop__dot {
+  height: initial;
+  width: 100%;
+}
+
+:host(.layout--mobile) .trip-stop__dot::before {
+  left: 0;
+  right: 0;
+  height: 2px;
+  top: 6px;
+  width: initial;
+  transform: translateX(50%);
+}

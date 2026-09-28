@@ -86,7 +86,7 @@ export class NoiMapLayerAnnouncementsComponent implements StencilComponent {
 
 
   // Feature popup helper
-  createPopup(feature/*, featureType*/): PopupDefinition {
+  async createPopup(feature: any/*, featureType*/): Promise<PopupDefinition> {
     const props = feature.properties;
     // const icon = getAssetPath('route-closures-icon.svg');
 

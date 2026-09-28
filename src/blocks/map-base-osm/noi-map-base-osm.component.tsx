@@ -17,9 +17,9 @@ import { Map } from "maplibre-gl";
 })
 export class NoiMapBaseOsmComponent implements StencilComponent {
 
-  private map: Map = null;
+  private map!: Map;
 
-  @Element() el: HTMLElement;
+  @Element() el!: HTMLElement;
 
   @Prop()
   variant: 'color' | 'grayscale' = 'color';

@@ -18,14 +18,14 @@ import { listenLayerReady } from "../../utils/maplibre";
 })
 export class NoiMapLayerRiskExposureComponent implements StencilComponent {
 
-  private map: Map = null;
+  private map!: Map;
 
-  @Element() el: HTMLElement;
+  @Element() el!: HTMLElement;
 
   /**
    * Emitted when layer data is loading
    */
-  @Event() layerLoading: EventEmitter<boolean>;
+  @Event() layerLoading!: EventEmitter<boolean>;
 
   private _subscriptions: Subscription[] = [];
 

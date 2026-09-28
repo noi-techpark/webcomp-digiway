@@ -17,9 +17,9 @@ import { Map } from "maplibre-gl";
 })
 export class NoiMapBaseTirolComponent implements StencilComponent {
 
-  private map: Map = null;
+  private map!: Map;
 
-  @Element() el: HTMLElement;
+  @Element() el!: HTMLElement;
 
   @Prop()
   variant: 'color' | 'grayscale' = 'color';
@@ -40,7 +40,7 @@ export class NoiMapBaseTirolComponent implements StencilComponent {
     const mapParent = this.el.closest('noi-map') as HTMLNoiMapElement;
 
     if (!mapParent) {
-      console.error('[noi-map-base-tyrol-tirol] must be a child of my-map');
+      console.error('[noi-map-base-tirol] must be a child of my-map');
       return;
     }
 
@@ -72,7 +72,7 @@ export class NoiMapBaseTirolComponent implements StencilComponent {
         this.map.setPaintProperty('layer-tirol-background', 'raster-saturation', -1);
         break;
       default:
-        console.warn('[noi-map-base-tyrol-tirol] Unknown variant:', this.variant);
+        console.warn('[noi-map-base-tirol] Unknown variant:', this.variant);
     }
   }
 
@@ -104,7 +104,7 @@ export class NoiMapBaseTirolComponent implements StencilComponent {
   }
 
   destroyLayer() {
-    console.log('[noi-map-base-tyrol-tirol] Removing layer from map');
+    console.log('[noi-map-base-tirol] Removing layer from map');
 
     // for (const subscription of this._subscriptions) {
     //   subscription.unsubscribe();

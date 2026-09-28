@@ -27,3 +27,13 @@ export function diffInDays(date1: Date, date2: Date) {
   // Math.round() safely snaps it to the correct calendar day count
   return Math.round(differenceInDays);
 }
+
+
+export function getSecondsSinceMidnight(date?: Date) {
+  const _date = date || new Date();
+  const hours = _date.getHours();
+  const minutes = _date.getMinutes();
+  const seconds = _date.getSeconds();
+
+  return (hours * 3600) + (minutes * 60) + seconds;
+}
