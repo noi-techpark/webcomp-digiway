@@ -103,7 +103,8 @@
         "options": {
           "values": [
             "osm",
-            "tirol"
+            "tirol",
+            "carto"
           ],
           "default": "tirol"
         }

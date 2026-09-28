@@ -11,10 +11,15 @@ import { getAssetPath } from "../../utils/asset-path";
 import { formatDay } from "../../utils/intl";
 import { WeatherForecastService } from "../../data/noi/weather-forecast-service";
 import { diffInDays } from "../../utils/date";
+import { ZoomCategory } from "../../blocks/otp/map-layer-otp-layers/layout";
 
 
 interface DataLayerOption extends SelectOption {
-  forceGrayscale: boolean;
+  forceGrayscale?: boolean;
+  forceSource?: BaseMapType;
+  children?: DataLayerOption[];
+  tags?: string | string[];
+  showLoader?: boolean; // default is true
 }
 
 type MapSourceOption = SelectOption;
@@ -22,7 +27,7 @@ type MapSourceOption = SelectOption;
 /**
  * @internal
  */
-type BaseMapType = 'tirol' | 'osm';
+type BaseMapType = 'tirol' | 'osm' | 'carto';
 
 /**
  * Consolidated web-component to show Open Data Hub data imported within the Digiway project
@@ -74,6 +79,9 @@ export class NoiDigiwayComponent implements StencilComponent {
   @State()
   layoutResolved!: ViewLayout;
 
+  @State()
+  otpZoomCategory?: ZoomCategory;
+
   @Element()
   el!: HTMLElement;
 
@@ -86,36 +94,53 @@ export class NoiDigiwayComponent implements StencilComponent {
   private modes: MapSourceOption[] = [
     {value: 'tirol', text: 'map.base.tirol'},
     {value: 'osm', text: 'map.base.osm'},
+    {value: 'carto', text: 'map.base.carto'},
   ];
   private modesTranslated: MapSourceOption[] = [];
-  // private subModes: SelectOption[] = [
-  //   {value: 'tyrol', text: 'Tyrol', icon: 'bicycle'},
-  //   {value: 'osm', text: 'Open Street Map', icon: 'hiking'},
-  //   {value: 'hk-mt', text: 'Mountain Trails', icon: 'hiking'},
-  // ];
 
 
-  private dataLayers: DataLayerOption[] = [
-    {value: 'layer-closures', text: 'map.layer.route-closures', icon: 'pointer-off', forceGrayscale: false},
+  private structure: DataLayerOption[] = [
+    {value: 'layer-closures', text: 'map.layer.route-closures', icon: 'pointer-off'},
     {value: 'layer-exposure', text: 'map.layer.risk-exposure', icon: 'context', forceGrayscale: true},
-    // {value: 'layer-poi', text: 'map.layer-poi', icon: 'group'},
+    {
+      value: 'layer-cycling', text: 'map.layer.cycling', icon: 'bicycle', showLoader: false,
+      children: [
+        // {value: 'layer-cycling-tyrol', text: 'map.layer.cycling-tyrol'},
+        {value: 'layer-cycling-tyrol-north', text: 'map.layer.cycling-tyrol-north'},
+        {value: 'layer-cycling-bolzano-int', text: 'map.layer.cycling-bolzano-int'},
+        {value: 'layer-cycling-trento', text: 'map.layer.cycling-trento'},
+        {value: 'layer-mountain-bolzano', text: 'map.layer.mountain-bolzano'},
+        {value: 'layer-mountain-trento', text: 'map.layer.mountain-trento'},
+      ],
+    },
+    {
+      value: 'layer-hiking', text: 'map.layer.hiking', icon: 'trekking', showLoader: false,
+      children: [
+        {value: 'layer-hiking-bolzano', text: 'map.layer.hiking-bolzano'},
+        {value: 'layer-hiking-trento', text: 'map.layer.hiking-trento'},
+        {value: 'layer-hiking-e5', text: 'map.layer.hiking-e5'},
+        {value: 'layer-hiking-accessible', text: 'map.layer.hiking-accessible'},
+      ],
+    },
+    {value: 'layer-weather', text: 'map.layer.weather', icon: 'weather-alert'},
+    {
+      value: 'layer-otp', text: 'map.layer.otp-stops', icon: 'transport', forceSource: 'carto', showLoader: true,
+      // children: [
+      //   {value: 'layer-otp-stops', text: 'map.layer.otp-stops', tags: 'stops', showLoader: false},
+      //   {value: 'layer-otp-parking', text: 'map.layer.otp-parking', tags: 'parking', showLoader: false},
+      //   {value: 'layer-otp-rental', text: 'map.layer.otp-rental', tags: 'rental', showLoader: false},
+      // ],
+    },
+    // {value: 'layer-otp-charger', text: 'map.layer.otp-charger', forceSource: 'otp', showLoader: true},
   ];
 
-  private cyclingDataLayers: DataLayerOption[] = [
-    // {value: 'layer-cycling-tyrol', text: 'map.layer.cycling-tyrol', forceGrayscale: false},
-    {value: 'layer-cycling-tyrol-north', text: 'map.layer.cycling-tyrol-north', forceGrayscale: false},
-    {value: 'layer-cycling-bolzano-int', text: 'map.layer.cycling-bolzano-int', forceGrayscale: false},
-    {value: 'layer-cycling-trento', text: 'map.layer.cycling-trento', forceGrayscale: false},
-    {value: 'layer-mountain-bolzano', text: 'map.layer.mountain-bolzano', forceGrayscale: false},
-    {value: 'layer-mountain-trento', text: 'map.layer.mountain-trento', forceGrayscale: false},
-  ];
-
-  private hikingDataLayers: DataLayerOption[] = [
-    {value: 'layer-hiking-bolzano', text: 'map.layer.hiking-bolzano', forceGrayscale: false},
-    {value: 'layer-hiking-trento', text: 'map.layer.hiking-trento', forceGrayscale: false},
-    {value: 'layer-hiking-e5', text: 'map.layer.hiking-e5', forceGrayscale: false},
-    {value: 'layer-hiking-accessible', text: 'map.layer.hiking-accessible', forceGrayscale: false},
-  ];
+  private _structureFlat: DataLayerOption[] = this.structure.reduce((acc, layer) => {
+    acc.push(layer);
+    if (layer.children) {
+      acc.push(...layer.children);
+    }
+    return acc;
+  }, [] as DataLayerOption[]);
 
 
   @State()
@@ -128,6 +153,7 @@ export class NoiDigiwayComponent implements StencilComponent {
   layersLoading: string[] = [];
 
   private _isGrayscaleMap = false;
+  private _activeTags: { [parentId: string]: string[] } = {};
 
   private now = new Date();
 
@@ -232,44 +258,62 @@ export class NoiDigiwayComponent implements StencilComponent {
   }
 
 
-  activateLayer(layer: string, isActive: boolean) {
+  setLayerActive(layer: string, isActive: boolean) {
     if (isActive) {
-      // activate layer
       if (!this.layersActive.includes(layer)) {
+        // activate layer
         this.layersActive.push(layer);
         this.layersActive = [...this.layersActive];
 
-        // also set loading here to avoid blink
-        this._setLayerLoading(layer, true);
+        //
+        const layerDef = this._structureFlat.find(l => l.value === layer);
+        if (layerDef?.showLoader !== false) {
+          // also set loading here to avoid blink
+          this._setLayerLoading(layer, true);
+        }
+
+        if (layerDef?.forceSource) {
+          // force source
+          this.setBaseMap(layerDef.forceSource);
+        }
       }
     } else {
-      // deactivate layers
+      // deactivate layer
       this.layersActive = this.layersActive.filter(l => l !== layer);
 
       // also clear loading state in case it's still loading
       this._setLayerLoading(layer, false);
 
-      // TODO: deactivate nested layers
-      let layersNested: string[] = [];
-      if (layer === 'layer-cycling') {
-        layersNested = this.cyclingDataLayers.map(dl => dl.value);
-      }
-
-      // if (layer === 'layer-mountain') {
-      //   layersNested = this.mountainDataLayers.map(dl => dl.value);
-      // }
-      if (layer === 'layer-hiking') {
-        layersNested = this.hikingDataLayers.map(dl => dl.value);
-      }
-
+      // deactivate nested layers
+      const layerDef = this.structure.find(l => l.value === layer);
+      let layersNested: string[] = (layerDef?.children || []).map(dl => dl.value);
       this.layersActive = this.layersActive.filter(l => !layersNested.includes(l));
+
+      // remove loading state for children layers
       for (const l of layersNested) {
         this._setLayerLoading(l, false);
       }
     }
 
-    // recalculate _isGrayscaleMap
-    this._isGrayscaleMap = !!this.layersActive.find(l => !!this.dataLayers.find(dl => dl.value === l)?.forceGrayscale);
+    // recalculate _isGrayscaleMap and _childLayersIds
+    this._isGrayscaleMap = false;
+    this._activeTags = {};
+    for (const layer of this.layersActive) {
+      const layerDef = this._structureFlat.find(l => l.value === layer);
+      if (layerDef?.forceGrayscale) {
+        this._isGrayscaleMap = true;
+      }
+
+      if (layerDef?.children) {
+        this._activeTags[layerDef.value] = [];
+        for (const layerChild of layerDef.children) {
+          if (this.layersActive.includes(layerChild.value)) {
+            const tags: string[] = Array.isArray(layerChild.tags) ? layerChild.tags : (layerChild.tags ? [layerChild.tags] : []);
+            this._activeTags[layerDef.value].push(...tags);
+          }
+        }
+      }
+    }
   }
 
   _setLayerLoading(layer: string, isLoading: boolean) {
@@ -297,8 +341,14 @@ export class NoiDigiwayComponent implements StencilComponent {
         <noi-map part="map" centermap={this.centermap}>
           {this.mapMode.value === 'osm'
             ? <noi-map-base-osm variant={this._isGrayscaleMap ? 'grayscale' : 'color'}></noi-map-base-osm>
-            : <noi-map-base-tirol variant={this._isGrayscaleMap ? 'grayscale' : 'color'}></noi-map-base-tirol>
-          }
+            : ''}
+          {this.mapMode.value === 'tirol'
+            ? <noi-map-base-tirol variant={this._isGrayscaleMap ? 'grayscale' : 'color'}></noi-map-base-tirol>
+            : ''}
+          {this.mapMode.value === 'carto'
+            ? <noi-map-base-carto></noi-map-base-carto>
+            : ''}
+
 
           {this.layersActive.includes('layer-exposure')
             ? <noi-map-layer-risk-exposure
@@ -408,6 +458,24 @@ export class NoiDigiwayComponent implements StencilComponent {
               onLayerLoading={(e) => this._setLayerLoading('layer-weather', e.detail)}></noi-map-layer-weather>
             : ''}
 
+          {this.layersActive.includes('layer-otp')
+            ? <noi-map-layer-otp
+              key="layer-otp"
+              layers="stops"
+              layout={this.layoutResolved}
+              onLayerLoading={(e) => this._setLayerLoading('layer-otp', e.detail)}
+              onZoomCategoryChange={e => this.otpZoomCategory = e.detail}
+            ></noi-map-layer-otp>
+            : ''}
+
+
+          {/*this.layersActive.includes('layer-otp-charger')
+            ? <noi-map-layer-otp-charger
+              key="layer-otp-charger"
+              onLayerLoading={(e) => this._setLayerLoading('layer-otp-charger', e.detail)}></noi-map-layer-otp-charger>
+            : ''*/}
+
+          {/*<noi-map-layer-otp-route routeId="sta:it:apb:Line:01216_.26a:"></noi-map-layer-otp-route>*/}
         </noi-map>
         {this._renderLegend()}
         <div class={this.isMenuOpened ? "sidebar-backdrop open" : "sidebar-backdrop"}
@@ -448,112 +516,48 @@ export class NoiDigiwayComponent implements StencilComponent {
             <span>{this.languageService.translate('sidebar.data-layers')}</span>
           </div>
 
-          {this.dataLayers.map(layer =>
-            <noi-checkbox class="p-bottom-small"
-                          loading={this.layersLoading.includes(layer.value)}
-                          checked={this.layersActive.includes(layer.value)}
-                          onCheckedChange={(event) => this.activateLayer(layer.value, event.detail.checked)}>
-              <div class="checkbox-content">
-                <noi-icon name={layer.icon}></noi-icon>
-                <span>{this.languageService.translate(layer.text)}</span>
-              </div>
-            </noi-checkbox>
-          )}
+          {this.structure.map(structureItem => {
+            if (structureItem.children) {
+              // group
+              return (<noi-checkbox-group class="p-bottom-small"
+                                          key={structureItem.value}
+                                          open={this.layersActive.includes(structureItem.value)}>
+                <noi-checkbox slot="main"
+                              checked={this.layersActive.includes(structureItem.value)}
+                              loading={this.layersLoading.includes(structureItem.value)}
+                              onCheckedChange={(event) => this.setLayerActive(structureItem.value, event.detail.checked)}>
+                  <div class="checkbox-content">
+                    <noi-icon name="bicycle"></noi-icon>
+                    <span>{this.languageService.translate(structureItem.text)}</span>
+                  </div>
+                </noi-checkbox>
 
-          <noi-checkbox-group class="p-bottom-small" open={this.layersActive.includes('layer-cycling')}>
-            <noi-checkbox slot="main"
-                          checked={this.layersActive.includes('layer-cycling')}
-                          onCheckedChange={(event) => this.activateLayer('layer-cycling', event.detail.checked)}>
-              <div class="checkbox-content">
-                <noi-icon name="bicycle"></noi-icon>
-                <span>{this.languageService.translate('map.layer.cycling')}</span>
-              </div>
-            </noi-checkbox>
-
-            {this.cyclingDataLayers.map(layer =>
-              <noi-checkbox loading={this.layersLoading.includes(layer.value)}
-                            checked={this.layersActive.includes(layer.value)}
-                            onCheckedChange={(event) => this.activateLayer(layer.value, event.detail.checked)}>
+                {structureItem.children.map(childItem =>
+                  <noi-checkbox key={childItem.value}
+                                loading={this.layersLoading.includes(childItem.value)}
+                                checked={this.layersActive.includes(childItem.value)}
+                                onCheckedChange={(event) => this.setLayerActive(childItem.value, event.detail.checked)}>
+                    <div class="checkbox-content">
+                      <span>{this.languageService.translate(childItem.text)}</span>
+                    </div>
+                  </noi-checkbox>
+                )}
+              </noi-checkbox-group>);
+            } else {
+              // one item
+              return (<noi-checkbox class="p-bottom-small"
+                                    key={structureItem.value}
+                                    loading={this.layersLoading.includes(structureItem.value)}
+                                    checked={this.layersActive.includes(structureItem.value)}
+                                    onCheckedChange={(event) => this.setLayerActive(structureItem.value, event.detail.checked)}>
                 <div class="checkbox-content">
-                  <span>{this.languageService.translate(layer.text)}</span>
+                  <noi-icon name={structureItem.icon}></noi-icon>
+                  <span>{this.languageService.translate(structureItem.text)}</span>
                 </div>
-              </noi-checkbox>
-            )}
-          </noi-checkbox-group>
+              </noi-checkbox>);
+            }
 
-          {/*
-          <noi-checkbox-group class="p-bottom-small" open={this.layersActive.includes('layer-mountain')}>
-            <noi-checkbox slot="main"
-                          checked={this.layersActive.includes('layer-mountain')}
-                          onCheckedChange={(event) => this.activateLayer('layer-mountain', event.detail.checked)}>
-              <div class="checkbox-content">
-                <noi-icon name="mountain"></noi-icon>
-                <span>{this.languageService.translate('map.layer.mountain')}</span>
-              </div>
-            </noi-checkbox>
-
-            {this.mountainDataLayers.map(layer =>
-              <noi-checkbox loading={this.layersLoading.includes(layer.value)}
-                            checked={this.layersActive.includes(layer.value)}
-                            onCheckedChange={(event) => this.activateLayer(layer.value, event.detail.checked)}>
-                <div class="checkbox-content">
-                  <span>{this.languageService.translate(layer.text)}</span>
-                </div>
-              </noi-checkbox>
-            )}
-          </noi-checkbox-group>
-          */}
-
-
-          <noi-checkbox-group class="p-bottom-small" open={this.layersActive.includes('layer-hiking')}>
-            <noi-checkbox slot="main"
-                          checked={this.layersActive.includes('layer-hiking')}
-                          onCheckedChange={(event) => this.activateLayer('layer-hiking', event.detail.checked)}>
-              <div class="checkbox-content">
-                <noi-icon name="trekking"></noi-icon>
-                <span>{this.languageService.translate('map.layer.hiking')}</span>
-              </div>
-            </noi-checkbox>
-
-            {this.hikingDataLayers.map(layer =>
-              <noi-checkbox loading={this.layersLoading.includes(layer.value)}
-                            checked={this.layersActive.includes(layer.value)}
-                            onCheckedChange={(event) => this.activateLayer(layer.value, event.detail.checked)}>
-                <div class="checkbox-content">
-                  <span>{this.languageService.translate(layer.text)}</span>
-                </div>
-              </noi-checkbox>
-            )}
-          </noi-checkbox-group>
-
-          <noi-checkbox class="p-bottom-small"
-                        loading={this.layersLoading.includes('layer-weather')}
-                        checked={this.layersActive.includes('layer-weather')}
-                        onCheckedChange={(event) => this.activateLayer('layer-weather', event.detail.checked)}>
-            <div class="checkbox-content">
-              <noi-icon name="weather-alert"></noi-icon>
-              <span>{this.languageService.translate('map.layer.weather')}</span>
-            </div>
-          </noi-checkbox>
-
-          {/*
-          <div class="menu-section-header p-top p-bottom">
-            <div class="checkbox-content">
-              <noi-icon name="context"></noi-icon>
-              <span>Context Data</span>
-            </div>
-          </div>
-
-
-          {this.contentLayers.map(layer =>
-            <noi-checkbox class="p-bottom-small">
-              <div class="checkbox-content">
-                <noi-icon name={layer.icon}></noi-icon>
-                <span>{layer.text}</span>
-              </div>
-            </noi-checkbox>
-          )}
-          */}
+          })}
 
           <div class="spacer"></div>
 
@@ -588,48 +592,47 @@ export class NoiDigiwayComponent implements StencilComponent {
         case 'layer-exposure':
           legendArr.push(this._renderLegend_riskExposure());
           break;
+        case 'layer-otp':
+          legendArr.push(this._renderLegend_otp());
+          break;
       }
     }
     return (<div class="legend-container" part="legend-container">{legendArr}</div>)
   }
 
   _renderLegend_debug() {
-    return (<div class="legend">
-      <div class="legend__item legend__item--debug">mapMode: {this.mapMode?.value}</div>
-      <div class="legend__item legend__item--debug">layout: {this.layoutResolved}</div>
+    return (<div class="legend" part="legend">
+      <div class="legend__text legend__text--debug">mapMode: {this.mapMode?.value}</div>
+      <div class="legend__text legend__text--debug">layout: {this.layoutResolved}</div>
     </div>);
   }
 
   _renderLegend_riskExposure() {
     return (<div class="legend" part="legend">
-      <div class="legend__icon" title={this.languageService.translate('map.layer.risk-exposure')}>
-        <noi-icon name="context"></noi-icon>
-      </div>
-      <div class="legend__item risk-level risk-level--low">
+      <noi-icon name="context" class="legend__icon legend__pane" title={this.languageService.translate('map.layer.risk-exposure')}></noi-icon>
+      <div class="legend__text risk-level risk-level--low">
         <span>{this.languageService.translate('risk-exposure.low')}</span></div>
-      <div class="legend__item risk-level risk-level--medium">
+      <div class="legend__text risk-level risk-level--medium">
         <span>{this.languageService.translate('risk-exposure.medium')}</span></div>
-      <div class="legend__item risk-level risk-level--high">
+      <div class="legend__text risk-level risk-level--high">
         <span>{this.languageService.translate('risk-exposure.high')}</span></div>
-      <div class="legend__item risk-level risk-level--veryhigh">
+      <div class="legend__text risk-level risk-level--veryhigh">
         <span>{this.languageService.translate('risk-exposure.veryhigh')}</span></div>
-      <div class="legend__item risk-level risk-level--extreme">
+      <div class="legend__text risk-level risk-level--extreme">
         <span>{this.languageService.translate('risk-exposure.extreme')}</span></div>
     </div>);
   }
 
   _renderLegend_weatherForecast() {
     return (<div class="legend" part="legend">
-      <div class="legend__icon" title={this.languageService.translate('map.layer.weather')}>
-        <noi-icon name="weather-alert"></noi-icon>
-      </div>
+      <noi-icon name="weather-alert" class="legend__icon legend__pane" title={this.languageService.translate('map.layer.weather')}></noi-icon>
       <noi-button class="legend__btn"
                   title="Previous day"
                   disabled={!this.canChangeViewDate(-1)}
                   onClick={() => this.changeViewDate(-1)}>
         <noi-icon name="chevron-left"></noi-icon>
       </noi-button>
-      <div class="legend__item">
+      <div class="legend__text">
         <span>{formatDay(this.viewDateObj, this.languageService.currentLanguage!)}</span>
       </div>
       <noi-button class="legend__btn"
@@ -638,6 +641,20 @@ export class NoiDigiwayComponent implements StencilComponent {
                   onClick={() => this.changeViewDate(1)}>
         <noi-icon name="chevron-right"></noi-icon>
       </noi-button>
+    </div>);
+  }
+
+
+  _renderLegend_otp() {
+    if (this.otpZoomCategory !== 'too-far') {
+      return;
+    }
+    return (<div class="legend" part="legend">
+      <noi-icon name="transport" class="legend__icon legend__pane"
+                title={this.languageService.translate('map.layer.otp-stops')}></noi-icon>
+      <div class="legend__text">
+        <span>{this.languageService.translate('otp.zoom-too-far')}</span>
+      </div>
     </div>);
   }
 }

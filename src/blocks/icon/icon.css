@@ -5,7 +5,10 @@
  */
 
 :host {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   line-height: 0; /* ignore possible whitespace */
   height: 1.5em;
   width: 1.5em;

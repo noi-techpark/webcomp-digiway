@@ -11,6 +11,10 @@ noi-map {
   box-sizing: border-box;
 }
 
+.maplibregl-map {
+  font: inherit;
+}
+
 .maplibregl-canvas-container {
   filter: var(--map-filter, none);
 }
@@ -20,6 +24,19 @@ noi-map {
   padding: 0;
   background: var(--color-background);
   color: var(--color-text);
+  border-radius: 6px;
+}
+
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
+.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip,
+.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip {
+  border-top-color: var(--color-background);
+}
+
+.maplibregl-popup-anchor-top .maplibregl-popup-tip,
+.maplibregl-popup-anchor-top-right .maplibregl-popup-tip,
+.maplibregl-popup-anchor-top-left .maplibregl-popup-tip {
+  border-bottom-color: var(--color-background);
 }
 
 .maplibregl-popup .maplibregl-popup-close-button {
@@ -29,4 +46,88 @@ noi-map {
   padding: 0;
   color: var(--color-text);
   line-height: 0;
+}
+
+
+/* POPUP */
+.noi-map-popup {
+  font-size: initial;
+}
+
+/* HEADER */
+.noi-map-popup .popup__header {
+  padding: 0 32px 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 0.5ch;
+  min-height: 32px;
+}
+
+.noi-map-popup .popup__header-icon {
+  height: 1.5em;
+}
+
+/* DESCRIPTION */
+.noi-map-popup .popup__status {
+  padding: 8px 16px;
+  background-color: rgba(207, 217, 231, 1);
+}
+
+.noi-map-popup .popup__name {
+  padding: 8px 16px;
+  font-weight: bold;
+}
+
+.noi-map-popup .popup__description {
+  padding: 8px 16px;
+
+  font-size: 10pt;
+}
+
+.noi-map-popup .popup__loading {
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* SECTION */
+.noi-map-popup .popup__section {
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5ch;
+  flex-wrap: wrap;
+
+  font-size: 10pt;
+}
+
+.noi-map-popup .popup__section-name {
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.noi-map-popup .popup__section-value {
+  text-align: right;
+}
+
+
+/*
+TODO: may be it's better to create a separate component for trip popup.
+@see: noi-map-layer-otp-trip.component.tsx
+*/
+.popup-stop-marker {
+  padding: 4px 8px;
+}
+
+.popup-stop-marker .stop-name {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.popup-stop-marker .stop-departure {
+  text-align: center;
+
 }

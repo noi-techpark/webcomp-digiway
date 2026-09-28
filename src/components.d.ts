@@ -14,6 +14,8 @@ import { IconName } from "./blocks/icon/icon.component";
 import { Map, MapGeoJSONFeature, RequestTransformFunction } from "maplibre-gl";
 import { LayerConfig } from "./blocks/map-layer-base-odh/noi-map-layer-base-odh.component";
 import { PopupDefinitionFn } from "./utils/maplibre-popup";
+import { ZoomCategory } from "./blocks/otp/map-layer-otp-layers/layout";
+import { OtpStation, OtpStop, OtpStoptime, OtpTrip } from "./data/noi/Otp";
 import { WeatherForecast } from "./data/noi/WeatherForecase";
 import { SelectOption } from "./blocks/select/select.component";
 export { ViewLayout } from "./utils/breakpoints";
@@ -21,9 +23,16 @@ export { IconName } from "./blocks/icon/icon.component";
 export { Map, MapGeoJSONFeature, RequestTransformFunction } from "maplibre-gl";
 export { LayerConfig } from "./blocks/map-layer-base-odh/noi-map-layer-base-odh.component";
 export { PopupDefinitionFn } from "./utils/maplibre-popup";
+export { ZoomCategory } from "./blocks/otp/map-layer-otp-layers/layout";
+export { OtpStation, OtpStop, OtpStoptime, OtpTrip } from "./data/noi/Otp";
 export { WeatherForecast } from "./data/noi/WeatherForecase";
 export { SelectOption } from "./blocks/select/select.component";
 export namespace Components {
+    /**
+     * (INTERNAL) render a badge.
+     */
+    interface NoiBadge {
+    }
     /**
      * (INTERNAL) Backdrop component.
      */
@@ -119,6 +128,11 @@ export namespace Components {
     /**
      * (INTERNAL) render map layer
      */
+    interface NoiMapBaseCarto {
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
     interface NoiMapBaseOsm {
         /**
           * @default 'color'
@@ -145,6 +159,72 @@ export namespace Components {
     interface NoiMapLayerBaseOdh {
         "config": LayerConfig;
         "popupStructure"?: PopupDefinitionFn;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerOtp {
+        "layers"?: string | string[];
+        "layout"?: ViewLayout;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerOtpCharger {
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerOtpIcons {
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerOtpParking {
+    }
+    /**
+     * (INTERNAL) render otp popup
+     */
+    interface NoiMapLayerOtpPopupParking {
+        "setData": (stopInfo: MapGeoJSONFeature) => Promise<void>;
+    }
+    /**
+     * (INTERNAL) render otp popup
+     */
+    interface NoiMapLayerOtpPopupStop {
+        "setData": (stopInfo: OtpStop | OtpStation, vehicleMode?: string) => Promise<void>;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerOtpRental {
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerOtpSource {
+        "isDestroying": () => Promise<boolean>;
+        "waitSourceReady": () => Promise<void>;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerOtpStops {
+    }
+    /**
+     * (INTERNAL)
+     */
+    interface NoiMapLayerOtpTrip {
+        "layout"?: ViewLayout;
+        /**
+          * Optional
+         */
+        "stopId"?: string;
+        /**
+          * Required
+         */
+        "tripId"?: string;
+        "vehicleTypeOverride"?: string;
     }
     /**
      * (INTERNAL) render map layer
@@ -191,6 +271,13 @@ export namespace Components {
     interface NoiMapLayerWeatherPopup {
         "setFeature": (feature: MapGeoJSONFeature) => Promise<void>;
     }
+    interface NoiOtpDepartureTime {
+        /**
+          * @default true
+         */
+        "showDelay": boolean;
+        "stoptime"?: OtpStoptime;
+    }
     /**
      * (INTERNAL) render a select box
      */
@@ -234,6 +321,42 @@ export interface NoiMapLayerBaseOdhCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLNoiMapLayerBaseOdhElement;
 }
+export interface NoiMapLayerOtpCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLNoiMapLayerOtpElement;
+}
+export interface NoiMapLayerOtpChargerCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLNoiMapLayerOtpChargerElement;
+}
+export interface NoiMapLayerOtpParkingCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLNoiMapLayerOtpParkingElement;
+}
+export interface NoiMapLayerOtpPopupParkingCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLNoiMapLayerOtpPopupParkingElement;
+}
+export interface NoiMapLayerOtpPopupStopCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLNoiMapLayerOtpPopupStopElement;
+}
+export interface NoiMapLayerOtpRentalCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLNoiMapLayerOtpRentalElement;
+}
+export interface NoiMapLayerOtpSourceCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLNoiMapLayerOtpSourceElement;
+}
+export interface NoiMapLayerOtpStopsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLNoiMapLayerOtpStopsElement;
+}
+export interface NoiMapLayerOtpTripCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLNoiMapLayerOtpTripElement;
+}
 export interface NoiMapLayerRiskExposureCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLNoiMapLayerRiskExposureElement;
@@ -251,6 +374,15 @@ export interface NoiSelectCustomEvent<T> extends CustomEvent<T> {
     target: HTMLNoiSelectElement;
 }
 declare global {
+    /**
+     * (INTERNAL) render a badge.
+     */
+    interface HTMLNoiBadgeElement extends Components.NoiBadge, HTMLStencilElement {
+    }
+    var HTMLNoiBadgeElement: {
+        prototype: HTMLNoiBadgeElement;
+        new (): HTMLNoiBadgeElement;
+    };
     interface HTMLNoiButtonElementEventMap {
         "btnClick": MouseEvent;
     }
@@ -343,6 +475,15 @@ declare global {
     /**
      * (INTERNAL) render map layer
      */
+    interface HTMLNoiMapBaseCartoElement extends Components.NoiMapBaseCarto, HTMLStencilElement {
+    }
+    var HTMLNoiMapBaseCartoElement: {
+        prototype: HTMLNoiMapBaseCartoElement;
+        new (): HTMLNoiMapBaseCartoElement;
+    };
+    /**
+     * (INTERNAL) render map layer
+     */
     interface HTMLNoiMapBaseOsmElement extends Components.NoiMapBaseOsm, HTMLStencilElement {
     }
     var HTMLNoiMapBaseOsmElement: {
@@ -397,6 +538,197 @@ declare global {
     var HTMLNoiMapLayerBaseOdhElement: {
         prototype: HTMLNoiMapLayerBaseOdhElement;
         new (): HTMLNoiMapLayerBaseOdhElement;
+    };
+    interface HTMLNoiMapLayerOtpElementEventMap {
+        "layerLoading": boolean;
+        "zoomCategoryChange": ZoomCategory;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface HTMLNoiMapLayerOtpElement extends Components.NoiMapLayerOtp, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLNoiMapLayerOtpElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpElement, ev: NoiMapLayerOtpCustomEvent<HTMLNoiMapLayerOtpElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLNoiMapLayerOtpElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpElement, ev: NoiMapLayerOtpCustomEvent<HTMLNoiMapLayerOtpElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLNoiMapLayerOtpElement: {
+        prototype: HTMLNoiMapLayerOtpElement;
+        new (): HTMLNoiMapLayerOtpElement;
+    };
+    interface HTMLNoiMapLayerOtpChargerElementEventMap {
+        "layerLoading": boolean;
+        "featureClick": MapGeoJSONFeature;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface HTMLNoiMapLayerOtpChargerElement extends Components.NoiMapLayerOtpCharger, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLNoiMapLayerOtpChargerElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpChargerElement, ev: NoiMapLayerOtpChargerCustomEvent<HTMLNoiMapLayerOtpChargerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLNoiMapLayerOtpChargerElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpChargerElement, ev: NoiMapLayerOtpChargerCustomEvent<HTMLNoiMapLayerOtpChargerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLNoiMapLayerOtpChargerElement: {
+        prototype: HTMLNoiMapLayerOtpChargerElement;
+        new (): HTMLNoiMapLayerOtpChargerElement;
+    };
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface HTMLNoiMapLayerOtpIconsElement extends Components.NoiMapLayerOtpIcons, HTMLStencilElement {
+    }
+    var HTMLNoiMapLayerOtpIconsElement: {
+        prototype: HTMLNoiMapLayerOtpIconsElement;
+        new (): HTMLNoiMapLayerOtpIconsElement;
+    };
+    interface HTMLNoiMapLayerOtpParkingElementEventMap {
+        "featureClick": MapGeoJSONFeature;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface HTMLNoiMapLayerOtpParkingElement extends Components.NoiMapLayerOtpParking, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLNoiMapLayerOtpParkingElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpParkingElement, ev: NoiMapLayerOtpParkingCustomEvent<HTMLNoiMapLayerOtpParkingElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLNoiMapLayerOtpParkingElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpParkingElement, ev: NoiMapLayerOtpParkingCustomEvent<HTMLNoiMapLayerOtpParkingElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLNoiMapLayerOtpParkingElement: {
+        prototype: HTMLNoiMapLayerOtpParkingElement;
+        new (): HTMLNoiMapLayerOtpParkingElement;
+    };
+    interface HTMLNoiMapLayerOtpPopupParkingElementEventMap {
+        "routeClick": OtpTrip;
+    }
+    /**
+     * (INTERNAL) render otp popup
+     */
+    interface HTMLNoiMapLayerOtpPopupParkingElement extends Components.NoiMapLayerOtpPopupParking, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLNoiMapLayerOtpPopupParkingElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpPopupParkingElement, ev: NoiMapLayerOtpPopupParkingCustomEvent<HTMLNoiMapLayerOtpPopupParkingElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLNoiMapLayerOtpPopupParkingElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpPopupParkingElement, ev: NoiMapLayerOtpPopupParkingCustomEvent<HTMLNoiMapLayerOtpPopupParkingElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLNoiMapLayerOtpPopupParkingElement: {
+        prototype: HTMLNoiMapLayerOtpPopupParkingElement;
+        new (): HTMLNoiMapLayerOtpPopupParkingElement;
+    };
+    interface HTMLNoiMapLayerOtpPopupStopElementEventMap {
+        "routeClick": OtpStoptime;
+    }
+    /**
+     * (INTERNAL) render otp popup
+     */
+    interface HTMLNoiMapLayerOtpPopupStopElement extends Components.NoiMapLayerOtpPopupStop, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLNoiMapLayerOtpPopupStopElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpPopupStopElement, ev: NoiMapLayerOtpPopupStopCustomEvent<HTMLNoiMapLayerOtpPopupStopElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLNoiMapLayerOtpPopupStopElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpPopupStopElement, ev: NoiMapLayerOtpPopupStopCustomEvent<HTMLNoiMapLayerOtpPopupStopElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLNoiMapLayerOtpPopupStopElement: {
+        prototype: HTMLNoiMapLayerOtpPopupStopElement;
+        new (): HTMLNoiMapLayerOtpPopupStopElement;
+    };
+    interface HTMLNoiMapLayerOtpRentalElementEventMap {
+        "featureClick": MapGeoJSONFeature;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface HTMLNoiMapLayerOtpRentalElement extends Components.NoiMapLayerOtpRental, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLNoiMapLayerOtpRentalElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpRentalElement, ev: NoiMapLayerOtpRentalCustomEvent<HTMLNoiMapLayerOtpRentalElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLNoiMapLayerOtpRentalElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpRentalElement, ev: NoiMapLayerOtpRentalCustomEvent<HTMLNoiMapLayerOtpRentalElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLNoiMapLayerOtpRentalElement: {
+        prototype: HTMLNoiMapLayerOtpRentalElement;
+        new (): HTMLNoiMapLayerOtpRentalElement;
+    };
+    interface HTMLNoiMapLayerOtpSourceElementEventMap {
+        "layerLoading": boolean;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface HTMLNoiMapLayerOtpSourceElement extends Components.NoiMapLayerOtpSource, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLNoiMapLayerOtpSourceElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpSourceElement, ev: NoiMapLayerOtpSourceCustomEvent<HTMLNoiMapLayerOtpSourceElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLNoiMapLayerOtpSourceElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpSourceElement, ev: NoiMapLayerOtpSourceCustomEvent<HTMLNoiMapLayerOtpSourceElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLNoiMapLayerOtpSourceElement: {
+        prototype: HTMLNoiMapLayerOtpSourceElement;
+        new (): HTMLNoiMapLayerOtpSourceElement;
+    };
+    interface HTMLNoiMapLayerOtpStopsElementEventMap {
+        "featureClick": MapGeoJSONFeature;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface HTMLNoiMapLayerOtpStopsElement extends Components.NoiMapLayerOtpStops, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLNoiMapLayerOtpStopsElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpStopsElement, ev: NoiMapLayerOtpStopsCustomEvent<HTMLNoiMapLayerOtpStopsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLNoiMapLayerOtpStopsElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpStopsElement, ev: NoiMapLayerOtpStopsCustomEvent<HTMLNoiMapLayerOtpStopsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLNoiMapLayerOtpStopsElement: {
+        prototype: HTMLNoiMapLayerOtpStopsElement;
+        new (): HTMLNoiMapLayerOtpStopsElement;
+    };
+    interface HTMLNoiMapLayerOtpTripElementEventMap {
+        "close": 'back' | 'close';
+    }
+    /**
+     * (INTERNAL)
+     */
+    interface HTMLNoiMapLayerOtpTripElement extends Components.NoiMapLayerOtpTrip, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLNoiMapLayerOtpTripElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpTripElement, ev: NoiMapLayerOtpTripCustomEvent<HTMLNoiMapLayerOtpTripElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLNoiMapLayerOtpTripElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerOtpTripElement, ev: NoiMapLayerOtpTripCustomEvent<HTMLNoiMapLayerOtpTripElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLNoiMapLayerOtpTripElement: {
+        prototype: HTMLNoiMapLayerOtpTripElement;
+        new (): HTMLNoiMapLayerOtpTripElement;
     };
     interface HTMLNoiMapLayerRiskExposureElementEventMap {
         "layerLoading": boolean;
@@ -476,6 +808,12 @@ declare global {
         prototype: HTMLNoiMapLayerWeatherPopupElement;
         new (): HTMLNoiMapLayerWeatherPopupElement;
     };
+    interface HTMLNoiOtpDepartureTimeElement extends Components.NoiOtpDepartureTime, HTMLStencilElement {
+    }
+    var HTMLNoiOtpDepartureTimeElement: {
+        prototype: HTMLNoiOtpDepartureTimeElement;
+        new (): HTMLNoiOtpDepartureTimeElement;
+    };
     interface HTMLNoiSelectElementEventMap {
         "selectChange": string;
     }
@@ -508,21 +846,34 @@ declare global {
         new (): HTMLNoiSpinnerElement;
     };
     interface HTMLElementTagNameMap {
+        "noi-badge": HTMLNoiBadgeElement;
         "noi-button": HTMLNoiButtonElement;
         "noi-checkbox": HTMLNoiCheckboxElement;
         "noi-checkbox-group": HTMLNoiCheckboxGroupElement;
         "noi-digiway": HTMLNoiDigiwayElement;
         "noi-icon": HTMLNoiIconElement;
         "noi-map": HTMLNoiMapElement;
+        "noi-map-base-carto": HTMLNoiMapBaseCartoElement;
         "noi-map-base-osm": HTMLNoiMapBaseOsmElement;
         "noi-map-base-tirol": HTMLNoiMapBaseTirolElement;
         "noi-map-layer-announcements": HTMLNoiMapLayerAnnouncementsElement;
         "noi-map-layer-base-odh": HTMLNoiMapLayerBaseOdhElement;
+        "noi-map-layer-otp": HTMLNoiMapLayerOtpElement;
+        "noi-map-layer-otp-charger": HTMLNoiMapLayerOtpChargerElement;
+        "noi-map-layer-otp-icons": HTMLNoiMapLayerOtpIconsElement;
+        "noi-map-layer-otp-parking": HTMLNoiMapLayerOtpParkingElement;
+        "noi-map-layer-otp-popup-parking": HTMLNoiMapLayerOtpPopupParkingElement;
+        "noi-map-layer-otp-popup-stop": HTMLNoiMapLayerOtpPopupStopElement;
+        "noi-map-layer-otp-rental": HTMLNoiMapLayerOtpRentalElement;
+        "noi-map-layer-otp-source": HTMLNoiMapLayerOtpSourceElement;
+        "noi-map-layer-otp-stops": HTMLNoiMapLayerOtpStopsElement;
+        "noi-map-layer-otp-trip": HTMLNoiMapLayerOtpTripElement;
         "noi-map-layer-risk-exposure": HTMLNoiMapLayerRiskExposureElement;
         "noi-map-layer-roads": HTMLNoiMapLayerRoadsElement;
         "noi-map-layer-roads-popup": HTMLNoiMapLayerRoadsPopupElement;
         "noi-map-layer-weather": HTMLNoiMapLayerWeatherElement;
         "noi-map-layer-weather-popup": HTMLNoiMapLayerWeatherPopupElement;
+        "noi-otp-departure-time": HTMLNoiOtpDepartureTimeElement;
         "noi-select": HTMLNoiSelectElement;
         "noi-spinner": HTMLNoiSpinnerElement;
     }
@@ -530,6 +881,11 @@ declare global {
 declare namespace LocalJSX {
     type OneOf<K extends string, PropT, AttrT = PropT> = { [P in K]: PropT } & { [P in `attr:${K}` | `prop:${K}`]?: never } | { [P in `attr:${K}`]: AttrT } & { [P in K | `prop:${K}`]?: never } | { [P in `prop:${K}`]: PropT } & { [P in K | `attr:${K}`]?: never };
 
+    /**
+     * (INTERNAL) render a badge.
+     */
+    interface NoiBadge {
+    }
     /**
      * (INTERNAL) Backdrop component.
      */
@@ -635,6 +991,11 @@ declare namespace LocalJSX {
     /**
      * (INTERNAL) render map layer
      */
+    interface NoiMapBaseCarto {
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
     interface NoiMapBaseOsm {
         /**
           * @default 'color'
@@ -669,6 +1030,94 @@ declare namespace LocalJSX {
          */
         "onLayerLoading"?: (event: NoiMapLayerBaseOdhCustomEvent<boolean>) => void;
         "popupStructure"?: PopupDefinitionFn;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerOtp {
+        "layers"?: string | string[];
+        "layout"?: ViewLayout;
+        /**
+          * Emitted when layer data is loading
+         */
+        "onLayerLoading"?: (event: NoiMapLayerOtpCustomEvent<boolean>) => void;
+        "onZoomCategoryChange"?: (event: NoiMapLayerOtpCustomEvent<ZoomCategory>) => void;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerOtpCharger {
+        "onFeatureClick"?: (event: NoiMapLayerOtpChargerCustomEvent<MapGeoJSONFeature>) => void;
+        /**
+          * Emitted when layer data is loading
+         */
+        "onLayerLoading"?: (event: NoiMapLayerOtpChargerCustomEvent<boolean>) => void;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerOtpIcons {
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerOtpParking {
+        "onFeatureClick"?: (event: NoiMapLayerOtpParkingCustomEvent<MapGeoJSONFeature>) => void;
+    }
+    /**
+     * (INTERNAL) render otp popup
+     */
+    interface NoiMapLayerOtpPopupParking {
+        /**
+          * Emitted when user clicks on the route
+         */
+        "onRouteClick"?: (event: NoiMapLayerOtpPopupParkingCustomEvent<OtpTrip>) => void;
+    }
+    /**
+     * (INTERNAL) render otp popup
+     */
+    interface NoiMapLayerOtpPopupStop {
+        /**
+          * Emitted when user clicks on the route
+         */
+        "onRouteClick"?: (event: NoiMapLayerOtpPopupStopCustomEvent<OtpStoptime>) => void;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerOtpRental {
+        "onFeatureClick"?: (event: NoiMapLayerOtpRentalCustomEvent<MapGeoJSONFeature>) => void;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerOtpSource {
+        /**
+          * Emitted when layer data is loading
+         */
+        "onLayerLoading"?: (event: NoiMapLayerOtpSourceCustomEvent<boolean>) => void;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerOtpStops {
+        "onFeatureClick"?: (event: NoiMapLayerOtpStopsCustomEvent<MapGeoJSONFeature>) => void;
+    }
+    /**
+     * (INTERNAL)
+     */
+    interface NoiMapLayerOtpTrip {
+        "layout"?: ViewLayout;
+        "onClose"?: (event: NoiMapLayerOtpTripCustomEvent<'back' | 'close'>) => void;
+        /**
+          * Optional
+         */
+        "stopId"?: string;
+        /**
+          * Required
+         */
+        "tripId"?: string;
+        "vehicleTypeOverride"?: string;
     }
     /**
      * (INTERNAL) render map layer
@@ -722,6 +1171,13 @@ declare namespace LocalJSX {
      * (INTERNAL) render map popup
      */
     interface NoiMapLayerWeatherPopup {
+    }
+    interface NoiOtpDepartureTime {
+        /**
+          * @default true
+         */
+        "showDelay"?: boolean;
+        "stoptime"?: OtpStoptime;
     }
     /**
      * (INTERNAL) render a select box
@@ -781,6 +1237,16 @@ declare namespace LocalJSX {
     interface NoiMapBaseTirolAttributes {
         "variant": 'color' | 'grayscale';
     }
+    interface NoiMapLayerOtpAttributes {
+        "layers": string | string[];
+        "layout": ViewLayout;
+    }
+    interface NoiMapLayerOtpTripAttributes {
+        "tripId": string;
+        "layout": ViewLayout;
+        "stopId": string;
+        "vehicleTypeOverride": string;
+    }
     interface NoiMapLayerRoadsAttributes {
         "region": 'tyrol'
     | 'tyrol-north'
@@ -795,27 +1261,43 @@ declare namespace LocalJSX {
         "titleText": string;
         "titleIcon": string;
     }
+    interface NoiOtpDepartureTimeAttributes {
+        "showDelay": boolean;
+    }
     interface NoiSelectAttributes {
         "disabled": boolean;
         "value": string;
     }
 
     interface IntrinsicElements {
+        "noi-badge": NoiBadge;
         "noi-button": Omit<NoiButton, keyof NoiButtonAttributes> & { [K in keyof NoiButton & keyof NoiButtonAttributes]?: NoiButton[K] } & { [K in keyof NoiButton & keyof NoiButtonAttributes as `attr:${K}`]?: NoiButtonAttributes[K] } & { [K in keyof NoiButton & keyof NoiButtonAttributes as `prop:${K}`]?: NoiButton[K] };
         "noi-checkbox": Omit<NoiCheckbox, keyof NoiCheckboxAttributes> & { [K in keyof NoiCheckbox & keyof NoiCheckboxAttributes]?: NoiCheckbox[K] } & { [K in keyof NoiCheckbox & keyof NoiCheckboxAttributes as `attr:${K}`]?: NoiCheckboxAttributes[K] } & { [K in keyof NoiCheckbox & keyof NoiCheckboxAttributes as `prop:${K}`]?: NoiCheckbox[K] };
         "noi-checkbox-group": Omit<NoiCheckboxGroup, keyof NoiCheckboxGroupAttributes> & { [K in keyof NoiCheckboxGroup & keyof NoiCheckboxGroupAttributes]?: NoiCheckboxGroup[K] } & { [K in keyof NoiCheckboxGroup & keyof NoiCheckboxGroupAttributes as `attr:${K}`]?: NoiCheckboxGroupAttributes[K] } & { [K in keyof NoiCheckboxGroup & keyof NoiCheckboxGroupAttributes as `prop:${K}`]?: NoiCheckboxGroup[K] };
         "noi-digiway": Omit<NoiDigiway, keyof NoiDigiwayAttributes> & { [K in keyof NoiDigiway & keyof NoiDigiwayAttributes]?: NoiDigiway[K] } & { [K in keyof NoiDigiway & keyof NoiDigiwayAttributes as `attr:${K}`]?: NoiDigiwayAttributes[K] } & { [K in keyof NoiDigiway & keyof NoiDigiwayAttributes as `prop:${K}`]?: NoiDigiway[K] };
         "noi-icon": Omit<NoiIcon, keyof NoiIconAttributes> & { [K in keyof NoiIcon & keyof NoiIconAttributes]?: NoiIcon[K] } & { [K in keyof NoiIcon & keyof NoiIconAttributes as `attr:${K}`]?: NoiIconAttributes[K] } & { [K in keyof NoiIcon & keyof NoiIconAttributes as `prop:${K}`]?: NoiIcon[K] };
         "noi-map": Omit<NoiMap, keyof NoiMapAttributes> & { [K in keyof NoiMap & keyof NoiMapAttributes]?: NoiMap[K] } & { [K in keyof NoiMap & keyof NoiMapAttributes as `attr:${K}`]?: NoiMapAttributes[K] } & { [K in keyof NoiMap & keyof NoiMapAttributes as `prop:${K}`]?: NoiMap[K] };
+        "noi-map-base-carto": NoiMapBaseCarto;
         "noi-map-base-osm": Omit<NoiMapBaseOsm, keyof NoiMapBaseOsmAttributes> & { [K in keyof NoiMapBaseOsm & keyof NoiMapBaseOsmAttributes]?: NoiMapBaseOsm[K] } & { [K in keyof NoiMapBaseOsm & keyof NoiMapBaseOsmAttributes as `attr:${K}`]?: NoiMapBaseOsmAttributes[K] } & { [K in keyof NoiMapBaseOsm & keyof NoiMapBaseOsmAttributes as `prop:${K}`]?: NoiMapBaseOsm[K] };
         "noi-map-base-tirol": Omit<NoiMapBaseTirol, keyof NoiMapBaseTirolAttributes> & { [K in keyof NoiMapBaseTirol & keyof NoiMapBaseTirolAttributes]?: NoiMapBaseTirol[K] } & { [K in keyof NoiMapBaseTirol & keyof NoiMapBaseTirolAttributes as `attr:${K}`]?: NoiMapBaseTirolAttributes[K] } & { [K in keyof NoiMapBaseTirol & keyof NoiMapBaseTirolAttributes as `prop:${K}`]?: NoiMapBaseTirol[K] };
         "noi-map-layer-announcements": NoiMapLayerAnnouncements;
         "noi-map-layer-base-odh": NoiMapLayerBaseOdh;
+        "noi-map-layer-otp": Omit<NoiMapLayerOtp, keyof NoiMapLayerOtpAttributes> & { [K in keyof NoiMapLayerOtp & keyof NoiMapLayerOtpAttributes]?: NoiMapLayerOtp[K] } & { [K in keyof NoiMapLayerOtp & keyof NoiMapLayerOtpAttributes as `attr:${K}`]?: NoiMapLayerOtpAttributes[K] } & { [K in keyof NoiMapLayerOtp & keyof NoiMapLayerOtpAttributes as `prop:${K}`]?: NoiMapLayerOtp[K] };
+        "noi-map-layer-otp-charger": NoiMapLayerOtpCharger;
+        "noi-map-layer-otp-icons": NoiMapLayerOtpIcons;
+        "noi-map-layer-otp-parking": NoiMapLayerOtpParking;
+        "noi-map-layer-otp-popup-parking": NoiMapLayerOtpPopupParking;
+        "noi-map-layer-otp-popup-stop": NoiMapLayerOtpPopupStop;
+        "noi-map-layer-otp-rental": NoiMapLayerOtpRental;
+        "noi-map-layer-otp-source": NoiMapLayerOtpSource;
+        "noi-map-layer-otp-stops": NoiMapLayerOtpStops;
+        "noi-map-layer-otp-trip": Omit<NoiMapLayerOtpTrip, keyof NoiMapLayerOtpTripAttributes> & { [K in keyof NoiMapLayerOtpTrip & keyof NoiMapLayerOtpTripAttributes]?: NoiMapLayerOtpTrip[K] } & { [K in keyof NoiMapLayerOtpTrip & keyof NoiMapLayerOtpTripAttributes as `attr:${K}`]?: NoiMapLayerOtpTripAttributes[K] } & { [K in keyof NoiMapLayerOtpTrip & keyof NoiMapLayerOtpTripAttributes as `prop:${K}`]?: NoiMapLayerOtpTrip[K] };
         "noi-map-layer-risk-exposure": NoiMapLayerRiskExposure;
         "noi-map-layer-roads": Omit<NoiMapLayerRoads, keyof NoiMapLayerRoadsAttributes> & { [K in keyof NoiMapLayerRoads & keyof NoiMapLayerRoadsAttributes]?: NoiMapLayerRoads[K] } & { [K in keyof NoiMapLayerRoads & keyof NoiMapLayerRoadsAttributes as `attr:${K}`]?: NoiMapLayerRoadsAttributes[K] } & { [K in keyof NoiMapLayerRoads & keyof NoiMapLayerRoadsAttributes as `prop:${K}`]?: NoiMapLayerRoads[K] } & OneOf<"region", NoiMapLayerRoads["region"], NoiMapLayerRoadsAttributes["region"]>;
         "noi-map-layer-roads-popup": NoiMapLayerRoadsPopup;
         "noi-map-layer-weather": NoiMapLayerWeather;
         "noi-map-layer-weather-popup": NoiMapLayerWeatherPopup;
+        "noi-otp-departure-time": Omit<NoiOtpDepartureTime, keyof NoiOtpDepartureTimeAttributes> & { [K in keyof NoiOtpDepartureTime & keyof NoiOtpDepartureTimeAttributes]?: NoiOtpDepartureTime[K] } & { [K in keyof NoiOtpDepartureTime & keyof NoiOtpDepartureTimeAttributes as `attr:${K}`]?: NoiOtpDepartureTimeAttributes[K] } & { [K in keyof NoiOtpDepartureTime & keyof NoiOtpDepartureTimeAttributes as `prop:${K}`]?: NoiOtpDepartureTime[K] };
         "noi-select": Omit<NoiSelect, keyof NoiSelectAttributes> & { [K in keyof NoiSelect & keyof NoiSelectAttributes]?: NoiSelect[K] } & { [K in keyof NoiSelect & keyof NoiSelectAttributes as `attr:${K}`]?: NoiSelectAttributes[K] } & { [K in keyof NoiSelect & keyof NoiSelectAttributes as `prop:${K}`]?: NoiSelect[K] };
         "noi-spinner": NoiSpinner;
     }
@@ -824,6 +1306,10 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            /**
+             * (INTERNAL) render a badge.
+             */
+            "noi-badge": LocalJSX.IntrinsicElements["noi-badge"] & JSXBase.HTMLAttributes<HTMLNoiBadgeElement>;
             /**
              * (INTERNAL) Backdrop component.
              */
@@ -853,6 +1339,10 @@ declare module "@stencil/core" {
             /**
              * (INTERNAL) render map layer
              */
+            "noi-map-base-carto": LocalJSX.IntrinsicElements["noi-map-base-carto"] & JSXBase.HTMLAttributes<HTMLNoiMapBaseCartoElement>;
+            /**
+             * (INTERNAL) render map layer
+             */
             "noi-map-base-osm": LocalJSX.IntrinsicElements["noi-map-base-osm"] & JSXBase.HTMLAttributes<HTMLNoiMapBaseOsmElement>;
             /**
              * (INTERNAL) render map layer
@@ -866,6 +1356,46 @@ declare module "@stencil/core" {
              * (INTERNAL) render map layer
              */
             "noi-map-layer-base-odh": LocalJSX.IntrinsicElements["noi-map-layer-base-odh"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerBaseOdhElement>;
+            /**
+             * (INTERNAL) render map layer
+             */
+            "noi-map-layer-otp": LocalJSX.IntrinsicElements["noi-map-layer-otp"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerOtpElement>;
+            /**
+             * (INTERNAL) render map layer
+             */
+            "noi-map-layer-otp-charger": LocalJSX.IntrinsicElements["noi-map-layer-otp-charger"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerOtpChargerElement>;
+            /**
+             * (INTERNAL) render map layer
+             */
+            "noi-map-layer-otp-icons": LocalJSX.IntrinsicElements["noi-map-layer-otp-icons"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerOtpIconsElement>;
+            /**
+             * (INTERNAL) render map layer
+             */
+            "noi-map-layer-otp-parking": LocalJSX.IntrinsicElements["noi-map-layer-otp-parking"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerOtpParkingElement>;
+            /**
+             * (INTERNAL) render otp popup
+             */
+            "noi-map-layer-otp-popup-parking": LocalJSX.IntrinsicElements["noi-map-layer-otp-popup-parking"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerOtpPopupParkingElement>;
+            /**
+             * (INTERNAL) render otp popup
+             */
+            "noi-map-layer-otp-popup-stop": LocalJSX.IntrinsicElements["noi-map-layer-otp-popup-stop"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerOtpPopupStopElement>;
+            /**
+             * (INTERNAL) render map layer
+             */
+            "noi-map-layer-otp-rental": LocalJSX.IntrinsicElements["noi-map-layer-otp-rental"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerOtpRentalElement>;
+            /**
+             * (INTERNAL) render map layer
+             */
+            "noi-map-layer-otp-source": LocalJSX.IntrinsicElements["noi-map-layer-otp-source"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerOtpSourceElement>;
+            /**
+             * (INTERNAL) render map layer
+             */
+            "noi-map-layer-otp-stops": LocalJSX.IntrinsicElements["noi-map-layer-otp-stops"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerOtpStopsElement>;
+            /**
+             * (INTERNAL)
+             */
+            "noi-map-layer-otp-trip": LocalJSX.IntrinsicElements["noi-map-layer-otp-trip"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerOtpTripElement>;
             /**
              * (INTERNAL) render map layer
              */
@@ -886,6 +1416,7 @@ declare module "@stencil/core" {
              * (INTERNAL) render map popup
              */
             "noi-map-layer-weather-popup": LocalJSX.IntrinsicElements["noi-map-layer-weather-popup"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerWeatherPopupElement>;
+            "noi-otp-departure-time": LocalJSX.IntrinsicElements["noi-otp-departure-time"] & JSXBase.HTMLAttributes<HTMLNoiOtpDepartureTimeElement>;
             /**
              * (INTERNAL) render a select box
              */

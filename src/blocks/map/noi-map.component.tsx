@@ -58,7 +58,7 @@ export class NoiMapComponent implements StencilComponent {
     this.map = new Map({
       container: this.el,
       center: mapCenterParsed.center || {lat: 46.5, lng: 11.35},
-      zoom: !isNaN(mapCenterParsed.zoom) ? mapCenterParsed.zoom : 10,
+      zoom: !isNaN(mapCenterParsed.zoom!) ? mapCenterParsed.zoom : 10,
 
       // // Intercept all map network traffic
       transformRequest: (url, resourceType) => {
@@ -95,6 +95,8 @@ export class NoiMapComponent implements StencilComponent {
 
     this.map.addControl(new NavigationControl());
     this.map.addControl(new ScaleControl());
+
+    (window as any)._map = this.map; // TODO: debug only
 
     // L.control.layers(this._layers, this._overlays, {position: 'topright'}).addTo(map);
     // this._layerControl = L.control.layers(this._layers, {}, {position: 'bottomright'}).addTo(this.map);
