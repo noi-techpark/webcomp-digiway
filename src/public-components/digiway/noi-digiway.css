@@ -283,12 +283,11 @@ noi-map {
   padding: 4px;
 
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 16px;
   pointer-events: none;
-
-  overflow-x: auto;
 }
 
 .legend {
@@ -304,6 +303,7 @@ noi-map {
   box-shadow: 0 0 4px var(--color-background-hover);
   pointer-events: initial;
   min-height: 2.25em;
+  overflow-x: auto;
 }
 
 :host(.layout--desktop) .legend-container {
@@ -321,7 +321,6 @@ noi-map {
 }
 
 .legend__btn {
-  height: 100%;
   --color: var(--color-text);
   --color-hover: var(--color-primary);
   --color-bg-hover: var(--color-background-hover);

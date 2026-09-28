@@ -16,6 +16,7 @@ import { LayerConfig } from "./blocks/map-layer-base-odh/noi-map-layer-base-odh.
 import { PopupDefinitionFn } from "./utils/maplibre-popup";
 import { ZoomCategory } from "./blocks/otp/map-layer-otp-layers/layout";
 import { OtpStation, OtpStop, OtpStoptime, OtpTrip } from "./data/noi/Otp";
+import { WeatherCurrentViewMode } from "./blocks/map-layer-weather-current/noi-map-layer-weather-current.component";
 import { WeatherForecast } from "./data/noi/WeatherForecase";
 import { SelectOption } from "./blocks/select/select.component";
 export { ViewLayout } from "./utils/breakpoints";
@@ -25,6 +26,7 @@ export { LayerConfig } from "./blocks/map-layer-base-odh/noi-map-layer-base-odh.
 export { PopupDefinitionFn } from "./utils/maplibre-popup";
 export { ZoomCategory } from "./blocks/otp/map-layer-otp-layers/layout";
 export { OtpStation, OtpStop, OtpStoptime, OtpTrip } from "./data/noi/Otp";
+export { WeatherCurrentViewMode } from "./blocks/map-layer-weather-current/noi-map-layer-weather-current.component";
 export { WeatherForecast } from "./data/noi/WeatherForecase";
 export { SelectOption } from "./blocks/select/select.component";
 export namespace Components {
@@ -266,6 +268,17 @@ export namespace Components {
         "viewDate": Date | undefined;
     }
     /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerWeatherCurrent {
+        "reloadData": () => Promise<void>;
+        /**
+          * View date for weather data
+          * @default 'temperature'
+         */
+        "viewMode": WeatherCurrentViewMode;
+    }
+    /**
      * (INTERNAL) render map popup
      */
     interface NoiMapLayerWeatherPopup {
@@ -368,6 +381,10 @@ export interface NoiMapLayerRoadsCustomEvent<T> extends CustomEvent<T> {
 export interface NoiMapLayerWeatherCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLNoiMapLayerWeatherElement;
+}
+export interface NoiMapLayerWeatherCurrentCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLNoiMapLayerWeatherCurrentElement;
 }
 export interface NoiSelectCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -799,6 +816,26 @@ declare global {
         prototype: HTMLNoiMapLayerWeatherElement;
         new (): HTMLNoiMapLayerWeatherElement;
     };
+    interface HTMLNoiMapLayerWeatherCurrentElementEventMap {
+        "layerLoading": boolean;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface HTMLNoiMapLayerWeatherCurrentElement extends Components.NoiMapLayerWeatherCurrent, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLNoiMapLayerWeatherCurrentElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerWeatherCurrentElement, ev: NoiMapLayerWeatherCurrentCustomEvent<HTMLNoiMapLayerWeatherCurrentElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLNoiMapLayerWeatherCurrentElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerWeatherCurrentElement, ev: NoiMapLayerWeatherCurrentCustomEvent<HTMLNoiMapLayerWeatherCurrentElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLNoiMapLayerWeatherCurrentElement: {
+        prototype: HTMLNoiMapLayerWeatherCurrentElement;
+        new (): HTMLNoiMapLayerWeatherCurrentElement;
+    };
     /**
      * (INTERNAL) render map popup
      */
@@ -872,6 +909,7 @@ declare global {
         "noi-map-layer-roads": HTMLNoiMapLayerRoadsElement;
         "noi-map-layer-roads-popup": HTMLNoiMapLayerRoadsPopupElement;
         "noi-map-layer-weather": HTMLNoiMapLayerWeatherElement;
+        "noi-map-layer-weather-current": HTMLNoiMapLayerWeatherCurrentElement;
         "noi-map-layer-weather-popup": HTMLNoiMapLayerWeatherPopupElement;
         "noi-otp-departure-time": HTMLNoiOtpDepartureTimeElement;
         "noi-select": HTMLNoiSelectElement;
@@ -1168,6 +1206,20 @@ declare namespace LocalJSX {
         "viewDate"?: Date | undefined;
     }
     /**
+     * (INTERNAL) render map layer
+     */
+    interface NoiMapLayerWeatherCurrent {
+        /**
+          * Emitted when layer data is loading
+         */
+        "onLayerLoading"?: (event: NoiMapLayerWeatherCurrentCustomEvent<boolean>) => void;
+        /**
+          * View date for weather data
+          * @default 'temperature'
+         */
+        "viewMode"?: WeatherCurrentViewMode;
+    }
+    /**
      * (INTERNAL) render map popup
      */
     interface NoiMapLayerWeatherPopup {
@@ -1261,6 +1313,9 @@ declare namespace LocalJSX {
         "titleText": string;
         "titleIcon": string;
     }
+    interface NoiMapLayerWeatherCurrentAttributes {
+        "viewMode": WeatherCurrentViewMode;
+    }
     interface NoiOtpDepartureTimeAttributes {
         "showDelay": boolean;
     }
@@ -1296,6 +1351,7 @@ declare namespace LocalJSX {
         "noi-map-layer-roads": Omit<NoiMapLayerRoads, keyof NoiMapLayerRoadsAttributes> & { [K in keyof NoiMapLayerRoads & keyof NoiMapLayerRoadsAttributes]?: NoiMapLayerRoads[K] } & { [K in keyof NoiMapLayerRoads & keyof NoiMapLayerRoadsAttributes as `attr:${K}`]?: NoiMapLayerRoadsAttributes[K] } & { [K in keyof NoiMapLayerRoads & keyof NoiMapLayerRoadsAttributes as `prop:${K}`]?: NoiMapLayerRoads[K] } & OneOf<"region", NoiMapLayerRoads["region"], NoiMapLayerRoadsAttributes["region"]>;
         "noi-map-layer-roads-popup": NoiMapLayerRoadsPopup;
         "noi-map-layer-weather": NoiMapLayerWeather;
+        "noi-map-layer-weather-current": Omit<NoiMapLayerWeatherCurrent, keyof NoiMapLayerWeatherCurrentAttributes> & { [K in keyof NoiMapLayerWeatherCurrent & keyof NoiMapLayerWeatherCurrentAttributes]?: NoiMapLayerWeatherCurrent[K] } & { [K in keyof NoiMapLayerWeatherCurrent & keyof NoiMapLayerWeatherCurrentAttributes as `attr:${K}`]?: NoiMapLayerWeatherCurrentAttributes[K] } & { [K in keyof NoiMapLayerWeatherCurrent & keyof NoiMapLayerWeatherCurrentAttributes as `prop:${K}`]?: NoiMapLayerWeatherCurrent[K] };
         "noi-map-layer-weather-popup": NoiMapLayerWeatherPopup;
         "noi-otp-departure-time": Omit<NoiOtpDepartureTime, keyof NoiOtpDepartureTimeAttributes> & { [K in keyof NoiOtpDepartureTime & keyof NoiOtpDepartureTimeAttributes]?: NoiOtpDepartureTime[K] } & { [K in keyof NoiOtpDepartureTime & keyof NoiOtpDepartureTimeAttributes as `attr:${K}`]?: NoiOtpDepartureTimeAttributes[K] } & { [K in keyof NoiOtpDepartureTime & keyof NoiOtpDepartureTimeAttributes as `prop:${K}`]?: NoiOtpDepartureTime[K] };
         "noi-select": Omit<NoiSelect, keyof NoiSelectAttributes> & { [K in keyof NoiSelect & keyof NoiSelectAttributes]?: NoiSelect[K] } & { [K in keyof NoiSelect & keyof NoiSelectAttributes as `attr:${K}`]?: NoiSelectAttributes[K] } & { [K in keyof NoiSelect & keyof NoiSelectAttributes as `prop:${K}`]?: NoiSelect[K] };
@@ -1412,6 +1468,10 @@ declare module "@stencil/core" {
              * (INTERNAL) render map layer
              */
             "noi-map-layer-weather": LocalJSX.IntrinsicElements["noi-map-layer-weather"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerWeatherElement>;
+            /**
+             * (INTERNAL) render map layer
+             */
+            "noi-map-layer-weather-current": LocalJSX.IntrinsicElements["noi-map-layer-weather-current"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerWeatherCurrentElement>;
             /**
              * (INTERNAL) render map popup
              */
