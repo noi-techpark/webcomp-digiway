@@ -43,12 +43,12 @@ export class SelectComponent implements StencilComponent {
     return this._valueId;
   }
 
-  set value(valueId: string) {
+  set value(valueId: string | null) {
     if (this._valueId !== valueId) {
       console.log('[select] set value:', valueId);
       this._valueId = valueId;
       this._skipEmit = true;
-      this._slimSelect?.setSelected(valueId);
+      this._slimSelect?.setSelected(valueId as any);
       // this._refreshData();
     }
   }
@@ -68,7 +68,7 @@ export class SelectComponent implements StencilComponent {
   /**
    * Emitted when user clicks on the button
    */
-  @Event() selectChange: EventEmitter<string>;
+  @Event() selectChange!: EventEmitter<string>;
 
   private _options: SelectOption[] = [];
 
@@ -86,7 +86,7 @@ export class SelectComponent implements StencilComponent {
       return;
     }
     this._slimSelect = new SlimSelect({
-      select: this._select,
+      select: this._select!,
       settings: {
         // alwaysOpen: true,
         showSearch: false,

@@ -539,6 +539,7 @@ export class NoiDigiwayComponent implements StencilComponent {
                                           key={structureItem.value}
                                           open={this.layersActive.includes(structureItem.value)}>
                 <noi-checkbox slot="main"
+                              kind="chevron"
                               checked={this.layersActive.includes(structureItem.value)}
                               loading={this.layersLoading.includes(structureItem.value)}
                               onCheckedChange={(event) => this.setLayerActive(structureItem.value, event.detail.checked)}>

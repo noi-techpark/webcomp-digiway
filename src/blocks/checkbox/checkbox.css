@@ -38,6 +38,7 @@
 :host(:focus-visible) {
   outline: 1px solid var(--checkbox-outline-color);
 }
+
 :host([checked]) {
   color: var(--checkbox-font-active-color);
 }
@@ -50,4 +51,15 @@
   height: 24px;
   width: 24px;
   font-size: 24px;
+}
+
+.chevron {
+  transition: transform ease-out 0.2s;
+}
+.chevron-closed {
+  transform: rotate(-90deg);
+}
+
+.chevron-opened {
+  transform: rotate(90deg);
 }
