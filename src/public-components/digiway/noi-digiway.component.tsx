@@ -543,7 +543,7 @@ export class NoiDigiwayComponent implements StencilComponent {
                               loading={this.layersLoading.includes(structureItem.value)}
                               onCheckedChange={(event) => this.setLayerActive(structureItem.value, event.detail.checked)}>
                   <div class="checkbox-content">
-                    <noi-icon name="bicycle"></noi-icon>
+                    {structureItem.icon ? <noi-icon name={structureItem.icon}></noi-icon> : ''}
                     <span>{this.languageService.translate(structureItem.text)}</span>
                   </div>
                 </noi-checkbox>
