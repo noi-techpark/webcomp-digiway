@@ -80,3 +80,34 @@ export function formatTime(date: Date | string | undefined, language: string): s
     return new Intl.DateTimeFormat('en', options).format(dateSafe);
   }
 }
+
+/**
+ * Formats a Date object or date string into a localized date and time string
+ * (including year, month, day, hour, and minute).
+ *
+ * @param date - The Date object or date-parseable string to format. Returns an empty string if undefined or null.
+ * @param language - The BCP 47 language tag (e.g., 'en-US', 'fr-FR') used to apply regional layouts.
+ * @returns A localized date and time string, or an English fallback if the language tag is invalid.
+ */
+export function formatDateTime(date: Date | string | undefined, language: string): string {
+  if (date === undefined || date === null) {
+    return '';
+  }
+  const dateSafe = (typeof date === 'string') ? new Date(date) : date;
+
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+  };
+
+  try {
+    return new Intl.DateTimeFormat(language, options).format(dateSafe);
+  } catch (error) {
+    // Safe fallback to English format
+    return new Intl.DateTimeFormat('en', options).format(dateSafe);
+  }
+}

@@ -93,7 +93,7 @@ export class NoiMapLayerWeatherComponent implements StencilComponent {
     const mapParent = this.el.closest('noi-map') as HTMLNoiMapElement;
 
     if (!mapParent) {
-      console.error('[noi-map-base-tyrol-euregio] must be a child of my-map');
+      console.error('[noi-map-layer-weather] must be a child of noi-map');
       return;
     }
 

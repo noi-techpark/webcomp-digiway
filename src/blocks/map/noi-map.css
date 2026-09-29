@@ -54,7 +54,7 @@ noi-map {
   font-size: initial;
 }
 
-/* HEADER */
+/* POPUP HEADER */
 .noi-map-popup .popup__header {
   padding: 0 32px 0 16px;
   display: flex;
@@ -67,7 +67,7 @@ noi-map {
   height: 1.5em;
 }
 
-/* DESCRIPTION */
+/* POPUP DESCRIPTION */
 .noi-map-popup .popup__status {
   padding: 8px 16px;
   background-color: rgba(207, 217, 231, 1);
@@ -92,7 +92,7 @@ noi-map {
 }
 
 
-/* SECTION */
+/* POPUP SECTION */
 .noi-map-popup .popup__section {
   padding: 8px 16px;
   display: flex;

@@ -173,9 +173,7 @@ export class MapLayerWeatherPopupComponent implements StencilComponent {
           ) : ''}
           <div class="day-content__main">
             <div class="section section--background">
-              {t('weather.air-temperature-min')}: {num(airTemperatureMin)}℃
-              &nbsp;-&nbsp;
-              {t('weather.air-temperature-max')}: {num(airTemperatureMax)}℃
+              {t('weather.air-temperature-min')}: {num(airTemperatureMin)}℃&nbsp;-&nbsp;{t('weather.air-temperature-max')}: {num(airTemperatureMax)}℃
             </div>
             <div class="section">
               {t('weather.precipitation-probability')}: {num(precipitationProbabilityDaily)}%
