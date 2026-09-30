@@ -204,6 +204,7 @@
   grid-template-rows: 14px 1em auto;
   padding: 8px 0 4px;
   align-items: self-start;
+  word-break: break-all;
 }
 
 :host(.layout--mobile) .trip-stop__padding {
