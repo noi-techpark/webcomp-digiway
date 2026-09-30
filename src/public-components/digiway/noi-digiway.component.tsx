@@ -137,6 +137,24 @@ export class NoiDigiwayComponent implements StencilComponent {
       // ],
     },
     // {value: 'layer-otp-charger', text: 'map.layer.otp-charger', forceSource: 'otp', showLoader: true},
+    {
+      value: 'layer-poi', text: 'map.layer.poi', icon: 'material-explore-nearby', showLoader: false,
+      children: [
+        {value: 'layer-poi-food', text: 'map.layer.poi-food', tags: 'essen trinken', showLoader: true},
+        {value: 'layer-poi-shops', text: 'map.layer.poi-shops', tags: 'geschäfte und dienstleister', showLoader: true},
+        {
+          value: 'layer-poi-culture',
+          text: 'map.layer.poi-culture',
+          tags: 'kultur sehenswürdigkeiten',
+          showLoader: true
+        },
+        {value: 'layer-poi-summer', text: 'map.layer.poi-summer', tags: 'sommer', showLoader: true},
+        {value: 'layer-poi-relax', text: 'map.layer.poi-relax', tags: 'wellness entspannung', showLoader: true},
+        {value: 'layer-poi-winter', text: 'map.layer.poi-winter', tags: 'winter', showLoader: true},
+        // 'hotels' is a separate layer
+        {value: 'layer-poi-hotels', text: 'map.layer.poi-hotels', showLoader: true},
+      ],
+    },
   ];
 
   private _structureFlat: DataLayerOption[] = this.structure.reduce((acc, layer) => {
@@ -336,6 +354,18 @@ export class NoiDigiwayComponent implements StencilComponent {
     }
   }
 
+  // note: this method works with a single tag only!
+  _setLayerLoadingByTag(tag: string, isLoading: boolean) {
+    const node = this._structureFlat.find(el => el.tags === tag);
+    if (!node) {
+      console.warn('No menu nod found for tag: ' + tag);
+      return;
+    }
+    const layerId = node.value;
+
+    return this._setLayerLoading(layerId, isLoading);
+  }
+
   render() {
     return (
       <Host class={getLayoutClass(this.layoutResolved)}>
@@ -485,6 +515,22 @@ export class NoiDigiwayComponent implements StencilComponent {
             : ''}
 
 
+          {this.layersActive.includes('layer-poi')
+            ? (this._activeTags['layer-poi'] || []).map(tag => (<noi-map-layer-poi
+              key={"layer-poi-" + tag}
+              tag={tag}
+              onLayerLoading={(e) => this._setLayerLoadingByTag(tag, e.detail)}
+            ></noi-map-layer-poi>))
+            : ''}
+
+          {this.layersActive.includes('layer-poi-hotels')
+            ? <noi-map-layer-accommodations
+              key="layer-poi-hotels"
+              onLayerLoading={(e) => this._setLayerLoading('layer-poi-hotels', e.detail)}
+            ></noi-map-layer-accommodations>
+            : ''}
+
+
           {/*this.layersActive.includes('layer-otp-charger')
             ? <noi-map-layer-otp-charger
               key="layer-otp-charger"
@@ -614,6 +660,9 @@ export class NoiDigiwayComponent implements StencilComponent {
         case 'layer-otp':
           legendArr.push(this._renderLegend_otp());
           break;
+        case 'layer-poi':
+          legendArr.push(this._renderLegend_poi());
+          break;
       }
     }
     return (<div class="legend-container" part="legend-container">{legendArr}</div>)
@@ -628,7 +677,8 @@ export class NoiDigiwayComponent implements StencilComponent {
 
   _renderLegend_riskExposure() {
     return (<div class="legend" part="legend">
-      <noi-icon name="context" class="legend__icon legend__pane" title={this.languageService.translate('map.layer.risk-exposure')}></noi-icon>
+      <noi-icon name="context" class="legend__icon legend__pane"
+                title={this.languageService.translate('map.layer.risk-exposure')}></noi-icon>
       <div class="legend__text risk-level risk-level--low">
         <span>{this.languageService.translate('risk-exposure.low')}</span></div>
       <div class="legend__text risk-level risk-level--medium">
@@ -644,7 +694,8 @@ export class NoiDigiwayComponent implements StencilComponent {
 
   _renderLegend_weatherForecast() {
     return (<div class="legend" part="legend">
-      <noi-icon name="weather-alert" class="legend__icon legend__pane" title={this.languageService.translate('map.layer.weather-forecast')}></noi-icon>
+      <noi-icon name="weather-alert" class="legend__icon legend__pane"
+                title={this.languageService.translate('map.layer.weather-forecast')}></noi-icon>
       <noi-button class="legend__btn"
                   title="Previous day"
                   disabled={!this.canChangeViewDate(-1)}
@@ -688,15 +739,40 @@ export class NoiDigiwayComponent implements StencilComponent {
         break;
     }
     return (<div class="legend" part="legend">
-      <noi-icon name={iconName} class="legend__icon legend__pane" title={this.languageService.translate('map.layer.weather-current')}></noi-icon>
-      <noi-button class={'legend__btn ' + (this.weatherCurrentMode === 'temperature' ? 'legend__btn-toggle--active' : '')}
-                  onClick={() => this.setWeatherCurrentMode('temperature')}>
+      <noi-icon name={iconName} class="legend__icon legend__pane"
+                title={this.languageService.translate('map.layer.weather-current')}></noi-icon>
+      <noi-button
+        class={'legend__btn ' + (this.weatherCurrentMode === 'temperature' ? 'legend__btn-toggle--active' : '')}
+        onClick={() => this.setWeatherCurrentMode('temperature')}>
         {this.languageService.translate('weather.type.temperature')}
       </noi-button>
-      <noi-button class={'legend__btn ' + (this.weatherCurrentMode === 'precipitation' ? 'legend__btn-toggle--active' : '')}
-                  onClick={() => this.setWeatherCurrentMode('precipitation')}>
+      <noi-button
+        class={'legend__btn ' + (this.weatherCurrentMode === 'precipitation' ? 'legend__btn-toggle--active' : '')}
+        onClick={() => this.setWeatherCurrentMode('precipitation')}>
         {this.languageService.translate('weather.type.precipitation')}
       </noi-button>
     </div>);
+  }
+
+
+  _renderLegend_poi() {
+    const poiLayer = this.structure.find(s => s.value === 'layer-poi');
+    if (!poiLayer) {
+      return;
+    }
+    let isChildLoading = false;
+    for (const l of this.layersLoading) {
+      if (poiLayer.children?.find(s => s.value === l)) {
+        isChildLoading = true;
+      }
+    }
+
+    return isChildLoading ? (<div class="legend" part="legend">
+      <noi-icon name={poiLayer.icon} class="legend__icon legend__pane"
+                title={this.languageService.translate(poiLayer.text)}></noi-icon>
+      <div class="legend__text">
+        <span>{this.languageService.translate('app.loading-very-long')}</span>
+      </div>
+    </div>) : null;
   }
 }

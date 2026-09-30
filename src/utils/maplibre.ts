@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import { Map, Subscription } from "maplibre-gl";
+import { LngLatBounds, Map, Subscription } from "maplibre-gl";
 
 
 /**
@@ -17,6 +17,7 @@ export function listenLayerReady(
   },
 ): Subscription {
   const _loadEvent = map.on('sourcedata', (e) => {
+    // console.debug('[sourcedata]', e);
     if (
       e.sourceId === sourceId
       && e.sourceDataType !== 'metadata'
@@ -139,6 +140,87 @@ export function enableHoverEffectTargeted(map: Map, opts: {
 }
 
 /**
+ * Click-to-Zoom on Clusters
+ */
+export function clusterClickZoom(map: Map, clusterSourceId: string, clusterLayerId: string) {
+
+  const _subscriptions: Subscription[] = [];
+
+  const clickEvent = map.on('click', clusterLayerId, (e) => {
+    const features = map.queryRenderedFeatures(e.point, {
+      layers: [clusterLayerId]
+    });
+
+    const clusterId = features[0].properties.cluster_id;
+    const source = map.getSource(clusterSourceId) as maplibregl.GeoJSONSource;
+
+    // Get the next zoom level where this cluster expands
+    source.getClusterExpansionZoom(clusterId).then((zoom) => {
+      const coordinates = (features[0].geometry as any).coordinates;
+      map.easeTo({
+        center: coordinates,
+        zoom: zoom + 0.5 // Add a small buffer so points disperse comfortably
+      });
+    });
+  });
+  _subscriptions.push(clickEvent);
+
+  // Change the pointer fingerprint over clusters
+  _subscriptions.push(
+    map.on('mouseenter', clusterLayerId, () => {
+      map.getCanvas().style.cursor = 'pointer';
+    }),
+
+    map.on('mouseleave', clusterLayerId, () => {
+      map.getCanvas().style.cursor = '';
+    }),
+  );
+
+
+  return {
+    unsubscribe: () => {
+      for (const subscription of _subscriptions) {
+        subscription.unsubscribe();
+      }
+    },
+  } as Subscription;
+}
+
+/**
+ *
+ */
+export function mapCenterBySourceData(map: Map, sourceId: string) {
+
+  // Get all features currently loaded in the source tiles
+  const features = map.querySourceFeatures(sourceId);
+  console.debug('[mapCenterBySourceData] got data:', features.length, features?.[0]);
+  if (!features || features.length === 0) return;
+
+
+  const bounds = new LngLatBounds();
+  let hasCoordinates = false;
+
+  // 2. Loop through whatever the source has (clusters OR points)
+  for (const feature of features) {
+    if (feature.geometry && feature.geometry.type === 'Point') {
+      bounds.extend(feature.geometry.coordinates as [number, number]);
+      hasCoordinates = true;
+    }
+  }
+
+  // 3. Zoom the map to wrap around all visible cluster nodes/points
+  if (hasCoordinates) {
+    map.fitBounds(bounds, {
+      padding: 50,
+      maxZoom: 15,
+      duration: 1200
+    });
+    return true;
+  }
+  return false;
+}
+
+/**
  */
 export interface FontIconPaintParams {
   'icon-text': string,
@@ -219,12 +301,16 @@ export async function loadIconFont(fontName: string, url: string) {
 }
 
 
-
 /**
+ * this method is suitable for colored icons.
+ * If the icon color should be changed dynamically - font icons approach should be used.
  *
+ *  // map.addImage(imageName, img, {sdf: true}); // < this technically can be used to make colored icons,
+ *     but this approach makes icon with sharp edges.
  */
 export function registerSvgImage(map: Map, imageName: string, svgString: string, opts?: {
-  size: number
+  size?: number,
+  sdf?: boolean,
 }): Promise<void> {
   return new Promise((resolve, reject) => {
     // Create an HTML Image element entirely in memory
@@ -243,7 +329,7 @@ export function registerSvgImage(map: Map, imageName: string, svgString: string,
 
     img.onload = () => {
       // 3. Add the loaded image into MapLibre's sprite registry
-      map.addImage(imageName, img);
+      map.addImage(imageName, img, {sdf: opts?.sdf || false});
 
       // Clean up the object URL to save system memory
       URL.revokeObjectURL(url);
@@ -340,18 +426,6 @@ export async function getParentMap(el: HTMLElement): Promise<Map> {
   return map;
 }
 
-
-/**
- * Simple string hashing function to generate a unique 32-bit integer
- */
-export function stringToNumId(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash << 5) - hash + str.charCodeAt(i);
-    hash |= 0; // Convert to 32bit integer
-  }
-  return Math.abs(hash);
-}
 
 /**
  * In MapLibre GL, feature-state has a strict historical requirement: unless configured otherwise, a feature's root-level id must be a number (an integer) or a string that can be cast to an integer.

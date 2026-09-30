@@ -231,6 +231,15 @@ export namespace Components {
     /**
      * (INTERNAL) render map layer
      */
+    interface NoiMapLayerPoi {
+        /**
+          * View date for weather data
+         */
+        "tag"?: string;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
     interface NoiMapLayerRiskExposure {
     }
     /**
@@ -313,6 +322,19 @@ export namespace Components {
      */
     interface NoiSpinner {
     }
+    /**
+     * (INTERNAL) render stars.
+     */
+    interface NoiStars {
+        /**
+          * @default 0
+         */
+        "stars": number;
+        /**
+          * @default 5
+         */
+        "total": number;
+    }
 }
 export interface NoiButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -369,6 +391,10 @@ export interface NoiMapLayerOtpStopsCustomEvent<T> extends CustomEvent<T> {
 export interface NoiMapLayerOtpTripCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLNoiMapLayerOtpTripElement;
+}
+export interface NoiMapLayerPoiCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLNoiMapLayerPoiElement;
 }
 export interface NoiMapLayerRiskExposureCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -747,6 +773,26 @@ declare global {
         prototype: HTMLNoiMapLayerOtpTripElement;
         new (): HTMLNoiMapLayerOtpTripElement;
     };
+    interface HTMLNoiMapLayerPoiElementEventMap {
+        "layerLoading": boolean;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
+    interface HTMLNoiMapLayerPoiElement extends Components.NoiMapLayerPoi, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLNoiMapLayerPoiElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerPoiElement, ev: NoiMapLayerPoiCustomEvent<HTMLNoiMapLayerPoiElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLNoiMapLayerPoiElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerPoiElement, ev: NoiMapLayerPoiCustomEvent<HTMLNoiMapLayerPoiElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLNoiMapLayerPoiElement: {
+        prototype: HTMLNoiMapLayerPoiElement;
+        new (): HTMLNoiMapLayerPoiElement;
+    };
     interface HTMLNoiMapLayerRiskExposureElementEventMap {
         "layerLoading": boolean;
     }
@@ -882,6 +928,15 @@ declare global {
         prototype: HTMLNoiSpinnerElement;
         new (): HTMLNoiSpinnerElement;
     };
+    /**
+     * (INTERNAL) render stars.
+     */
+    interface HTMLNoiStarsElement extends Components.NoiStars, HTMLStencilElement {
+    }
+    var HTMLNoiStarsElement: {
+        prototype: HTMLNoiStarsElement;
+        new (): HTMLNoiStarsElement;
+    };
     interface HTMLElementTagNameMap {
         "noi-badge": HTMLNoiBadgeElement;
         "noi-button": HTMLNoiButtonElement;
@@ -905,6 +960,7 @@ declare global {
         "noi-map-layer-otp-source": HTMLNoiMapLayerOtpSourceElement;
         "noi-map-layer-otp-stops": HTMLNoiMapLayerOtpStopsElement;
         "noi-map-layer-otp-trip": HTMLNoiMapLayerOtpTripElement;
+        "noi-map-layer-poi": HTMLNoiMapLayerPoiElement;
         "noi-map-layer-risk-exposure": HTMLNoiMapLayerRiskExposureElement;
         "noi-map-layer-roads": HTMLNoiMapLayerRoadsElement;
         "noi-map-layer-roads-popup": HTMLNoiMapLayerRoadsPopupElement;
@@ -914,6 +970,7 @@ declare global {
         "noi-otp-departure-time": HTMLNoiOtpDepartureTimeElement;
         "noi-select": HTMLNoiSelectElement;
         "noi-spinner": HTMLNoiSpinnerElement;
+        "noi-stars": HTMLNoiStarsElement;
     }
 }
 declare namespace LocalJSX {
@@ -1160,6 +1217,19 @@ declare namespace LocalJSX {
     /**
      * (INTERNAL) render map layer
      */
+    interface NoiMapLayerPoi {
+        /**
+          * Emitted when layer data is loading
+         */
+        "onLayerLoading"?: (event: NoiMapLayerPoiCustomEvent<boolean>) => void;
+        /**
+          * View date for weather data
+         */
+        "tag"?: string;
+    }
+    /**
+     * (INTERNAL) render map layer
+     */
     interface NoiMapLayerRiskExposure {
         /**
           * Emitted when layer data is loading
@@ -1257,6 +1327,19 @@ declare namespace LocalJSX {
      */
     interface NoiSpinner {
     }
+    /**
+     * (INTERNAL) render stars.
+     */
+    interface NoiStars {
+        /**
+          * @default 0
+         */
+        "stars"?: number;
+        /**
+          * @default 5
+         */
+        "total"?: number;
+    }
 
     interface NoiButtonAttributes {
         "disabled": boolean;
@@ -1299,6 +1382,9 @@ declare namespace LocalJSX {
         "stopId": string;
         "vehicleTypeOverride": string;
     }
+    interface NoiMapLayerPoiAttributes {
+        "tag": string;
+    }
     interface NoiMapLayerRoadsAttributes {
         "region": 'tyrol'
     | 'tyrol-north'
@@ -1322,6 +1408,10 @@ declare namespace LocalJSX {
     interface NoiSelectAttributes {
         "disabled": boolean;
         "value": string;
+    }
+    interface NoiStarsAttributes {
+        "stars": number;
+        "total": number;
     }
 
     interface IntrinsicElements {
@@ -1347,6 +1437,7 @@ declare namespace LocalJSX {
         "noi-map-layer-otp-source": NoiMapLayerOtpSource;
         "noi-map-layer-otp-stops": NoiMapLayerOtpStops;
         "noi-map-layer-otp-trip": Omit<NoiMapLayerOtpTrip, keyof NoiMapLayerOtpTripAttributes> & { [K in keyof NoiMapLayerOtpTrip & keyof NoiMapLayerOtpTripAttributes]?: NoiMapLayerOtpTrip[K] } & { [K in keyof NoiMapLayerOtpTrip & keyof NoiMapLayerOtpTripAttributes as `attr:${K}`]?: NoiMapLayerOtpTripAttributes[K] } & { [K in keyof NoiMapLayerOtpTrip & keyof NoiMapLayerOtpTripAttributes as `prop:${K}`]?: NoiMapLayerOtpTrip[K] };
+        "noi-map-layer-poi": Omit<NoiMapLayerPoi, keyof NoiMapLayerPoiAttributes> & { [K in keyof NoiMapLayerPoi & keyof NoiMapLayerPoiAttributes]?: NoiMapLayerPoi[K] } & { [K in keyof NoiMapLayerPoi & keyof NoiMapLayerPoiAttributes as `attr:${K}`]?: NoiMapLayerPoiAttributes[K] } & { [K in keyof NoiMapLayerPoi & keyof NoiMapLayerPoiAttributes as `prop:${K}`]?: NoiMapLayerPoi[K] };
         "noi-map-layer-risk-exposure": NoiMapLayerRiskExposure;
         "noi-map-layer-roads": Omit<NoiMapLayerRoads, keyof NoiMapLayerRoadsAttributes> & { [K in keyof NoiMapLayerRoads & keyof NoiMapLayerRoadsAttributes]?: NoiMapLayerRoads[K] } & { [K in keyof NoiMapLayerRoads & keyof NoiMapLayerRoadsAttributes as `attr:${K}`]?: NoiMapLayerRoadsAttributes[K] } & { [K in keyof NoiMapLayerRoads & keyof NoiMapLayerRoadsAttributes as `prop:${K}`]?: NoiMapLayerRoads[K] } & OneOf<"region", NoiMapLayerRoads["region"], NoiMapLayerRoadsAttributes["region"]>;
         "noi-map-layer-roads-popup": NoiMapLayerRoadsPopup;
@@ -1356,6 +1447,7 @@ declare namespace LocalJSX {
         "noi-otp-departure-time": Omit<NoiOtpDepartureTime, keyof NoiOtpDepartureTimeAttributes> & { [K in keyof NoiOtpDepartureTime & keyof NoiOtpDepartureTimeAttributes]?: NoiOtpDepartureTime[K] } & { [K in keyof NoiOtpDepartureTime & keyof NoiOtpDepartureTimeAttributes as `attr:${K}`]?: NoiOtpDepartureTimeAttributes[K] } & { [K in keyof NoiOtpDepartureTime & keyof NoiOtpDepartureTimeAttributes as `prop:${K}`]?: NoiOtpDepartureTime[K] };
         "noi-select": Omit<NoiSelect, keyof NoiSelectAttributes> & { [K in keyof NoiSelect & keyof NoiSelectAttributes]?: NoiSelect[K] } & { [K in keyof NoiSelect & keyof NoiSelectAttributes as `attr:${K}`]?: NoiSelectAttributes[K] } & { [K in keyof NoiSelect & keyof NoiSelectAttributes as `prop:${K}`]?: NoiSelect[K] };
         "noi-spinner": NoiSpinner;
+        "noi-stars": Omit<NoiStars, keyof NoiStarsAttributes> & { [K in keyof NoiStars & keyof NoiStarsAttributes]?: NoiStars[K] } & { [K in keyof NoiStars & keyof NoiStarsAttributes as `attr:${K}`]?: NoiStarsAttributes[K] } & { [K in keyof NoiStars & keyof NoiStarsAttributes as `prop:${K}`]?: NoiStars[K] };
     }
 }
 export { LocalJSX as JSX };
@@ -1455,6 +1547,10 @@ declare module "@stencil/core" {
             /**
              * (INTERNAL) render map layer
              */
+            "noi-map-layer-poi": LocalJSX.IntrinsicElements["noi-map-layer-poi"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerPoiElement>;
+            /**
+             * (INTERNAL) render map layer
+             */
             "noi-map-layer-risk-exposure": LocalJSX.IntrinsicElements["noi-map-layer-risk-exposure"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerRiskExposureElement>;
             /**
              * (INTERNAL) render map layer
@@ -1487,6 +1583,10 @@ declare module "@stencil/core" {
              * Icon size can be changed by 'font-size' style
              */
             "noi-spinner": LocalJSX.IntrinsicElements["noi-spinner"] & JSXBase.HTMLAttributes<HTMLNoiSpinnerElement>;
+            /**
+             * (INTERNAL) render stars.
+             */
+            "noi-stars": LocalJSX.IntrinsicElements["noi-stars"] & JSXBase.HTMLAttributes<HTMLNoiStarsElement>;
         }
     }
 }

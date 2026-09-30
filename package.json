@@ -13,6 +13,7 @@
     "@mapbox/polyline": "^1.2.1",
     "@stencil/core": "^4.43.3",
     "maplibre-gl": "^5.22.0",
+    "rxjs": "^7.8.2",
     "slim-select": "^3.4.3"
   },
   "devDependencies": {

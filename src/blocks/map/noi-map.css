@@ -52,6 +52,7 @@ noi-map {
 /* POPUP */
 .noi-map-popup {
   font-size: initial;
+  padding-bottom: 6px;
 }
 
 /* POPUP HEADER */
@@ -80,8 +81,28 @@ noi-map {
 
 .noi-map-popup .popup__description {
   padding: 8px 16px;
-
   font-size: 10pt;
+}
+
+.noi-map-popup .popup__images {
+  padding: 8px 16px;
+  min-height: 96px;
+
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.5em;
+  overflow-x: auto;
+}
+
+
+.noi-map-popup .popup__link {
+  padding: 8px 16px;
+  font-size: 10pt;
+}
+
+.noi-map-popup .popup__link a,
+.noi-map-popup .popup__link a:visited {
+  color: var(--color-primary);
 }
 
 .noi-map-popup .popup__loading {
