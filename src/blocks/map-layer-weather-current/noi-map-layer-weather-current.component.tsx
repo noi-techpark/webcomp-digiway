@@ -5,7 +5,7 @@
 import { Component, Element, Event, EventEmitter, Method, Prop, Watch } from "@stencil/core";
 import { StencilComponent } from "../../utils/StencilComponent";
 import { GeoJSONSource, LngLatLike, Map, MapGeoJSONFeature, Popup, Subscription } from "maplibre-gl";
-import { enableHoverEffect, stringToNumId, } from "../../utils/maplibre";
+import { enableHoverEffect, stringToNumericId } from "../../utils/maplibre";
 import { MyMeteoStationsResponse, WeatherForecastService } from "../../data/noi/weather-forecast-service";
 import { GeoJSON, Point } from "geojson";
 import { AbortHandler } from "../../data/noi/fetch.util";
@@ -367,7 +367,7 @@ export class NoiMapLayerWeatherCurrentComponent implements StencilComponent {
 
       // const skyType = getClearSkyType(viewDateTime, sunshineDuration);
       return {
-        id: stringToNumId(point.scode),
+        id: stringToNumericId(point.scode),
         type: 'Feature',
         geometry: {
           type: 'Point',

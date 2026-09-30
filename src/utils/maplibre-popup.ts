@@ -16,13 +16,29 @@ export interface PopupDefinitionObject {
     text?: string;
   },
   body: Array<{
-    type: 'name' | 'description' | 'section';
+    type: 'name' | 'description' | 'section' | 'link' | 'html';
     cssClass?: string;
-    // 'text' is for 'name' and 'description'
-    text?: string;
+    /**
+     * 'text' is for types 'name' and 'description'.
+     * null and undefined values are skipped
+     */
+    text?: string | null;
+
+    /**
+     * 'link' and 'linkName' is for type 'link' only.
+     * null and undefined values are skipped
+     */
+    link?: string | null;
+    linkName?: string | null;
+
+    /**
+     * 'html' is for type 'html only.
+     */
+    html?: string | null;
+
     // 'section' is for 'section'
     section?: PopupDefinitionObject_sectionData;
-  }>;
+  } | null>;
 }
 
 
@@ -52,12 +68,30 @@ export function popupBuilder(def: PopupDefinitionObject): string {
 
   // body
   for (const bDef of def.body) {
+    if (!bDef) {
+      continue;
+    }
     if (bDef.type === 'name') {
-      popupContent += `<div class="popup__name ${bDef.cssClass || ''}">${bDef.text}</div>`;
+      if (bDef.text) {
+        popupContent += `<div class="popup__name ${bDef.cssClass || ''}">${bDef.text}</div>`;
+      }
+    }
+    if (bDef.type === 'html') {
+      if (bDef.html) {
+        popupContent += `<div class="${bDef.cssClass || ''}">${bDef.html}</div>`;
+      }
     }
     if (bDef.type === 'description') {
       if (bDef.text) {
         popupContent += `<div class="popup__description ${bDef.cssClass || ''}">${sanitizeText(bDef.text)}</div>`;
+      }
+      continue;
+    }
+    if (bDef.type === 'link') {
+      if (bDef.link) {
+        popupContent += `<div class="popup__link ${bDef.cssClass || ''}">
+            <a href="${bDef.link}" target="_blank">${bDef.linkName || bDef.link}</a>
+        </div>`;
       }
       continue;
     }
