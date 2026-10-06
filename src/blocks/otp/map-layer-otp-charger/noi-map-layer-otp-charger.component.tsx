@@ -8,6 +8,7 @@ import { GeoJSONSource, Map, MapGeoJSONFeature, Popup, Subscription } from "mapl
 import { enableHoverEffectTargeted, getParentMap, registerSvgImage } from "../../../utils/maplibre";
 import { ChargerStationService } from "../../../data/noi/charger-stations-service";
 import { GeoJSON } from "geojson";
+import { firstValueFrom } from "rxjs";
 import { createDebugPopup } from "../../../utils/maplibre-popup";
 
 
@@ -161,7 +162,7 @@ export class NoiMapLayerOtpChargerComponent implements StencilComponent {
   async _reloadData() {
 
     this.layerLoading.emit(true);
-    const data = await this.chargerStationService.getChargerStations();
+    const data = await firstValueFrom(this.chargerStationService.getChargerStations());
 
     const dataPointsStops: any = data.map(chStation => {
       return {

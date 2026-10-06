@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import { buildUrl } from "../../utils/url";
-import { AbortHandler } from "./fetch.util";
+import { map, Observable } from "rxjs";
+import { fromFetch } from "rxjs/fetch";
 
 interface ChargerListResponse {
   last_updated: number;
@@ -47,37 +48,14 @@ export type ChargerType = 'Type2Mennekes' | string;
 export class ChargerStationService {
 
 
-  getChargerStations(): Promise<ChargerStation[]> {
-    return new Promise((resolve, reject) => {
-      this.getChargerStations$((err, chargerStations) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(chargerStations || []);
-        }
-      });
-    })
-  }
-
-  /**
-   */
-  getChargerStations$(cb: (err: Error | null, data?: ChargerStation[]) => void): AbortHandler {
-
-    const controller = new AbortController();
-    const signal = controller.signal;
-
+  getChargerStations(): Observable<ChargerStation[]> {
     // id: "urn:siat.provincia.tn.it:elementi_cicloviari_v:via001_23"
-    fetch(buildUrl(`https://charger.v2.otp.opendatahub.com/charger/stations.json`), {signal})
-      .then(response => response.json() as Promise<ChargerListResponse>)
-      .then(data => {
-        cb(null, data?.data?.stations || []);
-      })
-      .catch(err => {
-        console.error(err);
-        cb(err);
-      });
-
-    return controller;
+    return fromFetch<ChargerListResponse>(buildUrl(`https://charger.v2.otp.opendatahub.com/charger/stations.json`), {
+      // The selector allows you to parse the body directly
+      selector: (response) => response.json()
+    }).pipe(
+      map(data => data?.data?.stations || []),
+    );
   }
 
 

@@ -8,7 +8,6 @@ import { GeoJSONSource, LngLatLike, Map, MapGeoJSONFeature, Popup, Subscription 
 import { enableHoverEffect, stringToNumericId } from "../../utils/maplibre";
 import { MyMeteoStationsResponse, WeatherForecastService } from "../../data/noi/weather-forecast-service";
 import { GeoJSON, Point } from "geojson";
-import { AbortHandler } from "../../data/noi/fetch.util";
 import { popupBuilder, PopupDefinitionObject } from "../../utils/maplibre-popup";
 import {
   _getMeasurementAny,
@@ -195,6 +194,7 @@ export class NoiMapLayerWeatherCurrentComponent implements StencilComponent {
   }
 
   disconnectedCallback() {
+    this._sub?.unsubscribe();
     // Clean up the layer if the HTML element is removed from the DOM
     if (this.map) {
       this.destroyLayer();
@@ -327,7 +327,7 @@ export class NoiMapLayerWeatherCurrentComponent implements StencilComponent {
 
 
   private __data?: MyMeteoStationsResponse;
-  private __request?: AbortHandler;
+  private _sub?: Subscription;
 
   /**
    *
@@ -338,10 +338,9 @@ export class NoiMapLayerWeatherCurrentComponent implements StencilComponent {
     this.layerLoading.emit(true);
     // fetch weather forecast
 
-    this.__request?.abort();
+    this._sub?.unsubscribe();
 
-    this.__request = this.weatherService.getWeatherCurrent(data => {
-      this.__request = undefined; // avoid cancelling finished request later
+    this._sub = this.weatherService.getWeatherCurrent().subscribe(data => {
       this.__data = data;
       this._initLayerData();
       this.layerLoading.emit(false);

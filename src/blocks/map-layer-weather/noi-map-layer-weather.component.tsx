@@ -10,7 +10,6 @@ import { MyForecastResponse, WeatherForecastService } from "../../data/noi/weath
 import { GeoJSON, Point } from "geojson";
 import { WeatherIconFont, WeatherIconName } from "./icon-font";
 import { _getDailyMeasurement, getClearSkyType, getIconName } from "./weather-forecast.util";
-import { AbortHandler } from "../../data/noi/fetch.util";
 
 // Default styles
 const defaultStyles = {
@@ -103,6 +102,7 @@ export class NoiMapLayerWeatherComponent implements StencilComponent {
   }
 
   disconnectedCallback() {
+    this._sub?.unsubscribe();
     // Clean up the layer if the HTML element is removed from the DOM
     if (this.map) {
       this.destroyLayer();
@@ -188,7 +188,7 @@ export class NoiMapLayerWeatherComponent implements StencilComponent {
   }
 
 
-  private __request?: AbortHandler;
+  private _sub?: Subscription;
 
   async initLayerData() {
 
@@ -198,10 +198,9 @@ export class NoiMapLayerWeatherComponent implements StencilComponent {
     this.layerLoading.emit(true);
     // fetch weather forecast
 
-    this.__request?.abort();
+    this._sub?.unsubscribe();
 
-    this.__request = this.weatherService.getWeatherForecastForDay(viewDateTime, data => {
-      this.__request = undefined; // avoid cancelling finished request later
+    this._sub = this.weatherService.getWeatherForecastForDay(viewDateTime).subscribe(data => {
       this._initLayerData(data, viewDateTime);
     });
   }

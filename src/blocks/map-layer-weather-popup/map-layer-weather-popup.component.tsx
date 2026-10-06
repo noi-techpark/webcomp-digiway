@@ -4,7 +4,7 @@
 
 import { Component, h, Method, State } from "@stencil/core";
 import { StencilComponent } from "../../utils/StencilComponent";
-import { MapGeoJSONFeature } from "maplibre-gl";
+import { MapGeoJSONFeature, Subscription } from "maplibre-gl";
 import { WeatherForecast } from "../../data/noi/WeatherForecase";
 import { LanguageDataService } from "../../data/language/language-data-service";
 import {
@@ -17,7 +17,6 @@ import {
 } from "../map-layer-weather/weather-forecast.util";
 import { formatNumber, formatTime } from "../../utils/intl";
 import { WeatherForecastService } from "../../data/noi/weather-forecast-service";
-import { AbortHandler } from "../../data/noi/fetch.util";
 import { diffInDays } from "../../utils/date";
 
 
@@ -59,7 +58,7 @@ export class MapLayerWeatherPopupComponent implements StencilComponent {
   }
 
   disconnectedCallback() {
-
+    this._sub?.unsubscribe();
   }
 
   @Method()
@@ -97,7 +96,7 @@ export class MapLayerWeatherPopupComponent implements StencilComponent {
     this._loadData();
   }
 
-  private __request?: AbortHandler;
+  private _sub?: Subscription;
 
   _loadData() {
     if (!this.dayIso || !this.stationId) {
@@ -106,9 +105,8 @@ export class MapLayerWeatherPopupComponent implements StencilComponent {
     }
 
     this.isLoading = true;
-    this.__request?.abort();
-    this.__request = this.weatherService.getWeatherForecastDayStation(new Date(this.dayIso), this.stationId, (forecastData) => {
-      this.__request = undefined; // avoid cancelling finished request later
+    this._sub?.unsubscribe();
+    this._sub = this.weatherService.getWeatherForecastDayStation(new Date(this.dayIso), this.stationId).subscribe((forecastData) => {
       this.isLoading = false;
 
       this.data = forecastData.values?.[0];
