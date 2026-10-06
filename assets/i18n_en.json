@@ -1,6 +1,5 @@
 {
   "app.close": "Close",
-  "app.loading-very-long": "Loading data... This is a large dataset and may take up to 30–60 seconds",
   "sidebar.base-map": "Base map",
   "sidebar.data-layers": "Data Layers",
   "map.base.tirol": "Tirol",

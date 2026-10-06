@@ -7,39 +7,21 @@ import { StencilComponent } from "../../utils/StencilComponent";
 import { Map, MapGeoJSONFeature, MapMouseEvent, Popup, RequestTransformFunction, Subscription } from "maplibre-gl";
 import {
   enableHoverEffect,
-  FontIconPaintParams,
-  getFontIconData,
+  FontIconStyle,
   listenLayerReady,
-  loadIconFont
+  registerFontImage,
+  registerSvgImage
 } from "../../utils/maplibre";
-import { base64String } from "./icon-font";
 import {
   debugPopupStructure,
   popupBuilder,
   PopupDefinitionFn,
   PopupDefinitionObject
 } from "../../utils/maplibre-popup";
+import { ODHIconFont } from "./icon-font";
 
 const HOST = 'https://geo.api.opendatahub.testingmachine.eu';
 
-const ICON_FONT_NAME = 'noi-digiway-map-icons';
-const ICON_FONT_URL = `url(${base64String}) format('woff')`;
-
-
-const ICON_FONT_ICONS = {
-  'bicycle': '\ue800',
-  'closure': '\ue801',
-  'frequency': '\ue802',
-  'weather-prediction': '\ue803',
-  'weather-real-time': '\ue804',
-  'poi': '\ue805',
-  'transport': '\ue806',
-  'gastronomy': '\ue807',
-  'map': '\ue808',
-  'mountain-trails': '\ue809',
-  'hiking': '\ue80a',
-  'trekking': '\ue80b',
-} as const;
 
 // Default styles
 
@@ -124,15 +106,14 @@ function _getStyles(style: LayerConfig['style']) {
 
 
 // 'iconFontStyles' is not a part of maplibre
-const iconFontStyles: FontIconPaintParams = {
-  "icon-font": ICON_FONT_NAME,
+const iconFontStyles: FontIconStyle = {
   'icon-color': '#FFFFFF',
   "icon-size": 16,
-  "icon-text": '',
 };
 
 export interface LayerConfig {
-  markerIcon?: keyof typeof ICON_FONT_ICONS,
+  fontIcon?: keyof typeof ODHIconFont.icons | { fontUrl: string, character: string },
+  svgIcon?: string,
   isLineInteractive?: boolean;
   sourceLayer: string;
   additional: string;
@@ -271,7 +252,7 @@ export class NoiMapLayerBaseOdhComponent implements StencilComponent {
       this.map.removeLayer(this.uid('cluster-count'));
       this.map.removeLayer(this.uid('unclusteredpoints'));
 
-      if (this.config.markerIcon) {
+      if (this.config.fontIcon || this.config.svgIcon) {
         this.map.removeLayer(this.uid('unclustered-icons'));
         this.map.removeImage(this.uid('marker-icon'));
       }
@@ -290,6 +271,9 @@ export class NoiMapLayerBaseOdhComponent implements StencilComponent {
     const sourceLayer = this.config.sourceLayer;
     const additional = this.config.additional;
 
+    if (this.config.fontIcon && this.config.svgIcon) {
+      throw new Error('Cannot use both fontIcon and svgIcon');
+    }
 
     this.tileSource = `${HOST}/api/tiles/${sourceLayer}/{z}/{x}/{y}.pbf${additional}`;
     if (this.config.requestTransform) {
@@ -393,44 +377,43 @@ export class NoiMapLayerBaseOdhComponent implements StencilComponent {
 
 
     // ICON LAYER ON TOP OF CIRCLES
-    if (this.config.markerIcon) {
-      loadIconFont(ICON_FONT_NAME, ICON_FONT_URL).then(() => {
-        const imageData = getFontIconData({
-          ...iconFontStyles,
-          "icon-text": ICON_FONT_ICONS[this.config.markerIcon!],
-        });
-
-        if (imageData) {
-          // 3. Register the crisp canvas bitmap straight into MapLibre
-          this.map.addImage(this.uid('marker-icon'), imageData as any, {
-            sdf: false,
-          });
-        }
-
-        this.map.addLayer({
-          id: this.uid('unclustered-icons'),
-          type: 'symbol',
-          source: this.uid('vector-tiles'),
-          'source-layer': sourceLayer,
-          filter: ['all',
-            ['==', ['geometry-type'], 'Point'],
-            ['!=', ['get', 'cluster'], true]
-          ],
-
-          layout: {
-            'icon-image': this.uid('marker-icon'), // Pointing to the generated canvas
-            'icon-size': 1.0,
-            'icon-allow-overlap': true,
-            'icon-ignore-placement': true
-          },
-        });
-
-        console.log(`[noi-map-layer-base-odh] layer added: ${this.uid('unclustered-icons')}`);
-      });
+    if (this.config.fontIcon) {
+      if (typeof this.config.fontIcon === 'string') {
+        await registerFontImage(this.map, this.uid('marker-icon'), ODHIconFont.url, ODHIconFont.icons[this.config.fontIcon!], iconFontStyles);
+      } else {
+        await registerFontImage(this.map, this.uid('marker-icon'), this.config.fontIcon.fontUrl, this.config.fontIcon.character, iconFontStyles);
+      }
     }
-    console.log(`[noi-map-layer-base-odh] Successfully registered ${this.uid("vector-tiles")} source.`);
+    if (this.config.svgIcon) {
+      await registerSvgImage(this.map, this.uid('marker-icon'), this.config.svgIcon, {size: 16, sdf: true});
+    }
 
-    this.resetPosition();
+
+    this.map.addLayer({
+      id: this.uid('unclustered-icons'),
+      type: 'symbol',
+      source: this.uid('vector-tiles'),
+      'source-layer': sourceLayer,
+      filter: ['all',
+        ['==', ['geometry-type'], 'Point'],
+        ['!=', ['get', 'cluster'], true]
+      ],
+      layout: {
+        'icon-image': this.uid('marker-icon'),
+        'icon-size': 1.0,
+        'icon-allow-overlap': true,       // Keeps icons visible even if they crowd each other
+        'icon-ignore-placement': true,
+        'icon-anchor': 'center',            // "bottom" forces the bottom of your pin to sit directly on the coordinates
+      },
+      paint: {
+        // Icon color here (for svg icon)
+        'icon-color': iconFontStyles['icon-color'],
+      }
+    });
+
+
+    console.log(`[noi-map-layer-base-odh] layer added: ${this.uid('unclustered-icons')}`);
+
 
     ///////// Click handlers
     const _polygonsClick = this.map.on('click', this.uid('polygons'), (e) => {
@@ -484,6 +467,10 @@ export class NoiMapLayerBaseOdhComponent implements StencilComponent {
       console.log('[DEBUG] Vector features:', features.filter(f => f.source === 'vector-tiles'));
     });
     this._subscriptions.push(_debugClick);
+
+    //
+    console.log(`[noi-map-layer-base-odh] Successfully registered ${this.uid("vector-tiles")} source.`);
+    this.resetPosition();
   }
 
   resetPosition() {

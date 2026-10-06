@@ -140,19 +140,13 @@ export class NoiDigiwayComponent implements StencilComponent {
     {
       value: 'layer-poi', text: 'map.layer.poi', icon: 'material-explore-nearby', showLoader: false,
       children: [
-        {value: 'layer-poi-food', text: 'map.layer.poi-food', tags: 'essen trinken', showLoader: true},
-        {value: 'layer-poi-shops', text: 'map.layer.poi-shops', tags: 'geschäfte und dienstleister', showLoader: true},
-        {
-          value: 'layer-poi-culture',
-          text: 'map.layer.poi-culture',
-          tags: 'kultur sehenswürdigkeiten',
-          showLoader: true
-        },
-        {value: 'layer-poi-summer', text: 'map.layer.poi-summer', tags: 'sommer', showLoader: true},
-        {value: 'layer-poi-relax', text: 'map.layer.poi-relax', tags: 'wellness entspannung', showLoader: true},
+        {value: 'layer-poi-food', text: 'map.layer.poi-food', tags: 'gastronomies', showLoader: true},
+        {value: 'layer-poi-shops', text: 'map.layer.poi-shops', tags: 'shops', showLoader: true},
+        {value: 'layer-poi-culture', text: 'map.layer.poi-culture', tags: 'culture', showLoader: true},
+        {value: 'layer-poi-summer', text: 'map.layer.poi-summer', tags: 'summer', showLoader: true},
+        {value: 'layer-poi-relax', text: 'map.layer.poi-relax', tags: 'wellness', showLoader: true},
         {value: 'layer-poi-winter', text: 'map.layer.poi-winter', tags: 'winter', showLoader: true},
-        // 'hotels' is a separate layer
-        {value: 'layer-poi-hotels', text: 'map.layer.poi-hotels', showLoader: true},
+        {value: 'layer-poi-hotels', text: 'map.layer.poi-hotels', tags: 'accommodation', showLoader: true},
       ],
     },
   ];
@@ -523,13 +517,6 @@ export class NoiDigiwayComponent implements StencilComponent {
             ></noi-map-layer-poi>))
             : ''}
 
-          {this.layersActive.includes('layer-poi-hotels')
-            ? <noi-map-layer-accommodations
-              key="layer-poi-hotels"
-              onLayerLoading={(e) => this._setLayerLoading('layer-poi-hotels', e.detail)}
-            ></noi-map-layer-accommodations>
-            : ''}
-
 
           {/*this.layersActive.includes('layer-otp-charger')
             ? <noi-map-layer-otp-charger
@@ -661,9 +648,6 @@ export class NoiDigiwayComponent implements StencilComponent {
         case 'layer-otp':
           legendArr.push(this._renderLegend_otp());
           break;
-        case 'layer-poi':
-          legendArr.push(this._renderLegend_poi());
-          break;
       }
     }
     return (<div class="legend-container" part="legend-container">{legendArr}</div>)
@@ -753,27 +737,5 @@ export class NoiDigiwayComponent implements StencilComponent {
         {this.languageService.translate('weather.type.precipitation')}
       </noi-button>
     </div>);
-  }
-
-
-  _renderLegend_poi() {
-    const poiLayer = this.structure.find(s => s.value === 'layer-poi');
-    if (!poiLayer) {
-      return;
-    }
-    let isChildLoading = false;
-    for (const l of this.layersLoading) {
-      if (poiLayer.children?.find(s => s.value === l)) {
-        isChildLoading = true;
-      }
-    }
-
-    return isChildLoading ? (<div class="legend" part="legend">
-      <noi-icon name={poiLayer.icon} class="legend__icon legend__pane"
-                title={this.languageService.translate(poiLayer.text)}></noi-icon>
-      <div class="legend__text">
-        <span>{this.languageService.translate('app.loading-very-long')}</span>
-      </div>
-    </div>) : null;
   }
 }

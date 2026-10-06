@@ -5,13 +5,7 @@
 import { Component, Element, Event, EventEmitter, Prop, Watch } from "@stencil/core";
 import { StencilComponent } from "../../utils/StencilComponent";
 import { GeoJSONSource, LngLatLike, Map, MapGeoJSONFeature, Popup, Subscription } from "maplibre-gl";
-import {
-  enableHoverEffect,
-  FontIconPaintParams,
-  getFontIconData,
-  listenLayerReady,
-  loadIconFont
-} from "../../utils/maplibre";
+import { enableHoverEffect, FontIconStyle, listenLayerReady, loadFont, registerFontImage } from "../../utils/maplibre";
 import { MyForecastResponse, WeatherForecastService } from "../../data/noi/weather-forecast-service";
 import { GeoJSON, Point } from "geojson";
 import { WeatherIconFont, WeatherIconName } from "./icon-font";
@@ -41,11 +35,9 @@ const defaultStyles = {
 
 
 // 'iconFontStyles' is not a part of maplibre
-const iconFontStyles: FontIconPaintParams = {
-  "icon-font": WeatherIconFont.fontName,
+const iconFontStyles: FontIconStyle = {
   'icon-color': '#FFFFFF',
   "icon-size": 18,
-  "icon-text": '',
 };
 
 
@@ -148,40 +140,29 @@ export class NoiMapLayerWeatherComponent implements StencilComponent {
       paint: defaultStyles.unclusteredpoints as any,
     });
 
-    loadIconFont(WeatherIconFont.fontName, WeatherIconFont.url).then(() => {
 
-      for (const iconName in WeatherIconFont.icons) {
-        if (!iconName) {
-          continue;
-        }
-        const imageData = getFontIconData({
-          ...iconFontStyles,
-          // "icon-text": 'A',
-          "icon-text": WeatherIconFont.icons[iconName as WeatherIconName],
-        });
-
-        if (imageData) {
-          // 3. Register the crisp canvas bitmap straight into MapLibre
-          this.map.addImage(iconName, imageData, {
-            sdf: false,
-          });
-        }
+    // NOTE: this font is also used to render icon in the popup
+    await loadFont('noi-digiway-weather-icons', WeatherIconFont.url);
+    for (const iconName in WeatherIconFont.icons) {
+      if (!iconName) {
+        continue;
       }
+      await registerFontImage(this.map, iconName, WeatherIconFont.url, WeatherIconFont.icons[iconName as WeatherIconName], iconFontStyles);
+    }
 
-      this.map.addLayer({
-        id: 'layer-weather-icon',
-        type: 'symbol',
-        source: 'source-weather-data',
+    this.map.addLayer({
+      id: 'layer-weather-icon',
+      type: 'symbol',
+      source: 'source-weather-data',
 
-        layout: {
-          'icon-image': ['get', 'icon_name'],
-          'icon-size': 1.0,
-          'icon-allow-overlap': true,
-          'icon-ignore-placement': true
-        },
-      });
-
+      layout: {
+        'icon-image': ['get', 'icon_name'],
+        'icon-size': 1.0,
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true
+      },
     });
+
 
     // Hover effects
     const layerHover = enableHoverEffect(this.map, 'layer-weather-data');
@@ -264,7 +245,7 @@ export class NoiMapLayerWeatherComponent implements StencilComponent {
     });
   }
 
-  async _reopenPopup(){
+  async _reopenPopup() {
     const idOpened = this._popupFeatureId;
     if (!idOpened) {
       return;

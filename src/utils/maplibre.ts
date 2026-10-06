@@ -222,12 +222,19 @@ export function mapCenterBySourceData(map: Map, sourceId: string) {
 
 /**
  */
-export interface FontIconPaintParams {
-  'icon-text': string,
-  'icon-font': string,
-  'icon-size': number, // in px
-  'icon-color': string,
-  // 'scale'?: number,
+export interface FontIconStyle {
+  'icon-size': number; // in px
+  'icon-color': string;
+}
+
+
+/**
+ */
+interface FontIconPaintParams {
+  'icon-text': string;
+  'icon-font': string;
+  'icon-size': number;
+  'icon-color': string;
 }
 
 /**
@@ -266,14 +273,14 @@ export function getFontIconData(paint: FontIconPaintParams) {
 
     return imageData as ImageData;
   } else {
-    return null
+    return null;
   }
 }
 
 /**
  *
  */
-export async function loadIconFont(fontName: string, url: string) {
+export async function loadFont(fontName: string, url: string) {
 
   // TypeScript's internal DOM type definitions have a historical gap regarding the FontFaceSet interface, so we use 'any'
   const documentFonts = document.fonts as any;
@@ -284,22 +291,62 @@ export async function loadIconFont(fontName: string, url: string) {
   );
 
   if (isAlreadyLoaded) {
-    console.debug(`[loadIconFont] - already loaded:`, fontName);
+    console.debug(`[loadFont] - already loaded:`, fontName);
     return;
   }
 
-  console.log(`[loadIconFont] loading font:`, fontName);
+  console.log(`[loadFont] loading font:`, fontName);
 
   // 2. Instantiate and load the font directly into memory
   const iconFontFace = new FontFace(fontName, url);
 
   const fontLoadResult = await iconFontFace.load();
-  console.debug(`[loadIconFont] loaded:`, fontName, fontLoadResult);
+  console.debug(`[loadFont] loaded:`, fontName, fontLoadResult);
 
   // Inject it into document.fonts so the entire page (and all shadow roots) can use it
   documentFonts.add(iconFontFace);
 }
 
+
+const _fontLoadingCache: { [url: string]: { load$: Promise<void>; fontName: string } } = {};
+
+/**
+ * this method is suitable for uncolored icons.
+ * icon color can be set using style parameter
+ */
+export function registerFontImage(map: Map,
+                                  imageName: string,
+                                  fontUrl: string,
+                                  iconCharacterCode: string,
+                                  style: FontIconStyle,
+): Promise<void> {
+
+  // load font
+  if (!_fontLoadingCache[fontUrl]) {
+    const fontName = 'icon-font-' + Object.keys(_fontLoadingCache).length;
+    _fontLoadingCache[fontUrl] = {
+      load$: loadFont(fontName, fontUrl),
+      fontName,
+    };
+  }
+  const _fontCache = _fontLoadingCache[fontUrl];
+
+  // register image
+  return _fontCache.load$.then(() => {
+    const imageData = getFontIconData({
+      ...style,
+      'icon-font': _fontCache.fontName,
+      "icon-text": iconCharacterCode,
+    });
+
+    if (imageData) {
+      // 3. Register the crisp canvas bitmap straight into MapLibre
+      map.addImage(imageName, imageData as any, {
+        sdf: false,
+      });
+    }
+  });
+}
 
 /**
  * this method is suitable for colored icons.

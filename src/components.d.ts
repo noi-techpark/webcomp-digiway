@@ -157,11 +157,6 @@ export namespace Components {
     /**
      * (INTERNAL) render map layer
      */
-    interface NoiMapLayerAccommodations {
-    }
-    /**
-     * (INTERNAL) render map layer
-     */
     interface NoiMapLayerAnnouncements {
     }
     /**
@@ -357,10 +352,6 @@ export interface NoiMapCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLNoiMapElement;
 }
-export interface NoiMapLayerAccommodationsCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLNoiMapLayerAccommodationsElement;
-}
 export interface NoiMapLayerAnnouncementsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLNoiMapLayerAnnouncementsElement;
@@ -554,26 +545,6 @@ declare global {
     var HTMLNoiMapBaseTirolElement: {
         prototype: HTMLNoiMapBaseTirolElement;
         new (): HTMLNoiMapBaseTirolElement;
-    };
-    interface HTMLNoiMapLayerAccommodationsElementEventMap {
-        "layerLoading": boolean;
-    }
-    /**
-     * (INTERNAL) render map layer
-     */
-    interface HTMLNoiMapLayerAccommodationsElement extends Components.NoiMapLayerAccommodations, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLNoiMapLayerAccommodationsElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerAccommodationsElement, ev: NoiMapLayerAccommodationsCustomEvent<HTMLNoiMapLayerAccommodationsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLNoiMapLayerAccommodationsElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerAccommodationsElement, ev: NoiMapLayerAccommodationsCustomEvent<HTMLNoiMapLayerAccommodationsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLNoiMapLayerAccommodationsElement: {
-        prototype: HTMLNoiMapLayerAccommodationsElement;
-        new (): HTMLNoiMapLayerAccommodationsElement;
     };
     interface HTMLNoiMapLayerAnnouncementsElementEventMap {
         "layerLoading": boolean;
@@ -981,7 +952,6 @@ declare global {
         "noi-map-base-carto": HTMLNoiMapBaseCartoElement;
         "noi-map-base-osm": HTMLNoiMapBaseOsmElement;
         "noi-map-base-tirol": HTMLNoiMapBaseTirolElement;
-        "noi-map-layer-accommodations": HTMLNoiMapLayerAccommodationsElement;
         "noi-map-layer-announcements": HTMLNoiMapLayerAnnouncementsElement;
         "noi-map-layer-base-odh": HTMLNoiMapLayerBaseOdhElement;
         "noi-map-layer-otp": HTMLNoiMapLayerOtpElement;
@@ -1143,15 +1113,6 @@ declare namespace LocalJSX {
           * @default 'color'
          */
         "variant"?: 'color' | 'grayscale';
-    }
-    /**
-     * (INTERNAL) render map layer
-     */
-    interface NoiMapLayerAccommodations {
-        /**
-          * Emitted when layer data is loading
-         */
-        "onLayerLoading"?: (event: NoiMapLayerAccommodationsCustomEvent<boolean>) => void;
     }
     /**
      * (INTERNAL) render map layer
@@ -1473,7 +1434,6 @@ declare namespace LocalJSX {
         "noi-map-base-carto": NoiMapBaseCarto;
         "noi-map-base-osm": Omit<NoiMapBaseOsm, keyof NoiMapBaseOsmAttributes> & { [K in keyof NoiMapBaseOsm & keyof NoiMapBaseOsmAttributes]?: NoiMapBaseOsm[K] } & { [K in keyof NoiMapBaseOsm & keyof NoiMapBaseOsmAttributes as `attr:${K}`]?: NoiMapBaseOsmAttributes[K] } & { [K in keyof NoiMapBaseOsm & keyof NoiMapBaseOsmAttributes as `prop:${K}`]?: NoiMapBaseOsm[K] };
         "noi-map-base-tirol": Omit<NoiMapBaseTirol, keyof NoiMapBaseTirolAttributes> & { [K in keyof NoiMapBaseTirol & keyof NoiMapBaseTirolAttributes]?: NoiMapBaseTirol[K] } & { [K in keyof NoiMapBaseTirol & keyof NoiMapBaseTirolAttributes as `attr:${K}`]?: NoiMapBaseTirolAttributes[K] } & { [K in keyof NoiMapBaseTirol & keyof NoiMapBaseTirolAttributes as `prop:${K}`]?: NoiMapBaseTirol[K] };
-        "noi-map-layer-accommodations": NoiMapLayerAccommodations;
         "noi-map-layer-announcements": NoiMapLayerAnnouncements;
         "noi-map-layer-base-odh": NoiMapLayerBaseOdh;
         "noi-map-layer-otp": Omit<NoiMapLayerOtp, keyof NoiMapLayerOtpAttributes> & { [K in keyof NoiMapLayerOtp & keyof NoiMapLayerOtpAttributes]?: NoiMapLayerOtp[K] } & { [K in keyof NoiMapLayerOtp & keyof NoiMapLayerOtpAttributes as `attr:${K}`]?: NoiMapLayerOtpAttributes[K] } & { [K in keyof NoiMapLayerOtp & keyof NoiMapLayerOtpAttributes as `prop:${K}`]?: NoiMapLayerOtp[K] };
@@ -1545,10 +1505,6 @@ declare module "@stencil/core" {
              * (INTERNAL) render map layer
              */
             "noi-map-base-tirol": LocalJSX.IntrinsicElements["noi-map-base-tirol"] & JSXBase.HTMLAttributes<HTMLNoiMapBaseTirolElement>;
-            /**
-             * (INTERNAL) render map layer
-             */
-            "noi-map-layer-accommodations": LocalJSX.IntrinsicElements["noi-map-layer-accommodations"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerAccommodationsElement>;
             /**
              * (INTERNAL) render map layer
              */

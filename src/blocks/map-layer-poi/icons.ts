@@ -10,29 +10,5 @@ export const poiIcons = {
   snowflake: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M440-80v-73l-64 54-52-61 116-98v-152l-132 76-27 149-79-14 15-83-64 37-40-69 64-37-79-29 27-75 143 51 132-76-132-76-143 52-27-76 79-28-64-37 40-69 64 37-15-83 79-14 27 149 132 76v-152l-116-98 52-61 64 54v-74h80v74l64-54 52 61-116 98v152l131-76 27-149 79 14-15 83 64-37 40 69-64 37 79 28-27 76-143-52-131 76 131 76 143-51 27 75-79 29 64 37-40 69-64-37 15 83-79 14-27-149-131-76v152l116 98-52 61-64-54v73h-80Z"/></svg>',
   storefront: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M841-518v318q0 33-23.5 56.5T761-120H201q-33 0-56.5-23.5T121-200v-318q-23-21-35.5-54t-.5-72l42-136q8-26 28.5-43t47.5-17h556q27 0 47 16.5t29 43.5l42 136q12 39-.5 71T841-518Zm-272-42q27 0 41-18.5t11-41.5l-22-140h-78v148q0 21 14 36.5t34 15.5Zm-180 0q23 0 37.5-15.5T441-612v-148h-78l-22 140q-4 24 10.5 42t37.5 18Zm-178 0q18 0 31.5-13t16.5-33l22-154h-78l-40 134q-6 20 6.5 43t41.5 23Zm540 0q29 0 42-23t6-43l-42-134h-76l22 154q3 20 16.5 33t31.5 13ZM201-200h560v-282q-5 2-6.5 2H751q-27 0-47.5-9T663-518q-18 18-41 28t-49 10q-27 0-50.5-10T481-518q-17 18-39.5 28T393-480q-29 0-52.5-10T299-518q-21 21-41.5 29.5T211-480h-4.5q-2.5 0-5.5-2v282Zm560 0H201h560Z"/></svg>',
   museum: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M80-80v-80h80v-360H80v-80l400-280 400 280v80h-80v360h80v80H80Zm160-80h480-480Zm80-80h80v-160l80 120 80-120v160h80v-280h-80l-80 120-80-120h-80v280Zm400 80v-454L480-782 240-614v454h480Z"/></svg>',
-
-  exploreNearby: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M324-111.5Q251-143 197-197t-85.5-127Q80-397 80-480t31.5-156Q143-709 197-763t127-85.5Q397-880 480-880t156 31.5Q709-817 763-763t85.5 127Q880-563 880-480t-31.5 156Q817-251 763-197t-127 85.5Q563-80 480-80t-156-31.5ZM480-260q45-45 80-93 30-41 55-90t25-97q0-66-47-113t-113-47q-66 0-113 47t-47 113q0 48 25 97t55 90q35 48 80 93Zm-42.5-237.5Q420-515 420-540t17.5-42.5Q455-600 480-600t42.5 17.5Q540-565 540-540t-17.5 42.5Q505-480 480-480t-42.5-17.5Z"/></svg>',
+  hotel: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M40-200v-600h80v400h320v-320h320q66 0 113 47t47 113v360h-80v-120H120v120H40Zm155-275q-35-35-35-85t35-85q35-35 85-35t85 35q35 35 35 85t-35 85q-35 35-85 35t-85-35Zm325 75h320v-160q0-33-23.5-56.5T760-640H520v240ZM308.5-531.5Q320-543 320-560t-11.5-28.5Q297-600 280-600t-28.5 11.5Q240-577 240-560t11.5 28.5Q263-520 280-520t28.5-11.5ZM280-560Zm240-80v240-240Z"/></svg>',
 };
-
-/**
- */
-export function getPoiIcon(tag: string) {
-  switch (tag) {
-    case 'essen trinken':
-      return poiIcons.restaurant;
-    case 'geschäfte und dienstleister':
-      return poiIcons.storefront;
-    case 'kultur sehenswürdigkeiten':
-      return poiIcons.museum;
-    case 'kultur sehenswürdigkeiten':
-      return poiIcons.museum;
-    case 'sommer':
-      return poiIcons.sunny;
-    case 'wellness entspannung':
-      return poiIcons.spa;
-    case 'winter':
-      return poiIcons.snowflake;
-    default:
-      return poiIcons.exploreNearby;
-  }
-}
