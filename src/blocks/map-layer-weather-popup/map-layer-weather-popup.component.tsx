@@ -13,6 +13,7 @@ import {
   DayPointForecast,
   getClearSkyType,
   getIconContent,
+  getWeatherName,
   getWindDirectionLabel
 } from "../map-layer-weather/weather-forecast.util";
 import { formatNumber, formatTime } from "../../utils/intl";
@@ -199,6 +200,7 @@ export class MapLayerWeatherPopupComponent implements StencilComponent {
     const num = (_num: | number | undefined) => formatNumber(_num, this.languageService.currentLanguage!);
 
     const skyType = getClearSkyType(new Date(dp.time), sunshineDuration);
+    const weatherName = getWeatherName(dp["qualitative-forecast"]);
 
     return (<div>
 
@@ -223,8 +225,8 @@ export class MapLayerWeatherPopupComponent implements StencilComponent {
         <div class="table">
           <div class="table__cell">
             <div class="noi-weather-icon value-icon"
-                 title={dp["qualitative-forecast"] as any}>{getIconContent(dp["qualitative-forecast"] as any, skyType)}</div>
-            <div class="value-description">{dp["qualitative-forecast"]}</div>
+                 title={weatherName}>{getIconContent(dp["qualitative-forecast"]!, skyType)}</div>
+            <div class="value-description">{weatherName}</div>
           </div>
           <div class="table__cell">
             <div class="value-description">{t('weather.hours.air-temperature')}</div>
