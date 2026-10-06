@@ -4,9 +4,8 @@
 
 import { buildUrl } from "../../utils/url";
 import { MultilangData } from "../language/language-data-service";
-import { ListResponse } from "./types-v1-common";
 import { fromFetch } from 'rxjs/fetch';
-import { EMPTY, map, Observable, shareReplay } from "rxjs";
+import { catchError, EMPTY, Observable, of, shareReplay } from "rxjs";
 
 
 export interface PoiInfo {
@@ -95,26 +94,13 @@ export interface PoiInfo {
 // origin is used to track usage and traffic patterns
 const ORIGIN = 'webcomp-brennerlec';
 
-// https://github.com/noi-techpark/webcomp-activity-poi/blob/main/src/static/data/poi-types.json
-export const WELL_KNOWN_TAGS = [
-  // 'anderes', // Other
-  // 'mobilität', // Traffic and transport
-
-  'essen trinken', // Eating & Drinking
-  'geschäfte und dienstleister', // shops and services
-  'kultur sehenswürdigkeiten', // Culture & Attractions
-  'sommer', // Summer
-  'wellness entspannung', // Wellness & Relaxation
-  'winter', // Winter
-];
-
 /**
  *
  */
 export class PoiService {
 
   static _instance?: PoiService;
-  private _cache$: { [tag: string]: Observable<PoiInfo[]> } = {};
+  private _cache$: { [id: string]: Observable<PoiInfo | null> } = {};
 
   static getInstance() {
     if (!PoiService._instance) {
@@ -123,32 +109,43 @@ export class PoiService {
     return PoiService._instance;
   }
 
+
   /**
    */
-  getPoiInfo$(tag: string): Observable<PoiInfo[]> {
+  getPoiById$(id: string): Observable<PoiInfo | null> {
 
-    if (!tag) {
+    if (!id) {
       return EMPTY;
     }
-    if (!this._cache$[tag]) {
 
-      this._cache$[tag] = fromFetch<ListResponse<PoiInfo>>(buildUrl(`https://tourism.opendatahub.com/v1/ODHActivityPoi`, {
-        pagenumber: 1,
-        pagesize: -1, // -1 means no limit
-        // pagesize: 10, // TODO: debug
+    const normalizedId = prepareId(id);
+
+    if (!this._cache$[normalizedId]) {
+      this._cache$[normalizedId] = fromFetch<PoiInfo>(buildUrl(`https://tourism.opendatahub.com/v1/ODHActivityPoi/${normalizedId}`, {
         origin: ORIGIN,
-        odhtagfilter: tag,
-        // odhtagfilter: tags.join(','), // < this is working, but not needed
       }), {
         // The selector allows you to parse the body directly
         selector: (response) => response.json()
       }).pipe(
-        map(response => response?.Items || []),
         shareReplay({refCount: false, bufferSize: 1}),
+        catchError((err) => {
+          console.error(err);
+          return of(null);
+        }),
       );
     }
-    return this._cache$[tag];
+    return this._cache$[normalizedId];
   }
 
 
+}
+
+const ID_SUFFIX_TO_REMOVE = '_reduced';
+
+function prepareId(id: string) {
+  if (id.toLowerCase().endsWith(ID_SUFFIX_TO_REMOVE)) {
+    return id.substring(0, id.length - ID_SUFFIX_TO_REMOVE.length);
+  } else {
+    return id;
+  }
 }

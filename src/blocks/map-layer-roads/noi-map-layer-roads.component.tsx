@@ -51,7 +51,7 @@ export class NoiMapLayerRoadsComponent implements StencilComponent {
 
   private config: { [key: string]: LayerConfig } = {
     'tyrol': {
-      markerIcon: 'bicycle',
+      fontIcon: 'bicycle',
       isLineInteractive: true,
 
       sourceLayer: "spatialdata",
@@ -60,7 +60,7 @@ export class NoiMapLayerRoadsComponent implements StencilComponent {
       zoom: 10
     },
     'tyrol-north': {
-      markerIcon: 'bicycle',
+      fontIcon: 'bicycle',
       isLineInteractive: true,
 
       sourceLayer: "spatialdata",
@@ -71,7 +71,7 @@ export class NoiMapLayerRoadsComponent implements StencilComponent {
       zoom: 10
     },
     'bolzano-int': {
-      markerIcon: 'bicycle',
+      fontIcon: 'bicycle',
       isLineInteractive: true,
 
       sourceLayer: "spatialdata",
@@ -80,7 +80,7 @@ export class NoiMapLayerRoadsComponent implements StencilComponent {
       zoom: 10
     },
     'trento': {
-      markerIcon: 'bicycle',
+      fontIcon: 'bicycle',
       isLineInteractive: true,
 
       sourceLayer: "spatialdata",
@@ -92,7 +92,7 @@ export class NoiMapLayerRoadsComponent implements StencilComponent {
 
     'mountain-bike-bolzano': {
       // markerIcon: 'mountain-trails',
-      markerIcon: 'bicycle',
+      fontIcon: 'bicycle',
       isLineInteractive: true,
 
       sourceLayer: "spatialdata",
@@ -102,7 +102,7 @@ export class NoiMapLayerRoadsComponent implements StencilComponent {
     },
     'mountain-bike-trento': {
       // markerIcon: 'mountain-trails',
-      markerIcon: 'bicycle',
+      fontIcon: 'bicycle',
       isLineInteractive: true,
 
       sourceLayer: "spatialdata",
@@ -113,7 +113,7 @@ export class NoiMapLayerRoadsComponent implements StencilComponent {
 
 
     'hiking-bolzano': {
-      markerIcon: 'trekking',
+      fontIcon: 'trekking',
       isLineInteractive: true,
 
       sourceLayer: "spatialdata",
@@ -123,7 +123,7 @@ export class NoiMapLayerRoadsComponent implements StencilComponent {
     },
 
     'hiking-trento': {
-      markerIcon: 'trekking',
+      fontIcon: 'trekking',
       isLineInteractive: true,
 
       sourceLayer: "spatialdata",
@@ -132,7 +132,7 @@ export class NoiMapLayerRoadsComponent implements StencilComponent {
       zoom: 10
     },
     'hiking-e5': {
-      markerIcon: 'trekking',
+      fontIcon: 'trekking',
       isLineInteractive: true,
 
       sourceLayer: "spatialdata",
@@ -158,7 +158,7 @@ export class NoiMapLayerRoadsComponent implements StencilComponent {
       }
     },
     'hiking-accessible': {
-      markerIcon: 'trekking',
+      fontIcon: 'trekking',
       isLineInteractive: true,
 
       sourceLayer: "spatialdata",

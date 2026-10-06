@@ -4,8 +4,7 @@
 
 import { buildUrl } from "../../utils/url";
 import { MultilangData } from "../language/language-data-service";
-import { ListResponse } from "./types-v1-common";
-import { map, Observable, shareReplay } from "rxjs";
+import { catchError, EMPTY, Observable, of, shareReplay } from "rxjs";
 import { fromFetch } from "rxjs/fetch";
 
 
@@ -142,7 +141,7 @@ const ORIGIN = 'webcomp-brennerlec';
 export class AccommodationsService {
 
   static _instance?: AccommodationsService;
-  private _cache$?: Observable<AccommodationInfo[]>;
+  private _cache$: { [id: string]: Observable<AccommodationInfo | null> } = {};
 
   static getInstance() {
     if (!AccommodationsService._instance) {
@@ -153,24 +152,38 @@ export class AccommodationsService {
 
   /**
    */
-  getAccommodationsInfo$(): Observable<AccommodationInfo[]> {
+  getPoiById$(id: string): Observable<AccommodationInfo | null> {
+    if (!id) {
+      return EMPTY;
+    }
 
-    if (!this._cache$) {
-      this._cache$ = fromFetch<ListResponse<AccommodationInfo>>(buildUrl(`https://tourism.opendatahub.com/v1/Accommodation`, {
-        pagenumber: 1,
-        pagesize: -1, // -1 means no limit
-        // pagesize: 10, // TODO: debug
+    const normalizedId = prepareId(id);
+
+    if (!this._cache$[normalizedId]) {
+      this._cache$[normalizedId] = fromFetch<AccommodationInfo>(buildUrl(`https://tourism.opendatahub.com/v1/Accommodation/${normalizedId}`, {
         origin: ORIGIN,
       }), {
         // The selector allows you to parse the body directly
         selector: (response) => response.json()
       }).pipe(
-        map(response => response?.Items || []),
         shareReplay({refCount: false, bufferSize: 1}),
+        catchError((err) => {
+          console.error(err);
+          return of(null);
+        }),
       );
     }
-    return this._cache$;
+    return this._cache$[normalizedId];
   }
+}
 
 
+const ID_SUFFIX_TO_REMOVE = '_reduced';
+
+function prepareId(id: string) {
+  if (id.toLowerCase().endsWith(ID_SUFFIX_TO_REMOVE)) {
+    return id.substring(0, id.length - ID_SUFFIX_TO_REMOVE.length);
+  } else {
+    return id;
+  }
 }

@@ -29,7 +29,7 @@ export class NoiMapLayerAnnouncementsComponent implements StencilComponent {
   private languageService = LanguageDataService.getInstance();
 
   private config: LayerConfig = {
-    markerIcon: 'closure',
+    fontIcon: 'closure',
     sourceLayer: "announcement",
     // additional: '?source=tirol.mapservices.eu&operationmode=pointsandtracks&displaytracksonzoomlevel=10&jsonselector=StartTime,EndTime,Mapping[\'tirol.mapservices.eu\'].description';
     additional: '?source=tirol.mapservices.eu&operationmode=pointsandtracks&displaytracksonzoomlevel=10&jsonselector=StartTime,EndTime,Mapping',

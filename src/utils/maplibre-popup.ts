@@ -51,6 +51,10 @@ export interface PopupDefinitionObject_sectionData {
 /**
  */
 export function popupBuilder(def: PopupDefinitionObject): string {
+  return `<div class="noi-map-popup" part="popup">${popupBuilderContent(def)}</div>`;
+}
+
+export function popupBuilderContent(def: PopupDefinitionObject): string {
 
   let popupContent = '';
 
@@ -107,7 +111,7 @@ export function popupBuilder(def: PopupDefinitionObject): string {
   }
 
   //
-  return `<div class="noi-map-popup" part="popup">${popupContent}</div>`;
+  return popupContent;
 }
 
 // Feature popup helper
