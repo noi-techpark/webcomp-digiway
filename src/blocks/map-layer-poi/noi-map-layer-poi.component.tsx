@@ -9,8 +9,7 @@ import { PopupDefinitionObject } from "../../utils/maplibre-popup";
 import { LanguageDataService } from "../../data/language/language-data-service";
 import { PoiInfo } from "../../data/noi/poi-service";
 import { LayerConfig } from "../map-layer-base-odh/noi-map-layer-base-odh.component";
-import { poiIcons } from "./icons";
-
+import { PoiIconFont, poiIcons } from "./icons";
 
 
 /**
@@ -41,7 +40,10 @@ export class NoiMapLayerPoiComponent implements StencilComponent {
 
   private config: { [key: string]: LayerConfig } = {
     'accommodation': {
-      svgIcon: poiIcons.hotel,
+      fontIcon: {
+        fontUrl: PoiIconFont.url,
+        character: PoiIconFont.icons['hotel'],
+      },
 
       sourceLayer: "accommodation",
       additional: '?enableclustering=true',
@@ -49,7 +51,10 @@ export class NoiMapLayerPoiComponent implements StencilComponent {
       zoom: 10,
     },
     'summer': {
-      svgIcon: poiIcons.sunny,
+      fontIcon: {
+        fontUrl: PoiIconFont.url,
+        character: PoiIconFont.icons['sunny'],
+      },
 
       sourceLayer: "odhactivitypoi",
       additional: '?tagfilter=summer&enableclustering=true',
@@ -57,7 +62,10 @@ export class NoiMapLayerPoiComponent implements StencilComponent {
       zoom: 10,
     },
     'winter': {
-      svgIcon: poiIcons.snowflake,
+      fontIcon: {
+        fontUrl: PoiIconFont.url,
+        character: PoiIconFont.icons['snowflake'],
+      },
 
       sourceLayer: "odhactivitypoi",
       additional: '?tagfilter=winter&enableclustering=true',
@@ -65,7 +73,10 @@ export class NoiMapLayerPoiComponent implements StencilComponent {
       zoom: 10,
     },
     'gastronomies': {
-      svgIcon: poiIcons.restaurant,
+      fontIcon: {
+        fontUrl: PoiIconFont.url,
+        character: PoiIconFont.icons['restaurant'],
+      },
 
       sourceLayer: "odhactivitypoi",
       additional: '?tagfilter=eating%20drinking&enableclustering=true',
@@ -73,7 +84,10 @@ export class NoiMapLayerPoiComponent implements StencilComponent {
       zoom: 10,
     },
     'culture': {
-      svgIcon: poiIcons.museum,
+      fontIcon: {
+        fontUrl: PoiIconFont.url,
+        character: PoiIconFont.icons['museum'],
+      },
 
       sourceLayer: "odhactivitypoi",
       additional: '?tagfilter=culture%20attractions&enableclustering=true',
@@ -81,7 +95,10 @@ export class NoiMapLayerPoiComponent implements StencilComponent {
       zoom: 10,
     },
     'shops': {
-      svgIcon: poiIcons.storefront,
+      fontIcon: {
+        fontUrl: PoiIconFont.url,
+        character: PoiIconFont.icons['storefront'],
+      },
 
       sourceLayer: "odhactivitypoi",
       additional: '?tagfilter=shops%20and%20service%20providers&enableclustering=true',
@@ -89,7 +106,10 @@ export class NoiMapLayerPoiComponent implements StencilComponent {
       zoom: 10,
     },
     'wellness': {
-      svgIcon: poiIcons.spa,
+      fontIcon: {
+        fontUrl: PoiIconFont.url,
+        character: PoiIconFont.icons['spa'],
+      },
 
       sourceLayer: "odhactivitypoi",
       additional: '?tagfilter=wellness%20relaxation&enableclustering=true',
