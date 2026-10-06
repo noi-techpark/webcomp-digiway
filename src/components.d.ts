@@ -242,6 +242,20 @@ export namespace Components {
         "tag"?: string;
     }
     /**
+     * (INTERNAL) render map popup
+     */
+    interface NoiMapLayerPoiAccommodationPopup {
+        "setFeatureId": (featureId: string) => Promise<void>;
+        "setName": (featureName: string) => Promise<void>;
+    }
+    /**
+     * (INTERNAL) render map popup
+     */
+    interface NoiMapLayerPoiPopup {
+        "setFeatureId": (featureId: string) => Promise<void>;
+        "setName": (featureName: string) => Promise<void>;
+    }
+    /**
      * (INTERNAL) render map layer
      */
     interface NoiMapLayerRiskExposure {
@@ -797,6 +811,24 @@ declare global {
         prototype: HTMLNoiMapLayerPoiElement;
         new (): HTMLNoiMapLayerPoiElement;
     };
+    /**
+     * (INTERNAL) render map popup
+     */
+    interface HTMLNoiMapLayerPoiAccommodationPopupElement extends Components.NoiMapLayerPoiAccommodationPopup, HTMLStencilElement {
+    }
+    var HTMLNoiMapLayerPoiAccommodationPopupElement: {
+        prototype: HTMLNoiMapLayerPoiAccommodationPopupElement;
+        new (): HTMLNoiMapLayerPoiAccommodationPopupElement;
+    };
+    /**
+     * (INTERNAL) render map popup
+     */
+    interface HTMLNoiMapLayerPoiPopupElement extends Components.NoiMapLayerPoiPopup, HTMLStencilElement {
+    }
+    var HTMLNoiMapLayerPoiPopupElement: {
+        prototype: HTMLNoiMapLayerPoiPopupElement;
+        new (): HTMLNoiMapLayerPoiPopupElement;
+    };
     interface HTMLNoiMapLayerRiskExposureElementEventMap {
         "layerLoading": boolean;
     }
@@ -965,6 +997,8 @@ declare global {
         "noi-map-layer-otp-stops": HTMLNoiMapLayerOtpStopsElement;
         "noi-map-layer-otp-trip": HTMLNoiMapLayerOtpTripElement;
         "noi-map-layer-poi": HTMLNoiMapLayerPoiElement;
+        "noi-map-layer-poi-accommodation-popup": HTMLNoiMapLayerPoiAccommodationPopupElement;
+        "noi-map-layer-poi-popup": HTMLNoiMapLayerPoiPopupElement;
         "noi-map-layer-risk-exposure": HTMLNoiMapLayerRiskExposureElement;
         "noi-map-layer-roads": HTMLNoiMapLayerRoadsElement;
         "noi-map-layer-roads-popup": HTMLNoiMapLayerRoadsPopupElement;
@@ -1236,6 +1270,16 @@ declare namespace LocalJSX {
         "tag"?: string;
     }
     /**
+     * (INTERNAL) render map popup
+     */
+    interface NoiMapLayerPoiAccommodationPopup {
+    }
+    /**
+     * (INTERNAL) render map popup
+     */
+    interface NoiMapLayerPoiPopup {
+    }
+    /**
      * (INTERNAL) render map layer
      */
     interface NoiMapLayerRiskExposure {
@@ -1447,6 +1491,8 @@ declare namespace LocalJSX {
         "noi-map-layer-otp-stops": NoiMapLayerOtpStops;
         "noi-map-layer-otp-trip": Omit<NoiMapLayerOtpTrip, keyof NoiMapLayerOtpTripAttributes> & { [K in keyof NoiMapLayerOtpTrip & keyof NoiMapLayerOtpTripAttributes]?: NoiMapLayerOtpTrip[K] } & { [K in keyof NoiMapLayerOtpTrip & keyof NoiMapLayerOtpTripAttributes as `attr:${K}`]?: NoiMapLayerOtpTripAttributes[K] } & { [K in keyof NoiMapLayerOtpTrip & keyof NoiMapLayerOtpTripAttributes as `prop:${K}`]?: NoiMapLayerOtpTrip[K] };
         "noi-map-layer-poi": Omit<NoiMapLayerPoi, keyof NoiMapLayerPoiAttributes> & { [K in keyof NoiMapLayerPoi & keyof NoiMapLayerPoiAttributes]?: NoiMapLayerPoi[K] } & { [K in keyof NoiMapLayerPoi & keyof NoiMapLayerPoiAttributes as `attr:${K}`]?: NoiMapLayerPoiAttributes[K] } & { [K in keyof NoiMapLayerPoi & keyof NoiMapLayerPoiAttributes as `prop:${K}`]?: NoiMapLayerPoi[K] };
+        "noi-map-layer-poi-accommodation-popup": NoiMapLayerPoiAccommodationPopup;
+        "noi-map-layer-poi-popup": NoiMapLayerPoiPopup;
         "noi-map-layer-risk-exposure": NoiMapLayerRiskExposure;
         "noi-map-layer-roads": Omit<NoiMapLayerRoads, keyof NoiMapLayerRoadsAttributes> & { [K in keyof NoiMapLayerRoads & keyof NoiMapLayerRoadsAttributes]?: NoiMapLayerRoads[K] } & { [K in keyof NoiMapLayerRoads & keyof NoiMapLayerRoadsAttributes as `attr:${K}`]?: NoiMapLayerRoadsAttributes[K] } & { [K in keyof NoiMapLayerRoads & keyof NoiMapLayerRoadsAttributes as `prop:${K}`]?: NoiMapLayerRoads[K] } & OneOf<"region", NoiMapLayerRoads["region"], NoiMapLayerRoadsAttributes["region"]>;
         "noi-map-layer-roads-popup": NoiMapLayerRoadsPopup;
@@ -1557,6 +1603,14 @@ declare module "@stencil/core" {
              * (INTERNAL) render map layer
              */
             "noi-map-layer-poi": LocalJSX.IntrinsicElements["noi-map-layer-poi"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerPoiElement>;
+            /**
+             * (INTERNAL) render map popup
+             */
+            "noi-map-layer-poi-accommodation-popup": LocalJSX.IntrinsicElements["noi-map-layer-poi-accommodation-popup"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerPoiAccommodationPopupElement>;
+            /**
+             * (INTERNAL) render map popup
+             */
+            "noi-map-layer-poi-popup": LocalJSX.IntrinsicElements["noi-map-layer-poi-popup"] & JSXBase.HTMLAttributes<HTMLNoiMapLayerPoiPopupElement>;
             /**
              * (INTERNAL) render map layer
              */

@@ -2,14 +2,13 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import { Component, Event, EventEmitter, h, Prop } from "@stencil/core";
+import { Component, Element, Event, EventEmitter, h, Prop } from "@stencil/core";
 import { StencilComponent } from "../../utils/StencilComponent";
 import { MapGeoJSONFeature } from "maplibre-gl";
-import { PopupDefinitionObject } from "../../utils/maplibre-popup";
+import { PopupDefinition } from "../../utils/maplibre-popup";
 import { LanguageDataService } from "../../data/language/language-data-service";
-import { PoiInfo } from "../../data/noi/poi-service";
 import { LayerConfig } from "../map-layer-base-odh/noi-map-layer-base-odh.component";
-import { PoiIconFont, poiIcons } from "./icons";
+import { PoiIconFont } from "./icons";
 
 
 /**
@@ -21,6 +20,8 @@ import { PoiIconFont, poiIcons } from "./icons";
   shadow: false,
 })
 export class NoiMapLayerPoiComponent implements StencilComponent {
+
+  @Element() el!: HTMLElement;
 
   /**
    * Emitted when layer data is loading
@@ -35,8 +36,6 @@ export class NoiMapLayerPoiComponent implements StencilComponent {
 
   readonly languageService = LanguageDataService.getInstance();
 
-
-  // private poiService = PoiService.getInstance();
 
   private config: { [key: string]: LayerConfig } = {
     'accommodation': {
@@ -127,74 +126,59 @@ export class NoiMapLayerPoiComponent implements StencilComponent {
   render(): any {
     return this.tagConfig ?
       (<noi-map-layer-base-odh config={this.tagConfig}
-                               popupStructure={this.createFeaturePopup.bind(this)}
+                               popupStructure={this.createPopup.bind(this)}
                                onLayerLoading={(e) => this.layerLoading.emit(e.detail)}
       ></noi-map-layer-base-odh>)
       : null;
   }
 
-  async createFeaturePopup(feature: MapGeoJSONFeature) {
-    // const featureId = feature.id;
-    // if (this._popupFeatureId === featureId) {
-    //   return; // same popup is already opened
-    // }
 
-    const poiInfo = JSON.parse(feature?.properties?.data) as PoiInfo;
-
-    const phoneNumber = this.languageService.translateObjectDeep(poiInfo.ContactInfos, 'Phonenumber');
-    const email = this.languageService.translateObjectDeep(poiInfo.ContactInfos, 'Email');
-
-    const structure: PopupDefinitionObject = {
-      title: {
-        icon: 'material-explore-nearby',
-        text: this.languageService.translate('map.layer.poi'),
-      },
-      body: [
-        {type: 'name', text: this.languageService.translateObjectDeep(poiInfo.Detail, 'Header')},
-        {type: 'description', text: this.languageService.translateObjectDeep(poiInfo.Detail, 'SubHeader')},
-        {type: 'name', text: this.languageService.translateObjectDeep(poiInfo.Detail, 'Title') || poiInfo.Shortname},
-        {type: 'description', text: this.languageService.translateObjectDeep(poiInfo.Detail, 'IntroText')},
-        {type: 'description', text: this.languageService.translateObjectDeep(poiInfo.Detail, 'BaseText')},
-        {type: 'description', text: this.languageService.translateObjectDeep(poiInfo.Detail, 'AdditionalText')},
-        {type: 'description', text: this.languageService.translateObjectDeep(poiInfo.Detail, 'GetThereText')},
-        {type: 'description', text: this.languageService.translateObjectDeep(poiInfo.Detail, 'SafetyInfo')},
-        {type: 'description', text: this.languageService.translateObjectDeep(poiInfo.Detail, 'ParkingInfo')},
-        {
-          type: 'description',
-          text: this.languageService.translateObjectDeep(poiInfo.Detail, 'PublicTransportationInfo')
-        },
-        {type: 'description', text: this.languageService.translateObjectDeep(poiInfo.Detail, 'EquipmentInfo')},
-        {type: 'description', text: this.languageService.translateObjectDeep(poiInfo.Detail, 'AuthorTip')},
-        email ? {
-          type: 'link',
-          link: 'mailto:' + email,
-          linkName: email,
-        } : null,
-        phoneNumber ? {
-          type: 'link',
-          link: 'tel:' + phoneNumber,
-          linkName: phoneNumber,
-        } : null,
-        {type: 'link', link: this.languageService.translateObjectDeep(poiInfo.ContactInfos, 'Url')},
-      ],
-    };
-
-    return structure;
-
-    // create popup
-    // this._popupFeatureId = featureId;
-    // this._popup = new Popup()
-    //   // .setLngLat(lngLat) // < on mouse click point
-    //   .setLngLat((feature.geometry as Point).coordinates as LngLatLike) // < on feature center
-    //   .setHTML(popupBuilder(structure))
-    //   // .setHTML(debugPopupStructure(feature))
-    //   .setMaxWidth('380px')
-    //   .addTo(this.map);
-    // this._popup.on('close', () => {
-    //   if (this._popupFeatureId === featureId) {
-    //     this._popupFeatureId = undefined;
-    //   }
-    // });
+  // Feature popup helper
+  async createPopup(feature: MapGeoJSONFeature): Promise<PopupDefinition> {
+    if (this.tag === 'accommodation') {
+      return this.createPopup_accommodation(feature);
+    } else {
+      return this.createPopup_generic(feature);
+    }
   }
+
+  async createPopup_accommodation(feature: MapGeoJSONFeature): Promise<PopupDefinition> {
+    if (!feature.id) {
+      console.error('No feature id', feature)
+      throw new Error('No feature id');
+    }
+    const geoName = feature.properties.data;
+
+    // create popup element
+    const popupContent = document.createElement('noi-map-layer-poi-accommodation-popup');
+
+    // CRUCIAL: add to dom, so Stencil can initialize it
+    this.el.appendChild(popupContent);
+
+    await popupContent.setName(geoName);
+    await popupContent.setFeatureId(feature.id as string);
+
+    return popupContent;
+  }
+
+  async createPopup_generic(feature: MapGeoJSONFeature): Promise<PopupDefinition> {
+    if (!feature.id) {
+      console.error('No feature id', feature)
+      throw new Error('No feature id');
+    }
+    const geoName = feature.properties.data;
+
+    // create popup element
+    const popupContent = document.createElement('noi-map-layer-poi-popup');
+
+    // CRUCIAL: add to dom, so Stencil can initialize it
+    this.el.appendChild(popupContent);
+
+    await popupContent.setName(geoName);
+    await popupContent.setFeatureId(feature.id as string);
+
+    return popupContent;
+  }
+
 
 }
