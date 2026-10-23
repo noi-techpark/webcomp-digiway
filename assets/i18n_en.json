@@ -2,7 +2,7 @@
   "app.close": "Close",
   "sidebar.base-map": "Base map",
   "sidebar.data-layers": "Data Layers",
-  "map.base.tirol": "Tirol",
+  "map.base.tirol": "Euregio (tiris/OSM)",
   "map.base.osm": "Open Street Map",
   "map.base.carto": "Carto",
   "map.layer.util.no-details": "No details",

@@ -1,7 +1,7 @@
 {
   "sidebar.base-map": "Basiskarte",
   "sidebar.data-layers": "Datenebenen",
-  "map.base.tirol": "Tirol",
+  "map.base.tirol": "Euregio (tiris/OSM)",
   "map.base.osm": "Open Street Map",
   "map.layer.route-closures": "Streckensperrungen",
   "map.layer.risk-exposure": "Ausgesetztheit",
