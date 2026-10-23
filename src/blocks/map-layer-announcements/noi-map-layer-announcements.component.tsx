@@ -7,6 +7,7 @@ import { StencilComponent } from "../../utils/StencilComponent";
 import { LanguageDataService } from "../../data/language/language-data-service";
 import { LayerConfig } from "../map-layer-base-odh/noi-map-layer-base-odh.component";
 import { PopupDefinition } from "../../utils/maplibre-popup";
+import { formatDateTime } from "../../utils/intl";
 
 
 /**
@@ -101,7 +102,7 @@ export class NoiMapLayerAnnouncementsComponent implements StencilComponent {
 
     const name = data['Mapping']?.['tirol.mapservices.eu']?.['name'];
 
-    const lang = this.languageService.currentLanguage;
+    const lang = this.languageService.currentLanguage!;
     const description = data['Mapping']?.['tirol.mapservices.eu']?.[`publicDescription.${lang}`]
       || data['Mapping']?.['tirol.mapservices.eu']?.['publicDescription.en']
       || data['Mapping']?.['tirol.mapservices.eu']?.['description']
@@ -115,20 +116,20 @@ export class NoiMapLayerAnnouncementsComponent implements StencilComponent {
       body: [
         {type: 'name', text: name},
         {type: 'description', text: description},
-        {
+        data['StartTime'] ? {
           type: 'section',
           section: {
             name: this.languageService.translate('route-closures.start-time'),
-            value: data['StartTime'],
+            value: formatDateTime(data['StartTime'], lang),
           },
-        },
-        {
+        } : null,
+        data['EndTime'] ? {
           type: 'section',
           section: {
             name: this.languageService.translate('route-closures.end-time'),
-            value: data['EndTime'],
+            value: formatDateTime(data['EndTime'], lang),
           },
-        },
+        } : null,
       ],
     };
 
