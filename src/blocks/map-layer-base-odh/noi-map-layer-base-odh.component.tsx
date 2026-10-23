@@ -487,6 +487,7 @@ export class NoiMapLayerBaseOdhComponent implements StencilComponent {
     if (this._popupFeatureId === featureId) {
       return; // same popup is already opened by another event
     }
+    this._popup?.remove();
     this._popupFeatureId = featureId;
 
     const fn = this.popupStructure || debugPopupStructure;
