@@ -415,6 +415,14 @@ export interface NoiMapLayerPoiCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLNoiMapLayerPoiElement;
 }
+export interface NoiMapLayerPoiAccommodationPopupCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLNoiMapLayerPoiAccommodationPopupElement;
+}
+export interface NoiMapLayerPoiPopupCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLNoiMapLayerPoiPopupElement;
+}
 export interface NoiMapLayerRiskExposureCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLNoiMapLayerRiskExposureElement;
@@ -422,6 +430,10 @@ export interface NoiMapLayerRiskExposureCustomEvent<T> extends CustomEvent<T> {
 export interface NoiMapLayerRoadsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLNoiMapLayerRoadsElement;
+}
+export interface NoiMapLayerRoadsPopupCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLNoiMapLayerRoadsPopupElement;
 }
 export interface NoiMapLayerWeatherCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -812,19 +824,41 @@ declare global {
         prototype: HTMLNoiMapLayerPoiElement;
         new (): HTMLNoiMapLayerPoiElement;
     };
+    interface HTMLNoiMapLayerPoiAccommodationPopupElementEventMap {
+        "sizeChanged": void;
+    }
     /**
      * (INTERNAL) render map popup
      */
     interface HTMLNoiMapLayerPoiAccommodationPopupElement extends Components.NoiMapLayerPoiAccommodationPopup, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLNoiMapLayerPoiAccommodationPopupElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerPoiAccommodationPopupElement, ev: NoiMapLayerPoiAccommodationPopupCustomEvent<HTMLNoiMapLayerPoiAccommodationPopupElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLNoiMapLayerPoiAccommodationPopupElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerPoiAccommodationPopupElement, ev: NoiMapLayerPoiAccommodationPopupCustomEvent<HTMLNoiMapLayerPoiAccommodationPopupElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLNoiMapLayerPoiAccommodationPopupElement: {
         prototype: HTMLNoiMapLayerPoiAccommodationPopupElement;
         new (): HTMLNoiMapLayerPoiAccommodationPopupElement;
     };
+    interface HTMLNoiMapLayerPoiPopupElementEventMap {
+        "sizeChanged": void;
+    }
     /**
      * (INTERNAL) render map popup
      */
     interface HTMLNoiMapLayerPoiPopupElement extends Components.NoiMapLayerPoiPopup, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLNoiMapLayerPoiPopupElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerPoiPopupElement, ev: NoiMapLayerPoiPopupCustomEvent<HTMLNoiMapLayerPoiPopupElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLNoiMapLayerPoiPopupElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerPoiPopupElement, ev: NoiMapLayerPoiPopupCustomEvent<HTMLNoiMapLayerPoiPopupElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLNoiMapLayerPoiPopupElement: {
         prototype: HTMLNoiMapLayerPoiPopupElement;
@@ -870,10 +904,21 @@ declare global {
         prototype: HTMLNoiMapLayerRoadsElement;
         new (): HTMLNoiMapLayerRoadsElement;
     };
+    interface HTMLNoiMapLayerRoadsPopupElementEventMap {
+        "sizeChanged": void;
+    }
     /**
      * (INTERNAL) render map popup
      */
     interface HTMLNoiMapLayerRoadsPopupElement extends Components.NoiMapLayerRoadsPopup, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLNoiMapLayerRoadsPopupElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerRoadsPopupElement, ev: NoiMapLayerRoadsPopupCustomEvent<HTMLNoiMapLayerRoadsPopupElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLNoiMapLayerRoadsPopupElementEventMap>(type: K, listener: (this: HTMLNoiMapLayerRoadsPopupElement, ev: NoiMapLayerRoadsPopupCustomEvent<HTMLNoiMapLayerRoadsPopupElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLNoiMapLayerRoadsPopupElement: {
         prototype: HTMLNoiMapLayerRoadsPopupElement;
@@ -1274,11 +1319,13 @@ declare namespace LocalJSX {
      * (INTERNAL) render map popup
      */
     interface NoiMapLayerPoiAccommodationPopup {
+        "onSizeChanged"?: (event: NoiMapLayerPoiAccommodationPopupCustomEvent<void>) => void;
     }
     /**
      * (INTERNAL) render map popup
      */
     interface NoiMapLayerPoiPopup {
+        "onSizeChanged"?: (event: NoiMapLayerPoiPopupCustomEvent<void>) => void;
     }
     /**
      * (INTERNAL) render map layer
@@ -1315,6 +1362,7 @@ declare namespace LocalJSX {
      * (INTERNAL) render map popup
      */
     interface NoiMapLayerRoadsPopup {
+        "onSizeChanged"?: (event: NoiMapLayerRoadsPopupCustomEvent<void>) => void;
     }
     /**
      * (INTERNAL) render map layer

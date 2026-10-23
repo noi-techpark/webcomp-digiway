@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import { Component, h, Method, State } from "@stencil/core";
+import { Component, Event, EventEmitter, h, Method, State } from "@stencil/core";
 import { StencilComponent } from "../../utils/StencilComponent";
 import { RouteDetailsService } from "../../data/noi/route-details-service";
 import { RouteDetails } from "../../data/noi/route-details";
@@ -38,6 +38,8 @@ export class MapLayerRoadsPopupComponent implements StencilComponent {
 
   @State()
   private geoName?: string;
+
+  @Event() sizeChanged!: EventEmitter<void>;
 
   private routeId?: string;
   private detailsService = new RouteDetailsService();
@@ -90,9 +92,13 @@ export class MapLayerRoadsPopupComponent implements StencilComponent {
           }
         }
       }
-      console.log('mappingData', this.mappingData);
+      // console.log('mappingData', this.mappingData);
 
       this.isLoading = false;
+
+      requestAnimationFrame(() => {
+        this.sizeChanged.emit();
+      });
     });
   }
 

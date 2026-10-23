@@ -511,6 +511,13 @@ export class NoiMapLayerBaseOdhComponent implements StencilComponent {
         .setDOMContent(structure)
         .addTo(this.map);
 
+      structure.addEventListener('sizeChanged', () => {
+        // console.log('[sizeChanged] Event received from popup:');
+        if (this._popup?.isOpen()) {
+          this._popup.setLngLat(this._popup.getLngLat());
+        }
+      });
+
       // 3. Check for PopupDefinitionObject object
     } else if (typeof structure === 'object') {
       this._popup = new Popup()
