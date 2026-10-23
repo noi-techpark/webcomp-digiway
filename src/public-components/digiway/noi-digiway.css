@@ -52,6 +52,11 @@
   --color-background-hover: #f4f4f4;
 
   /**
+   * @prop --color-shadow: Shadow color for some elements
+   */
+  --color-shadow: rgba(0, 0, 0, 0.2);
+
+  /**
    * @prop --sidebar-width: Sidebar with (for desktop and tablet layout)
    */
   --sidebar-width: 300px;
@@ -300,9 +305,8 @@ noi-map {
 
   color: var(--color-text);
   background: var(--color-background);
-  box-shadow: 0 0 4px var(--color-background-hover);
+  box-shadow: 0 0 6px var(--color-shadow);
   pointer-events: initial;
-  min-height: 2.25em;
   overflow-x: auto;
 }
 
@@ -317,6 +321,7 @@ noi-map {
 .legend__icon {
   padding: 6px 8px;
   display: flex;
+  min-height: 1.5em; /* prevent font jump */
   flex: 0 0 1.5em; /* prevent font jump */
 }
 

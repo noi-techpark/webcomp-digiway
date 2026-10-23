@@ -25,7 +25,7 @@ noi-map {
   background: var(--color-background);
   color: var(--color-text);
   border-radius: 6px;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 6px var(--color-shadow, rgba(0, 0, 0, 0.2));
 }
 
 .maplibregl-popup-anchor-bottom .maplibregl-popup-tip,

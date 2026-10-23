@@ -47,6 +47,7 @@ Consolidated web-component to show Open Data Hub data imported within the Digiwa
 | `--color-primary`          | Primary color                                |
 | `--color-secondary`        | Secondary color                              |
 | `--color-text`             | Text color                                   |
+| `--color-shadow`           | Shadow color for some elements               |
 | `--map-filter`             | 'filter' property for the map                |
 | `--scrollbar-bg`           | Scrollbar background color                   |
 | `--scrollbar-color`        | Scrollbar thumb color                        |
