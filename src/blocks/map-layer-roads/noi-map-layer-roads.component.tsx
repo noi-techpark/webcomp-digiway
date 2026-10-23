@@ -26,12 +26,13 @@ export class NoiMapLayerRoadsComponent implements StencilComponent {
   /**
    */
   @Prop({mutable: false})
-  region!: 'tyrol'
-    | 'tyrol-north'
-    | 'bolzano-int'
-    | 'trento'
+  region!: 'cycling-tyrol'
+    | 'mountain-bike-tyrol'
+    | 'cycling-bolzano'
     | 'mountain-bike-bolzano'
+    | 'cycling-trento'
     | 'mountain-bike-trento'
+
     | 'hiking-bolzano'
     | 'hiking-trento'
     | 'hiking-e5'
@@ -50,27 +51,16 @@ export class NoiMapLayerRoadsComponent implements StencilComponent {
   @Element() el!: HTMLElement;
 
   private config: { [key: string]: LayerConfig } = {
-    'tyrol': {
+    'cycling-tyrol': {
       fontIcon: 'bicycle',
       isLineInteractive: true,
 
       sourceLayer: "spatialdata",
-      additional: '?source=dservices3.arcgis.com&tagfilter=radrouten_tirol&operationmode=pointsandtracks&displaytracksonzoomlevel=10',
+      additional: '?source=dservices3.arcgis.com&tagfilter=cycling&operationmode=pointsandtracks&displaytracksonzoomlevel=10',
       center: [11.06, 47.27],
       zoom: 10
     },
-    'tyrol-north': {
-      fontIcon: 'bicycle',
-      isLineInteractive: true,
-
-      sourceLayer: "spatialdata",
-      additional: '?source=dservices3.arcgis.com&tagfilter=radrouten_tirol&operationmode=pointsandtracks&displaytracksonzoomlevel=10',
-      // additional: '?source=civis.geoserver&tagfilter=cyclewaystyrol&operationmode=pointsandtracks&displaytracksonzoomlevel=10',
-      // center: [10.98, 46.88],
-      center: [11.06, 47.27],
-      zoom: 10
-    },
-    'bolzano-int': {
+    'cycling-bolzano': {
       fontIcon: 'bicycle',
       isLineInteractive: true,
 
@@ -79,7 +69,7 @@ export class NoiMapLayerRoadsComponent implements StencilComponent {
       center: [11.35, 46.5],
       zoom: 10
     },
-    'trento': {
+    'cycling-trento': {
       fontIcon: 'bicycle',
       isLineInteractive: true,
 
@@ -90,6 +80,15 @@ export class NoiMapLayerRoadsComponent implements StencilComponent {
     },
 
 
+    'mountain-bike-tyrol': {
+      fontIcon: 'bicycle',
+      isLineInteractive: true,
+
+      sourceLayer: "spatialdata",
+      additional: '?source=dservices3.arcgis.com&tagfilter=mountain%20bike&operationmode=pointsandtracks&displaytracksonzoomlevel=10',
+      center: [11.06, 47.27],
+      zoom: 10
+    },
     'mountain-bike-bolzano': {
       // markerIcon: 'mountain-trails',
       fontIcon: 'bicycle',
