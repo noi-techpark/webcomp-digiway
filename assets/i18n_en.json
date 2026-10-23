@@ -2,11 +2,14 @@
   "app.close": "Close",
   "sidebar.base-map": "Base map",
   "sidebar.data-layers": "Data Layers",
+
   "map.base.euregio": "Euregio (tiris/OSM)",
   "map.base.osm": "Open Street Map",
   "map.base.carto": "Carto",
+
   "map.layer.util.no-details": "No details",
   "map.layer.util.technical-details": "Technical details",
+
   "map.layer.route-closures": "Route Closures",
   "map.layer.risk-exposure": "Exposure Map",
   "map.layer.cycling": "Cycling routes",
@@ -32,13 +35,16 @@
   "map.layer.poi-relax": "Wellness & Relaxation",
   "map.layer.poi-winter": "Winter",
   "map.layer.poi-hotels": "Hotels & Accommodations",
+
   "route-closures.start-time": "Start Time",
   "route-closures.end-time": "End Time",
+
   "risk-exposure.low": "minor",
   "risk-exposure.medium": "moderate",
   "risk-exposure.high": "high",
   "risk-exposure.veryhigh": "very high",
   "risk-exposure.extreme": "immediate drop-off zone",
+
   "weather.air-temperature-min": "Min",
   "weather.air-temperature-max": "Max",
   "weather.precipitation-probability": "Precipitation probability",

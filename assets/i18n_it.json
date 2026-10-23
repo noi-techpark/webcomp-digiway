@@ -1,20 +1,31 @@
 {
+  "app.close": "Chiudi",
   "sidebar.base-map": "Mappa di base",
   "sidebar.data-layers": "Livelli dati",
+
   "map.base.euregio": "Euregio (tiris/OSM)",
   "map.base.osm": "Open Street Map",
+  "map.base.carto": "Carto",
+
+  "map.layer.util.no-details": "Nessun dettaglio",
+  "map.layer.util.technical-details": "Dettagli tecnici",
+
   "map.layer.route-closures": "Chiusure stradali",
   "map.layer.risk-exposure": "Esposizione al rischio",
   "route-closures.start-time": "Orario di inizio",
   "route-closures.end-time": "Orario di fine",
+
   "risk-exposure.low": "ridotta",
   "risk-exposure.medium": "moderata",
   "risk-exposure.high": "elevata",
   "risk-exposure.veryhigh": "molto elevata",
   "risk-exposure.extreme": "zona di precipizio",
+
   "weather.precipitation-probability": "Probabilità precipitazioni",
   "weather.precipitation-amount": "Precipitazioni",
   "weather.wind-directions": "N,NE,E,SE,S,SO,O,NO",
+
+  "otp.zoom-too-far": "Ingrandisci per vedere i dati",
 
   "weather.parameter.air-humidity": "Umidità dell'aria",
   "weather.parameter.air-temperature": "Temperatura dell'aria",

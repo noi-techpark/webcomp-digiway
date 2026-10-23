@@ -1,17 +1,24 @@
 {
+  "app.close": "Close",
   "sidebar.base-map": "Basiskarte",
   "sidebar.data-layers": "Datenebenen",
+
   "map.base.euregio": "Euregio (tiris/OSM)",
   "map.base.osm": "Open Street Map",
+  "map.base.carto": "Carto",
+
   "map.layer.route-closures": "Streckensperrungen",
   "map.layer.risk-exposure": "Ausgesetztheit",
+
   "route-closures.start-time": "Startzeit",
   "route-closures.end-time": "Endzeit",
+
   "risk-exposure.low": "gering",
   "risk-exposure.medium": "mäßig",
   "risk-exposure.high": "hoch",
   "risk-exposure.veryhigh": "sehr hoch",
   "risk-exposure.extreme": "unmittelbarer absturzbereich",
+
   "weather.wind-directions": "N,NO,O,SO,S,SW,W,NW",
   "": ""
 }
