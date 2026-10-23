@@ -103,10 +103,10 @@
         "options": {
           "values": [
             "osm",
-            "tirol",
+            "euregio",
             "carto"
           ],
-          "default": "tirol"
+          "default": "euregio"
         }
       }
     ]

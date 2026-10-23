@@ -87,9 +87,9 @@ export namespace Components {
     interface NoiDigiway {
         /**
           * Base map layer
-          * @default 'tirol'
+          * @default 'euregio'
          */
-        "baseMap": 'osm' | 'tirol';
+        "baseMap": BaseMapType;
         /**
           * Pass latitude, longitude and zoomlevel separated by "," if map should be centered an a specific gps point
          */
@@ -139,7 +139,7 @@ export namespace Components {
     /**
      * (INTERNAL) render map layer
      */
-    interface NoiMapBaseOsm {
+    interface NoiMapBaseEuregio {
         /**
           * @default 'color'
          */
@@ -148,7 +148,7 @@ export namespace Components {
     /**
      * (INTERNAL) render map layer
      */
-    interface NoiMapBaseTirol {
+    interface NoiMapBaseOsm {
         /**
           * @default 'color'
          */
@@ -264,12 +264,13 @@ export namespace Components {
      * (INTERNAL) render map layer
      */
     interface NoiMapLayerRoads {
-        "region": 'tyrol'
-    | 'tyrol-north'
-    | 'bolzano-int'
-    | 'trento'
+        "region": 'cycling-tyrol'
+    | 'mountain-bike-tyrol'
+    | 'cycling-bolzano'
     | 'mountain-bike-bolzano'
+    | 'cycling-trento'
     | 'mountain-bike-trento'
+
     | 'hiking-bolzano'
     | 'hiking-trento'
     | 'hiking-e5'
@@ -545,20 +546,20 @@ declare global {
     /**
      * (INTERNAL) render map layer
      */
+    interface HTMLNoiMapBaseEuregioElement extends Components.NoiMapBaseEuregio, HTMLStencilElement {
+    }
+    var HTMLNoiMapBaseEuregioElement: {
+        prototype: HTMLNoiMapBaseEuregioElement;
+        new (): HTMLNoiMapBaseEuregioElement;
+    };
+    /**
+     * (INTERNAL) render map layer
+     */
     interface HTMLNoiMapBaseOsmElement extends Components.NoiMapBaseOsm, HTMLStencilElement {
     }
     var HTMLNoiMapBaseOsmElement: {
         prototype: HTMLNoiMapBaseOsmElement;
         new (): HTMLNoiMapBaseOsmElement;
-    };
-    /**
-     * (INTERNAL) render map layer
-     */
-    interface HTMLNoiMapBaseTirolElement extends Components.NoiMapBaseTirol, HTMLStencilElement {
-    }
-    var HTMLNoiMapBaseTirolElement: {
-        prototype: HTMLNoiMapBaseTirolElement;
-        new (): HTMLNoiMapBaseTirolElement;
     };
     interface HTMLNoiMapLayerAnnouncementsElementEventMap {
         "layerLoading": boolean;
@@ -982,8 +983,8 @@ declare global {
         "noi-icon": HTMLNoiIconElement;
         "noi-map": HTMLNoiMapElement;
         "noi-map-base-carto": HTMLNoiMapBaseCartoElement;
+        "noi-map-base-euregio": HTMLNoiMapBaseEuregioElement;
         "noi-map-base-osm": HTMLNoiMapBaseOsmElement;
-        "noi-map-base-tirol": HTMLNoiMapBaseTirolElement;
         "noi-map-layer-announcements": HTMLNoiMapLayerAnnouncementsElement;
         "noi-map-layer-base-odh": HTMLNoiMapLayerBaseOdhElement;
         "noi-map-layer-otp": HTMLNoiMapLayerOtpElement;
@@ -1079,9 +1080,9 @@ declare namespace LocalJSX {
     interface NoiDigiway {
         /**
           * Base map layer
-          * @default 'tirol'
+          * @default 'euregio'
          */
-        "baseMap"?: 'osm' | 'tirol';
+        "baseMap"?: BaseMapType;
         /**
           * Pass latitude, longitude and zoomlevel separated by "," if map should be centered an a specific gps point
          */
@@ -1133,7 +1134,7 @@ declare namespace LocalJSX {
     /**
      * (INTERNAL) render map layer
      */
-    interface NoiMapBaseOsm {
+    interface NoiMapBaseEuregio {
         /**
           * @default 'color'
          */
@@ -1142,7 +1143,7 @@ declare namespace LocalJSX {
     /**
      * (INTERNAL) render map layer
      */
-    interface NoiMapBaseTirol {
+    interface NoiMapBaseOsm {
         /**
           * @default 'color'
          */
@@ -1296,12 +1297,13 @@ declare namespace LocalJSX {
           * Emitted when layer data is loading
          */
         "onLayerLoading"?: (event: NoiMapLayerRoadsCustomEvent<boolean>) => void;
-        "region": 'tyrol'
-    | 'tyrol-north'
-    | 'bolzano-int'
-    | 'trento'
+        "region": 'cycling-tyrol'
+    | 'mountain-bike-tyrol'
+    | 'cycling-bolzano'
     | 'mountain-bike-bolzano'
+    | 'cycling-trento'
     | 'mountain-bike-trento'
+
     | 'hiking-bolzano'
     | 'hiking-trento'
     | 'hiking-e5'
@@ -1408,7 +1410,7 @@ declare namespace LocalJSX {
     }
     interface NoiDigiwayAttributes {
         "layout": ViewLayout;
-        "baseMap": 'osm' | 'tirol';
+        "baseMap": BaseMapType;
         "centermap": string;
         "language": string;
         "viewDate": string | undefined;
@@ -1419,10 +1421,10 @@ declare namespace LocalJSX {
     interface NoiMapAttributes {
         "centermap": string;
     }
-    interface NoiMapBaseOsmAttributes {
+    interface NoiMapBaseEuregioAttributes {
         "variant": 'color' | 'grayscale';
     }
-    interface NoiMapBaseTirolAttributes {
+    interface NoiMapBaseOsmAttributes {
         "variant": 'color' | 'grayscale';
     }
     interface NoiMapLayerOtpAttributes {
@@ -1439,12 +1441,13 @@ declare namespace LocalJSX {
         "tag": string;
     }
     interface NoiMapLayerRoadsAttributes {
-        "region": 'tyrol'
-    | 'tyrol-north'
-    | 'bolzano-int'
-    | 'trento'
+        "region": 'cycling-tyrol'
+    | 'mountain-bike-tyrol'
+    | 'cycling-bolzano'
     | 'mountain-bike-bolzano'
+    | 'cycling-trento'
     | 'mountain-bike-trento'
+
     | 'hiking-bolzano'
     | 'hiking-trento'
     | 'hiking-e5'
@@ -1476,8 +1479,8 @@ declare namespace LocalJSX {
         "noi-icon": Omit<NoiIcon, keyof NoiIconAttributes> & { [K in keyof NoiIcon & keyof NoiIconAttributes]?: NoiIcon[K] } & { [K in keyof NoiIcon & keyof NoiIconAttributes as `attr:${K}`]?: NoiIconAttributes[K] } & { [K in keyof NoiIcon & keyof NoiIconAttributes as `prop:${K}`]?: NoiIcon[K] };
         "noi-map": Omit<NoiMap, keyof NoiMapAttributes> & { [K in keyof NoiMap & keyof NoiMapAttributes]?: NoiMap[K] } & { [K in keyof NoiMap & keyof NoiMapAttributes as `attr:${K}`]?: NoiMapAttributes[K] } & { [K in keyof NoiMap & keyof NoiMapAttributes as `prop:${K}`]?: NoiMap[K] };
         "noi-map-base-carto": NoiMapBaseCarto;
+        "noi-map-base-euregio": Omit<NoiMapBaseEuregio, keyof NoiMapBaseEuregioAttributes> & { [K in keyof NoiMapBaseEuregio & keyof NoiMapBaseEuregioAttributes]?: NoiMapBaseEuregio[K] } & { [K in keyof NoiMapBaseEuregio & keyof NoiMapBaseEuregioAttributes as `attr:${K}`]?: NoiMapBaseEuregioAttributes[K] } & { [K in keyof NoiMapBaseEuregio & keyof NoiMapBaseEuregioAttributes as `prop:${K}`]?: NoiMapBaseEuregio[K] };
         "noi-map-base-osm": Omit<NoiMapBaseOsm, keyof NoiMapBaseOsmAttributes> & { [K in keyof NoiMapBaseOsm & keyof NoiMapBaseOsmAttributes]?: NoiMapBaseOsm[K] } & { [K in keyof NoiMapBaseOsm & keyof NoiMapBaseOsmAttributes as `attr:${K}`]?: NoiMapBaseOsmAttributes[K] } & { [K in keyof NoiMapBaseOsm & keyof NoiMapBaseOsmAttributes as `prop:${K}`]?: NoiMapBaseOsm[K] };
-        "noi-map-base-tirol": Omit<NoiMapBaseTirol, keyof NoiMapBaseTirolAttributes> & { [K in keyof NoiMapBaseTirol & keyof NoiMapBaseTirolAttributes]?: NoiMapBaseTirol[K] } & { [K in keyof NoiMapBaseTirol & keyof NoiMapBaseTirolAttributes as `attr:${K}`]?: NoiMapBaseTirolAttributes[K] } & { [K in keyof NoiMapBaseTirol & keyof NoiMapBaseTirolAttributes as `prop:${K}`]?: NoiMapBaseTirol[K] };
         "noi-map-layer-announcements": NoiMapLayerAnnouncements;
         "noi-map-layer-base-odh": NoiMapLayerBaseOdh;
         "noi-map-layer-otp": Omit<NoiMapLayerOtp, keyof NoiMapLayerOtpAttributes> & { [K in keyof NoiMapLayerOtp & keyof NoiMapLayerOtpAttributes]?: NoiMapLayerOtp[K] } & { [K in keyof NoiMapLayerOtp & keyof NoiMapLayerOtpAttributes as `attr:${K}`]?: NoiMapLayerOtpAttributes[K] } & { [K in keyof NoiMapLayerOtp & keyof NoiMapLayerOtpAttributes as `prop:${K}`]?: NoiMapLayerOtp[K] };
@@ -1546,11 +1549,11 @@ declare module "@stencil/core" {
             /**
              * (INTERNAL) render map layer
              */
-            "noi-map-base-osm": LocalJSX.IntrinsicElements["noi-map-base-osm"] & JSXBase.HTMLAttributes<HTMLNoiMapBaseOsmElement>;
+            "noi-map-base-euregio": LocalJSX.IntrinsicElements["noi-map-base-euregio"] & JSXBase.HTMLAttributes<HTMLNoiMapBaseEuregioElement>;
             /**
              * (INTERNAL) render map layer
              */
-            "noi-map-base-tirol": LocalJSX.IntrinsicElements["noi-map-base-tirol"] & JSXBase.HTMLAttributes<HTMLNoiMapBaseTirolElement>;
+            "noi-map-base-osm": LocalJSX.IntrinsicElements["noi-map-base-osm"] & JSXBase.HTMLAttributes<HTMLNoiMapBaseOsmElement>;
             /**
              * (INTERNAL) render map layer
              */

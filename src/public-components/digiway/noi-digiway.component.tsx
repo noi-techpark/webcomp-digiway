@@ -28,7 +28,7 @@ type MapSourceOption = SelectOption;
 /**
  * @internal
  */
-type BaseMapType = 'tirol' | 'osm' | 'carto';
+type BaseMapType = 'euregio' | 'osm' | 'carto';
 
 /**
  * Consolidated web-component to show Open Data Hub data imported within the Digiway project
@@ -56,7 +56,7 @@ export class NoiDigiwayComponent implements StencilComponent {
    * Base map layer
    */
   @Prop({mutable: true})
-  baseMap: 'osm' | 'tirol' = 'tirol';
+  baseMap: BaseMapType = 'euregio';
 
   /**
    * Pass latitude, longitude and zoomlevel separated by "," if map should be centered an a specific gps point
@@ -96,7 +96,7 @@ export class NoiDigiwayComponent implements StencilComponent {
   weatherCurrentMode: WeatherCurrentViewMode = 'temperature';
 
   private modes: MapSourceOption[] = [
-    {value: 'tirol', text: 'map.base.tirol'},
+    {value: 'euregio', text: 'map.base.euregio'},
     {value: 'osm', text: 'map.base.osm'},
     {value: 'carto', text: 'map.base.carto'},
   ];
@@ -375,8 +375,8 @@ export class NoiDigiwayComponent implements StencilComponent {
           {this.mapMode.value === 'osm'
             ? <noi-map-base-osm variant={this._isGrayscaleMap ? 'grayscale' : 'color'}></noi-map-base-osm>
             : ''}
-          {this.mapMode.value === 'tirol'
-            ? <noi-map-base-tirol variant={this._isGrayscaleMap ? 'grayscale' : 'color'}></noi-map-base-tirol>
+          {this.mapMode.value === 'euregio'
+            ? <noi-map-base-euregio variant={this._isGrayscaleMap ? 'grayscale' : 'color'}></noi-map-base-euregio>
             : ''}
           {this.mapMode.value === 'carto'
             ? <noi-map-base-carto></noi-map-base-carto>
