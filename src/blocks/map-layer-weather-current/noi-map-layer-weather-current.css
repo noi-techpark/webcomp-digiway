@@ -12,5 +12,5 @@
 
 .noi-map-popup .popup__description.map-layer-weather-current--popup-outdated {
   color: var(--color-secondary);
-  padding-top: 0;
+  margin-bottom: -8px;
 }

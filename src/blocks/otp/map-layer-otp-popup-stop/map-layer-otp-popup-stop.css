@@ -12,20 +12,26 @@
   font: inherit;
 }
 
+/* POPUP HEADER */
 .noi-otp-popup .popup__header {
-  padding: 0 32px 0 8px;
+  padding: 4px 40px 4px 16px;
   display: flex;
   align-items: center;
-  gap: 0.5ch;
+  gap: 1ch;
   min-height: 32px;
-  font-size: 1.05em;
   font-weight: bold;
+
+  background-color: var(--color-background-shade);
+  border-radius: 6px 6px 0 0;
 }
 
+.noi-otp-popup .popup__header-icon {
+  height: 1.5em;
+}
 
 /* */
 .station-name-section {
-  padding: 8px;
+  padding: 8px 16px;
 }
 
 .station-name-section__code {
@@ -40,7 +46,7 @@
 
 /* transport-types */
 .transport-types-section {
-  padding: 8px;
+  padding: 8px 16px;
   background: var(--color-background-shade);
   display: flex;
   flex-wrap: wrap;
@@ -90,14 +96,16 @@
 }
 
 .departures-section__header {
-  padding: 4px 8px;
+  padding: 4px 16px;
   font-size: .9em;
   color: var(--color-primary);
   font-weight: bold;
 }
 
 .departures-section__empty {
-  padding: 0 8px;
+  padding: 0 16px;
+  margin-bottom: 8px;
+
   opacity: 0.9;
   font-size: 0.9em;
   color: var(--color-text);
@@ -105,7 +113,7 @@
 
 /* departures-list */
 .noi-otp-popup .departures-list {
-  padding: 0 1px;
+  padding: 0 2px 0 10px;
 }
 
 .noi-otp-popup .departures-list > * {
@@ -120,7 +128,7 @@
 }
 
 .noi-otp-popup .departures-list noi-button::part(button-native) {
-  padding: 2px 4px 2px 7px;
+  padding: 3px 6px 3px 6px;
   border-radius: 4px;
   width: 100%;
 }

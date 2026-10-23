@@ -13,19 +13,21 @@ noi-button::part(button-native) {
   border-radius: 8px;
 }
 
-/* POPUP */
-.noi-otp-popup {
-  font-size: initial;
-}
-
+/* POPUP HEADER */
 .noi-otp-popup .popup__header {
-  padding: 0 32px 0 8px;
+  padding: 4px 40px 4px 16px;
   display: flex;
   align-items: center;
-  gap: 0.5ch;
+  gap: 1ch;
   min-height: 32px;
-  font-size: 1.05em;
   font-weight: bold;
+
+  background-color: var(--color-background-shade);
+  border-radius: 6px 6px 0 0;
+}
+
+.noi-otp-popup .popup__header-icon {
+  height: 1.5em;
 }
 
 

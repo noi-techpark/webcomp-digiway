@@ -25,6 +25,7 @@ noi-map {
   background: var(--color-background);
   color: var(--color-text);
   border-radius: 6px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
 }
 
 .maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
@@ -46,6 +47,9 @@ noi-map {
   padding: 0;
   color: var(--color-text);
   line-height: 0;
+
+  margin: 4px;
+  border-radius: 4px;
 }
 
 
@@ -57,11 +61,15 @@ noi-map {
 
 /* POPUP HEADER */
 .noi-map-popup .popup__header {
-  padding: 0 32px 0 16px;
+  padding: 4px 40px 4px 16px;
   display: flex;
   align-items: center;
-  gap: 0.5ch;
+  gap: 1ch;
   min-height: 32px;
+  font-weight: bold;
+
+  background-color: var(--color-background-shade);
+  border-radius: 6px 6px 0 0;
 }
 
 .noi-map-popup .popup__header-icon {

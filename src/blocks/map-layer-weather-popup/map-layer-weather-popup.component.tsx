@@ -140,9 +140,9 @@ export class MapLayerWeatherPopupComponent implements StencilComponent {
     const sunshineDuration = _getDailyMeasurement(this.data.sdatatypes["forecast-sunshine-duration"]?.tmeasurements || [])?.mvalue;
 
     return (
-      <div class="noi-weather-popup" part="popup">
-        <div class="header">
-          <noi-icon name="map-point"></noi-icon>
+      <div class="noi-map-popup noi-weather-popup" part="popup">
+        <div class="popup__header">
+          <noi-icon class="popup__header-icon" name="map-point"></noi-icon>
           <div>{pointName}</div>
         </div>
 
@@ -171,7 +171,7 @@ export class MapLayerWeatherPopupComponent implements StencilComponent {
             </div>
           ) : ''}
           <div class="day-content__main">
-            <div class="section section--background">
+            <div class="section">
               {t('weather.air-temperature-min')}: {num(airTemperatureMin)}℃&nbsp;-&nbsp;{t('weather.air-temperature-max')}: {num(airTemperatureMax)}℃
             </div>
             <div class="section">

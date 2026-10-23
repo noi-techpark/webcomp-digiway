@@ -496,6 +496,7 @@ export class NoiMapLayerBaseOdhComponent implements StencilComponent {
     // 1. Check for string
     if (typeof structure === 'string') {
       this._popup = new Popup()
+        .setMaxWidth('320px')
         .setLngLat(lngLat)
         .setHTML(structure)
         .addTo(this.map);
@@ -506,8 +507,8 @@ export class NoiMapLayerBaseOdhComponent implements StencilComponent {
       await new Promise(resolve => requestAnimationFrame(resolve));
 
       this._popup = new Popup()
+        .setMaxWidth('320px')
         .setLngLat(lngLat)
-        .setMaxWidth('380px')
         .setDOMContent(structure)
         .addTo(this.map);
 
@@ -521,6 +522,7 @@ export class NoiMapLayerBaseOdhComponent implements StencilComponent {
       // 3. Check for PopupDefinitionObject object
     } else if (typeof structure === 'object') {
       this._popup = new Popup()
+        .setMaxWidth('320px')
         .setLngLat(lngLat)
         .setHTML(popupBuilder(structure as PopupDefinitionObject))
         .addTo(this.map);
@@ -532,7 +534,7 @@ export class NoiMapLayerBaseOdhComponent implements StencilComponent {
         this._popupFeatureId = undefined;
       });
     } else {
-      console.warn('No valid popup defnition');
+      console.warn('No valid popup definition');
     }
   }
 }
