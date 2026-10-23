@@ -57,7 +57,7 @@
 
   "otp.zoom-too-far": "Zoom in to see the data",
   "otp.type-train": "Train",
-  "otp.type-bus": "Bus1",
+  "otp.type-bus": "Bus",
   "otp.type-ferry": "Ferry",
   "otp.type-funicular": "Funicular",
   "otp.type-gondola": "Gondola",
@@ -72,6 +72,7 @@
 
   "weather.type.temperature": "Temperature (°C)",
   "weather.type.precipitation": "Precipitation (mm)",
+
   "weather.parameter.air-humidity": "Air Humidity",
   "weather.parameter.air-temperature": "Air Temperature",
   "weather.parameter.air-temperature-max": "Max Air Temperature",
@@ -97,6 +98,8 @@
   "weather.parameter.wind10m_direction": "Wind Direction (10m)",
   "weather.parameter.wind10m_speed": "Wind Speed (10m)",
   "weather.parameter.snow_depth": "Snow Depth",
+
   "weather.utils.data-outdated": "Data is outdated",
+
   "": ""
 }
