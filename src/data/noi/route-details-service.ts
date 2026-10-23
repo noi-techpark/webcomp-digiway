@@ -18,7 +18,6 @@ export class RouteDetailsService {
   getDetails$(pointId: string): Observable<RouteDetails> {
     return fromFetch<RouteDetails>(buildUrl(`https://tourism.api.opendatahub.com/v1/SpatialData/${pointId}`, {
       origin: ORIGIN,
-      limit: -1,
     }), {
       // The selector allows you to parse the body directly
       selector: (response) => response.json()
