@@ -105,7 +105,7 @@ export class NoiDigiwayComponent implements StencilComponent {
 
   private structure: DataLayerOption[] = [
     {value: 'layer-closures', text: 'map.layer.route-closures', icon: 'pointer-off'},
-    {value: 'layer-exposure', text: 'map.layer.risk-exposure', icon: 'context', forceGrayscale: true},
+    {value: 'layer-exposure', text: 'map.layer.risk-exposure', icon: 'landslide', forceGrayscale: true},
     {
       value: 'layer-cycling', text: 'map.layer.cycling', icon: 'bicycle', showLoader: false,
       children: [
@@ -662,7 +662,7 @@ export class NoiDigiwayComponent implements StencilComponent {
 
   _renderLegend_riskExposure() {
     return (<div class="legend" part="legend">
-      <noi-icon name="context" class="legend__icon legend__pane"
+      <noi-icon name="landslide" class="legend__icon legend__pane"
                 title={this.languageService.translate('map.layer.risk-exposure')}></noi-icon>
       <div class="legend__text risk-level risk-level--low">
         <span>{this.languageService.translate('risk-exposure.low')}</span></div>
