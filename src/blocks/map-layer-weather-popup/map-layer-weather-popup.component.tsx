@@ -4,7 +4,7 @@
 
 import { Component, h, Method, State } from "@stencil/core";
 import { StencilComponent } from "../../utils/StencilComponent";
-import { MapGeoJSONFeature } from "maplibre-gl";
+import { MapGeoJSONFeature, Subscription } from "maplibre-gl";
 import { WeatherForecast } from "../../data/noi/WeatherForecase";
 import { LanguageDataService } from "../../data/language/language-data-service";
 import {
@@ -13,11 +13,11 @@ import {
   DayPointForecast,
   getClearSkyType,
   getIconContent,
+  getWeatherName,
   getWindDirectionLabel
 } from "../map-layer-weather/weather-forecast.util";
 import { formatNumber, formatTime } from "../../utils/intl";
 import { WeatherForecastService } from "../../data/noi/weather-forecast-service";
-import { AbortHandler } from "../../data/noi/fetch.util";
 import { diffInDays } from "../../utils/date";
 
 
@@ -59,7 +59,7 @@ export class MapLayerWeatherPopupComponent implements StencilComponent {
   }
 
   disconnectedCallback() {
-
+    this._sub?.unsubscribe();
   }
 
   @Method()
@@ -97,7 +97,7 @@ export class MapLayerWeatherPopupComponent implements StencilComponent {
     this._loadData();
   }
 
-  private __request?: AbortHandler;
+  private _sub?: Subscription;
 
   _loadData() {
     if (!this.dayIso || !this.stationId) {
@@ -106,9 +106,8 @@ export class MapLayerWeatherPopupComponent implements StencilComponent {
     }
 
     this.isLoading = true;
-    this.__request?.abort();
-    this.__request = this.weatherService.getWeatherForecastDayStation(new Date(this.dayIso), this.stationId, (forecastData) => {
-      this.__request = undefined; // avoid cancelling finished request later
+    this._sub?.unsubscribe();
+    this._sub = this.weatherService.getWeatherForecastDayStation(new Date(this.dayIso), this.stationId).subscribe((forecastData) => {
       this.isLoading = false;
 
       this.data = forecastData.values?.[0];
@@ -141,9 +140,9 @@ export class MapLayerWeatherPopupComponent implements StencilComponent {
     const sunshineDuration = _getDailyMeasurement(this.data.sdatatypes["forecast-sunshine-duration"]?.tmeasurements || [])?.mvalue;
 
     return (
-      <div class="noi-weather-popup" part="popup">
-        <div class="header">
-          <noi-icon name="map-point"></noi-icon>
+      <div class="noi-map-popup noi-weather-popup" part="popup">
+        <div class="popup__header">
+          <noi-icon class="popup__header-icon" name="map-point"></noi-icon>
           <div>{pointName}</div>
         </div>
 
@@ -172,7 +171,7 @@ export class MapLayerWeatherPopupComponent implements StencilComponent {
             </div>
           ) : ''}
           <div class="day-content__main">
-            <div class="section section--background">
+            <div class="section">
               {t('weather.air-temperature-min')}: {num(airTemperatureMin)}℃&nbsp;-&nbsp;{t('weather.air-temperature-max')}: {num(airTemperatureMax)}℃
             </div>
             <div class="section">
@@ -201,6 +200,7 @@ export class MapLayerWeatherPopupComponent implements StencilComponent {
     const num = (_num: | number | undefined) => formatNumber(_num, this.languageService.currentLanguage!);
 
     const skyType = getClearSkyType(new Date(dp.time), sunshineDuration);
+    const weatherName = getWeatherName(dp["qualitative-forecast"]);
 
     return (<div>
 
@@ -225,8 +225,8 @@ export class MapLayerWeatherPopupComponent implements StencilComponent {
         <div class="table">
           <div class="table__cell">
             <div class="noi-weather-icon value-icon"
-                 title={dp["qualitative-forecast"] as any}>{getIconContent(dp["qualitative-forecast"] as any, skyType)}</div>
-            <div class="value-description">{dp["qualitative-forecast"]}</div>
+                 title={weatherName}>{getIconContent(dp["qualitative-forecast"]!, skyType)}</div>
+            <div class="value-description">{weatherName}</div>
           </div>
           <div class="table__cell">
             <div class="value-description">{t('weather.hours.air-temperature')}</div>

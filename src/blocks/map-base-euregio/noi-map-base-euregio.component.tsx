@@ -11,11 +11,11 @@ import { Map } from "maplibre-gl";
  * (INTERNAL) render map layer
  */
 @Component({
-  tag: 'noi-map-base-tirol',
+  tag: 'noi-map-base-euregio',
   // styleUrl: 'noi-map.css',
   shadow: false,
 })
-export class NoiMapBaseTirolComponent implements StencilComponent {
+export class NoiMapBaseEuregioComponent implements StencilComponent {
 
   private map!: Map;
 
@@ -40,7 +40,7 @@ export class NoiMapBaseTirolComponent implements StencilComponent {
     const mapParent = this.el.closest('noi-map') as HTMLNoiMapElement;
 
     if (!mapParent) {
-      console.error('[noi-map-base-tirol] must be a child of my-map');
+      console.error('[noi-map-base-euregio] must be a child of my-map');
       return;
     }
 
@@ -66,23 +66,23 @@ export class NoiMapBaseTirolComponent implements StencilComponent {
   onVariantChange() {
     switch (this.variant) {
       case 'color':
-        this.map.setPaintProperty('layer-tirol-background', 'raster-saturation', 0);
+        this.map.setPaintProperty('layer-euregio-background', 'raster-saturation', 0);
         break;
       case 'grayscale':
-        this.map.setPaintProperty('layer-tirol-background', 'raster-saturation', -1);
+        this.map.setPaintProperty('layer-euregio-background', 'raster-saturation', -1);
         break;
       default:
-        console.warn('[noi-map-base-tirol] Unknown variant:', this.variant);
+        console.warn('[noi-map-base-euregio] Unknown variant:', this.variant);
     }
   }
 
 
   initLayer() {
-    console.log(`[noi-map-base-tirol] Adding layer to map`);
+    console.log(`[noi-map-base-euregio] Adding layer to map`);
 
 
     // Add the WMTS endpoint as a raster source
-    this.map.addSource('source-tirol', {
+    this.map.addSource('source-euregio', {
       type: 'raster',
       tiles: [
         // Extracted tile template from the WMTS configuration
@@ -95,16 +95,16 @@ export class NoiMapBaseTirolComponent implements StencilComponent {
     // Render the source using a raster layer
     const layers = this.map.getLayersOrder();
     this.map.addLayer({
-      id: 'layer-tirol-background',
+      id: 'layer-euregio-background',
       type: 'raster',
-      source: 'source-tirol',
+      source: 'source-euregio',
     }, layers[0]);
 
     this.onVariantChange();
   }
 
   destroyLayer() {
-    console.log('[noi-map-base-tirol] Removing layer from map');
+    console.log('[noi-map-base-euregio] Removing layer from map');
 
     // for (const subscription of this._subscriptions) {
     //   subscription.unsubscribe();
@@ -112,10 +112,10 @@ export class NoiMapBaseTirolComponent implements StencilComponent {
     // this._subscriptions = [];
 
     // 4. Cleanup source when HTML element gets removed from DOM
-    if (this.map && this.map.getSource('source-tirol')) {
-      this.map.removeLayer('layer-tirol-background');
+    if (this.map && this.map.getSource('source-euregio')) {
+      this.map.removeLayer('layer-euregio-background');
 
-      this.map.removeSource('source-tirol');
+      this.map.removeSource('source-euregio');
     }
   }
 }

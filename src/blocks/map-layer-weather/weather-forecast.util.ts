@@ -4,7 +4,11 @@
 
 import { WeatherIconFont, WeatherIconName } from "./icon-font";
 import { Measurement } from "../../data/noi/types-v1-common";
-import { WeatherForecast, WeatherForecastMeasurementType } from "../../data/noi/WeatherForecase";
+import {
+  WeatherForecast,
+  WeatherForecastIconValueType,
+  WeatherForecastMeasurementType
+} from "../../data/noi/WeatherForecase";
 
 
 /**
@@ -167,7 +171,7 @@ export function getIconName(description: string, type: 'day' | 'night'): Weather
   }
   const lc = (description + '').toLowerCase();
 
-  if (lc === 'sunny') {
+  if (lc === 'sunny' || lc === 'clear sky') {
     return type === 'night' ? 'icon-moon' : 'icon-sunny';
   }
   if (lc === 'partly cloudy') {
@@ -190,7 +194,7 @@ export function getIconName(description: string, type: 'day' | 'night'): Weather
   const isCloudy = lc.includes('cloudy') || lc.includes('overcast');
   const isSnow = lc.includes('snow');
   const isRain = lc.includes('rain');
-  let level = 2; // moderate
+  let level: 1 | 2 | 3 = 2; // moderate
   if (lc.includes('light')) {
     level = 1;
   }
@@ -204,6 +208,7 @@ export function getIconName(description: string, type: 'day' | 'night'): Weather
     if (isSnow) {
       return 'icon-snow-' + level as any;
     }
+    return 'icon-cloudy';
   }
   return '';
 }
@@ -221,7 +226,7 @@ export interface DayPointForecast {
   'wind-speed'?: number;
   'precipitation-probability'?: number;
   'precipitation-sum'?: number;
-  'qualitative-forecast'?: number;
+  'qualitative-forecast'?: WeatherForecastIconValueType;
 }
 
 /**
@@ -251,8 +256,8 @@ export function calculateDayPoints(point: WeatherForecast): DayPointForecast[] {
   // sort by time
   const _uniqueDayPointsSorted = _uniqueDayPoints.sort((a, b) => a.localeCompare(b));
 
-  function __getPointMeasurement(type: WeatherForecastMeasurementType, dp: string) {
-    return (point.sdatatypes[type]?.tmeasurements || [])?.find(m => m.mvalidtime === dp);
+  function __getPointMeasurement<T = number>(type: WeatherForecastMeasurementType, dp: string): Measurement<T> | undefined {
+    return (point.sdatatypes[type]?.tmeasurements || [])?.find(m => m.mvalidtime === dp) as Measurement<T> | undefined;
   }
 
   const points: DayPointForecast[] = [];
@@ -264,9 +269,17 @@ export function calculateDayPoints(point: WeatherForecast): DayPointForecast[] {
       'wind-speed': __getPointMeasurement('forecast-wind-speed', dp)?.mvalue,
       'precipitation-probability': __getPointMeasurement('forecast-precipitation-probability', dp)?.mvalue,
       'precipitation-sum': __getPointMeasurement('forecast-precipitation-sum', dp)?.mvalue,
-      'qualitative-forecast': __getPointMeasurement('qualitative-forecast', dp)?.mvalue,
+      'qualitative-forecast': __getPointMeasurement<WeatherForecastIconValueType>('qualitative-forecast', dp)?.mvalue,
     };
     points.push(pointData);
   }
   return points;
+}
+
+
+export function getWeatherName(qualitativeForecast?: string) {
+  if (qualitativeForecast === 'sunny') {
+    return 'clear sky';
+  }
+  return qualitativeForecast;
 }

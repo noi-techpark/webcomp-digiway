@@ -136,6 +136,7 @@ This is regular CSS styles for the component, but specific adjustment is support
 | `--color-secondary`         | Secondary color                              |
 | `--color-tertiary`          | Tertiary color                               |
 | `--color-text`              | Text color                                   |
+| `--color-shadow`            | Shadow color for some elements               |
 | `--map-filter`              | 'filter' property for the map                |
 | `--sidebar-width`           | Sidebar with (for desktop and tablet layout) |
 | `--scrollbar-bg`            | Scrollbar background color                   |

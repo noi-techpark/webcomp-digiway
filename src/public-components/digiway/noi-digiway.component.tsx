@@ -28,7 +28,7 @@ type MapSourceOption = SelectOption;
 /**
  * @internal
  */
-type BaseMapType = 'tirol' | 'osm' | 'carto';
+type BaseMapType = 'euregio' | 'osm' | 'carto';
 
 /**
  * Consolidated web-component to show Open Data Hub data imported within the Digiway project
@@ -56,7 +56,7 @@ export class NoiDigiwayComponent implements StencilComponent {
    * Base map layer
    */
   @Prop({mutable: true})
-  baseMap: 'osm' | 'tirol' = 'tirol';
+  baseMap: BaseMapType = 'euregio';
 
   /**
    * Pass latitude, longitude and zoomlevel separated by "," if map should be centered an a specific gps point
@@ -96,7 +96,7 @@ export class NoiDigiwayComponent implements StencilComponent {
   weatherCurrentMode: WeatherCurrentViewMode = 'temperature';
 
   private modes: MapSourceOption[] = [
-    {value: 'tirol', text: 'map.base.tirol'},
+    {value: 'euregio', text: 'map.base.euregio'},
     {value: 'osm', text: 'map.base.osm'},
     {value: 'carto', text: 'map.base.carto'},
   ];
@@ -105,14 +105,14 @@ export class NoiDigiwayComponent implements StencilComponent {
 
   private structure: DataLayerOption[] = [
     {value: 'layer-closures', text: 'map.layer.route-closures', icon: 'pointer-off'},
-    {value: 'layer-exposure', text: 'map.layer.risk-exposure', icon: 'context', forceGrayscale: true},
+    {value: 'layer-exposure', text: 'map.layer.risk-exposure', icon: 'landslide', forceGrayscale: true},
     {
       value: 'layer-cycling', text: 'map.layer.cycling', icon: 'bicycle', showLoader: false,
       children: [
-        // {value: 'layer-cycling-tyrol', text: 'map.layer.cycling-tyrol'},
-        {value: 'layer-cycling-tyrol-north', text: 'map.layer.cycling-tyrol-north'},
-        {value: 'layer-cycling-bolzano-int', text: 'map.layer.cycling-bolzano-int'},
+        {value: 'layer-cycling-tyrol', text: 'map.layer.cycling-tyrol'},
+        {value: 'layer-cycling-bolzano', text: 'map.layer.cycling-bolzano'},
         {value: 'layer-cycling-trento', text: 'map.layer.cycling-trento'},
+        {value: 'layer-mountain-tyrol', text: 'map.layer.mountain-tyrol'},
         {value: 'layer-mountain-bolzano', text: 'map.layer.mountain-bolzano'},
         {value: 'layer-mountain-trento', text: 'map.layer.mountain-trento'},
       ],
@@ -375,8 +375,8 @@ export class NoiDigiwayComponent implements StencilComponent {
           {this.mapMode.value === 'osm'
             ? <noi-map-base-osm variant={this._isGrayscaleMap ? 'grayscale' : 'color'}></noi-map-base-osm>
             : ''}
-          {this.mapMode.value === 'tirol'
-            ? <noi-map-base-tirol variant={this._isGrayscaleMap ? 'grayscale' : 'color'}></noi-map-base-tirol>
+          {this.mapMode.value === 'euregio'
+            ? <noi-map-base-euregio variant={this._isGrayscaleMap ? 'grayscale' : 'color'}></noi-map-base-euregio>
             : ''}
           {this.mapMode.value === 'carto'
             ? <noi-map-base-carto></noi-map-base-carto>
@@ -397,34 +397,34 @@ export class NoiDigiwayComponent implements StencilComponent {
           {this.layersActive.includes('layer-cycling-tyrol')
             ? <noi-map-layer-roads
               key="layer-cycling-tyrol"
-              region="tyrol"
+              region="cycling-tyrol"
               titleIcon="bicycle"
               titleText={this.languageService.translate('map.layer.cycling')}
               onLayerLoading={(e) => this._setLayerLoading('layer-cycling-tyrol', e.detail)}></noi-map-layer-roads>
             : ''}
 
-          {this.layersActive.includes('layer-cycling-tyrol-north')
+          {this.layersActive.includes('layer-mountain-tyrol')
             ? <noi-map-layer-roads
-              key="layer-cycling-tyrol-north"
-              region="tyrol-north"
+              key="layer-mountain-tyrol"
+              region="mountain-bike-tyrol"
               titleIcon="bicycle"
               titleText={this.languageService.translate('map.layer.cycling')}
-              onLayerLoading={(e) => this._setLayerLoading('layer-cycling-tyrol-north', e.detail)}></noi-map-layer-roads>
+              onLayerLoading={(e) => this._setLayerLoading('layer-mountain-tyrol', e.detail)}></noi-map-layer-roads>
             : ''}
 
-          {this.layersActive.includes('layer-cycling-bolzano-int')
+          {this.layersActive.includes('layer-cycling-bolzano')
             ? <noi-map-layer-roads
-              key="layer-cycling-bolzano-int"
-              region="bolzano-int"
+              key="layer-cycling-bolzano"
+              region="cycling-bolzano"
               titleIcon="bicycle"
               titleText={this.languageService.translate('map.layer.cycling')}
-              onLayerLoading={(e) => this._setLayerLoading('layer-cycling-bolzano-int', e.detail)}></noi-map-layer-roads>
+              onLayerLoading={(e) => this._setLayerLoading('layer-cycling-bolzano', e.detail)}></noi-map-layer-roads>
             : ''}
 
           {this.layersActive.includes('layer-cycling-trento')
             ? <noi-map-layer-roads
-              key="layer-cycling-bolzano-trento"
-              region="trento"
+              key="layer-cycling-trento"
+              region="cycling-trento"
               titleIcon="bicycle"
               titleText={this.languageService.translate('map.layer.cycling')}
               onLayerLoading={(e) => this._setLayerLoading('layer-cycling-trento', e.detail)}></noi-map-layer-roads>
@@ -662,7 +662,7 @@ export class NoiDigiwayComponent implements StencilComponent {
 
   _renderLegend_riskExposure() {
     return (<div class="legend" part="legend">
-      <noi-icon name="context" class="legend__icon legend__pane"
+      <noi-icon name="landslide" class="legend__icon legend__pane"
                 title={this.languageService.translate('map.layer.risk-exposure')}></noi-icon>
       <div class="legend__text risk-level risk-level--low">
         <span>{this.languageService.translate('risk-exposure.low')}</span></div>

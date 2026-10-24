@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import { Component, h, Method, State } from "@stencil/core";
+import { Component, Event, EventEmitter, h, Method, State } from "@stencil/core";
 import { StencilComponent } from "../../utils/StencilComponent";
 import { LanguageDataService } from "../../data/language/language-data-service";
 import { PoiInfo, PoiService } from "../../data/noi/poi-service";
@@ -29,6 +29,8 @@ export class MapLayerPoiPopupComponent implements StencilComponent {
 
   @State()
   private featureName?: string;
+
+  @Event() sizeChanged!: EventEmitter<void>;
 
   private featureId?: string;
 
@@ -59,6 +61,9 @@ export class MapLayerPoiPopupComponent implements StencilComponent {
     this._sub = this.poiService.getPoiById$(this.featureId).subscribe(poi => {
       this.poiInfo = poi;
       this.isLoading = false;
+      requestAnimationFrame(() => {
+        this.sizeChanged.emit();
+      });
     });
   }
 

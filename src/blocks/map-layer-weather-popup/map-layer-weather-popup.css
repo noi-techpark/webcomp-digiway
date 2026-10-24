@@ -51,18 +51,13 @@ noi-map-layer-weather-popup {
   text-transform: capitalize;
 }
 
-.noi-weather-popup .section.section--background {
-  padding: 8px 16px;
-  background: var(--color-background-shade, #f0f0f0);
-}
-
 /* PANEL */
 .noi-weather-popup .panel {
   display: flex;
   align-items: center;
   gap: 0.5ch;
 
-  padding: 8px 16px;
+  padding: 4px 16px;
   background: var(--color-background-shade, #f0f0f0);
 }
 
@@ -73,12 +68,21 @@ noi-map-layer-weather-popup {
 
 .noi-weather-popup .panel__btn {
   --color: var(--color-text);
-  --color-hover: var(--color-primary);
-  --color-bg-hover: var(--color-background);
+  --color-hover: var(--color-text);
+
+  /* same as .maplibregl-popup-close-button */
+  --color-bg-hover: rgba(0, 0, 0, .05);
 }
 
 .noi-weather-popup .panel__btn::part(button-native) {
-  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* same as .maplibregl-popup-close-button */
+  height: 32px;
+  width: 32px;
+  border-radius: 4px;
 }
 
 /* TABLE */

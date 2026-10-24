@@ -2,12 +2,12 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import { Component, h, Method, State } from "@stencil/core";
+import { Component, Event, EventEmitter, h, Method, State } from "@stencil/core";
 import { StencilComponent } from "../../utils/StencilComponent";
-import { AbortHandler } from "../../data/noi/fetch.util";
 import { RouteDetailsService } from "../../data/noi/route-details-service";
 import { RouteDetails } from "../../data/noi/route-details";
 import { LanguageDataService } from "../../data/language/language-data-service";
+import { Subscription } from "maplibre-gl";
 
 interface HeaderConfig {
   icon: string;
@@ -39,6 +39,8 @@ export class MapLayerRoadsPopupComponent implements StencilComponent {
   @State()
   private geoName?: string;
 
+  @Event() sizeChanged!: EventEmitter<void>;
+
   private routeId?: string;
   private detailsService = new RouteDetailsService();
 
@@ -59,17 +61,24 @@ export class MapLayerRoadsPopupComponent implements StencilComponent {
     this.geoName = geoName
   }
 
+  // popup is reattached multiple times, which triggers unwanted requests
+  // connectedCallback(){
+  //   this._loadData();
+  // }
+  //
+  // disconnectedCallback(){
+  //   this._sub?.unsubscribe();
+  // }
 
-  private __request?: AbortHandler;
+  private _sub?: Subscription;
 
   _loadData() {
     if (!this.routeId) {
       return;
     }
     this.isLoading = true;
-    this.__request?.abort();
-    this.__request = this.detailsService.getDetails(this.routeId, (_, routeDetails) => {
-      this.__request = undefined; // avoid cancelling finished request later
+    this._sub?.unsubscribe();
+    this._sub = this.detailsService.getDetails$(this.routeId).subscribe(routeDetails => {
       this.routeDetails = routeDetails;
 
       // calculate extended details
@@ -83,9 +92,13 @@ export class MapLayerRoadsPopupComponent implements StencilComponent {
           }
         }
       }
-      console.log('mappingData', this.mappingData);
+      // console.log('mappingData', this.mappingData);
 
       this.isLoading = false;
+
+      requestAnimationFrame(() => {
+        this.sizeChanged.emit();
+      });
     });
   }
 

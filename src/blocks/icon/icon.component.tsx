@@ -29,6 +29,7 @@ export class IconComponent {
   @Prop()
   name?: IconName | string;
 
+  /* NOTE: viewBox is essential for correct scaling */
   render() {
     switch (this.name) {
       case 'close':
@@ -76,6 +77,12 @@ export class IconComponent {
           </svg>
         );
 
+      case 'landslide':
+        return (<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+              <path d="M80-80h800L640-400l-200-80-120-160H80v560Zm80-80v-64l80 26 361-120 119 158H160Zm80-122-80-27v-75l80 26 158-52 96 43-254 85Zm500-118 180-80v-160l-180-40-100 80v120l100 80Zm-500-42-80-27v-91h120l65 83-105 35Zm512-51-32-25v-44l40-32 80 18v44l-88 39ZM480-640l200-80v-200l-200-40-120 80v160l120 80Zm9-90-49-33v-74l57-38 103 21v80l-111 44Z"/>
+          </svg>
+        );
+
       case 'bicycle-old':
         return (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
             <path fill="currentColor"
@@ -105,7 +112,7 @@ export class IconComponent {
           </svg>
         );
       case 'weather-alert':
-        return (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+        return (<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
             <path d="M14.0449 22.123H11.082V19.2822H14.0449V22.123Z" fill="currentColor"/>
             <path d="M12.7998 1.87598C15.8366 1.876 18.2988 4.33822 18.2988 7.375L18.2979 8.49805L18.7705 8.49902C21.4482 8.49911 23.632 10.6128 23.7451 13.2627L23.75 13.4785C23.75 16.2286 21.5206 18.4579 18.7705 18.458H16.8896V16.958H18.7705C20.6922 16.9579 22.25 15.4002 22.25 13.4785C22.25 11.5568 20.6922 9.99911 18.7705 9.99902H16.7988V7.375C16.7988 5.16665 15.0081 3.376 12.7998 3.37598C10.5914 3.37598 8.80078 5.16663 8.80078 7.375V8.33789H5.93945C3.6261 8.33789 1.75026 10.2131 1.75 12.5264C1.75 14.8399 3.62594 16.7158 5.93945 16.7158H8.05078V18.2158H5.93945C2.79751 18.2158 0.25 15.6683 0.25 12.5264C0.250261 9.38465 2.79767 6.83789 5.93945 6.83789L7.32715 6.83691L7.33984 6.71875C7.65583 4.06344 9.86415 1.98845 12.5781 1.88086L12.7998 1.87598Z" fill="currentColor"/>
             <path d="M14.083 17.3789H11.1055V9.17285H14.083V17.3789Z" fill="currentColor"/>

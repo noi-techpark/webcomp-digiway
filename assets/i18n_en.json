@@ -2,18 +2,21 @@
   "app.close": "Close",
   "sidebar.base-map": "Base map",
   "sidebar.data-layers": "Data Layers",
-  "map.base.tirol": "Tirol",
+
+  "map.base.euregio": "Euregio (tiris/OSM)",
   "map.base.osm": "Open Street Map",
   "map.base.carto": "Carto",
+
   "map.layer.util.no-details": "No details",
   "map.layer.util.technical-details": "Technical details",
+
   "map.layer.route-closures": "Route Closures",
-  "map.layer.risk-exposure": "Risk Exposure",
+  "map.layer.risk-exposure": "Exposure Map",
   "map.layer.cycling": "Cycling routes",
   "map.layer.cycling-tyrol": "Tyrol",
-  "map.layer.cycling-tyrol-north": "North Tyrol",
-  "map.layer.cycling-bolzano-int": "Province of Bolzano (Intermunicipal)",
+  "map.layer.cycling-bolzano": "Province of Bolzano (Intermunicipal)",
   "map.layer.cycling-trento": "Province of Trento",
+  "map.layer.mountain-tyrol": "Mountainbike routes Province of Tyrol",
   "map.layer.mountain-bolzano": "Mountainbike routes Province of Bolzano",
   "map.layer.mountain-trento": "Mountainbike routes Province of Trento",
   "map.layer.hiking": "Hiking trails",
@@ -32,13 +35,16 @@
   "map.layer.poi-relax": "Wellness & Relaxation",
   "map.layer.poi-winter": "Winter",
   "map.layer.poi-hotels": "Hotels & Accommodations",
+
   "route-closures.start-time": "Start Time",
   "route-closures.end-time": "End Time",
+
   "risk-exposure.low": "minor",
   "risk-exposure.medium": "moderate",
   "risk-exposure.high": "high",
   "risk-exposure.veryhigh": "very high",
   "risk-exposure.extreme": "immediate drop-off zone",
+
   "weather.air-temperature-min": "Min",
   "weather.air-temperature-max": "Max",
   "weather.precipitation-probability": "Precipitation probability",
@@ -51,7 +57,7 @@
 
   "otp.zoom-too-far": "Zoom in to see the data",
   "otp.type-train": "Train",
-  "otp.type-bus": "Bus1",
+  "otp.type-bus": "Bus",
   "otp.type-ferry": "Ferry",
   "otp.type-funicular": "Funicular",
   "otp.type-gondola": "Gondola",
@@ -66,6 +72,7 @@
 
   "weather.type.temperature": "Temperature (°C)",
   "weather.type.precipitation": "Precipitation (mm)",
+
   "weather.parameter.air-humidity": "Air Humidity",
   "weather.parameter.air-temperature": "Air Temperature",
   "weather.parameter.air-temperature-max": "Max Air Temperature",
@@ -91,6 +98,8 @@
   "weather.parameter.wind10m_direction": "Wind Direction (10m)",
   "weather.parameter.wind10m_speed": "Wind Speed (10m)",
   "weather.parameter.snow_depth": "Snow Depth",
+
   "weather.utils.data-outdated": "Data is outdated",
+
   "": ""
 }

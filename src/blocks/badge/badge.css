@@ -7,7 +7,7 @@
 :host {
   display: inline-block;
   padding: 2px 6px;
-  border-radius: 6px;
+  border-radius: 4px;
 
   /**
    * @prop --badge-color-text: Text color
