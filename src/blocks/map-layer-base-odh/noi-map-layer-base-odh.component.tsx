@@ -20,7 +20,9 @@ import {
 } from "../../utils/maplibre-popup";
 import { ODHIconFont } from "./icon-font";
 
-const HOST = 'https://geo.api.opendatahub.testingmachine.eu';
+// const HOST = 'https://geo.api.opendatahub.testingmachine.eu';
+const HOST = 'https://geo.api.opendatahub.com';
+
 
 
 // Default styles
