@@ -87,7 +87,7 @@ export class NoiDigiwayComponent implements StencilComponent {
   el!: HTMLElement;
 
   @State()
-  isMenuOpened = false;
+  isMenuOpened = true;
 
   @State()
   viewDateObj!: Date;
@@ -362,7 +362,7 @@ export class NoiDigiwayComponent implements StencilComponent {
 
   render() {
     return (
-      <Host class={getLayoutClass(this.layoutResolved)}>
+      <Host class={`${getLayoutClass(this.layoutResolved)}${this.isMenuOpened ? ' menu-open' : ''}`}>
         <div class="sidebar-collapsed">
           <div class="menu-button-wrapper">
             <button class="menu-button" onClick={() => this._toggleMenu()}>
