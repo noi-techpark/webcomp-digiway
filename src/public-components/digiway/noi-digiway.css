@@ -110,6 +110,18 @@ noi-map {
   margin-left: 0px;
 }
 
+/* Open menu sits beside the map instead of covering it. */
+:host(.layout--tablet),
+:host(.layout--mobile) {
+  --panel-width: min(var(--sidebar-width, 300px), calc(100% - 140px));
+}
+
+:host(.layout--tablet.menu-open) noi-map,
+:host(.layout--mobile.menu-open) noi-map {
+  width: calc(100% - var(--panel-width));
+  margin-left: var(--panel-width);
+}
+
 /* sidebar */
 .sidebar {
   position: absolute;
@@ -125,12 +137,9 @@ noi-map {
   transition: transform ease-out 180ms;
 }
 
-:host(.layout--mobile) .sidebar {
-  width: 100%;
-}
-
 :host(.layout--mobile) .sidebar,
 :host(.layout--tablet) .sidebar {
+  width: var(--panel-width);
   transform: translateX(-100%);
 }
 
@@ -161,13 +170,6 @@ noi-map {
   pointer-events: none;
   transition: opacity ease-out 180ms;
 }
-
-:host(.layout--mobile) .sidebar-backdrop.open,
-:host(.layout--tablet) .sidebar-backdrop.open {
-  opacity: 1;
-  pointer-events: inherit;
-}
-
 
 /* menu */
 .logo {
@@ -312,6 +314,11 @@ noi-map {
 
 :host(.layout--desktop) .legend-container {
   padding-left: var(--sidebar-width, 300px); /* left panel width */
+}
+
+:host(.layout--tablet.menu-open) .legend-container,
+:host(.layout--mobile.menu-open) .legend-container {
+  padding-left: var(--panel-width);
 }
 
 .legend__pane {
